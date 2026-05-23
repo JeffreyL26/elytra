@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: inkognigo-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: inkognigo
+      POSTGRES_PASSWORD: inkognigo
+      POSTGRES_DB: inkognigo
+    ports:
+      - "5432:5432"
+    volumes:
+      - inkognigo_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U inkognigo -d inkognigo"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  inkognigo_pgdata:
