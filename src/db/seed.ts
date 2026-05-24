@@ -1,5 +1,5 @@
 import { dummyBrokers } from "@/data/dummy-brokers";
-import { db } from "@/db/client";
+import { db, sql } from "@/db/client";
 import { brokers } from "@/db/schema";
 
 async function seed() {
@@ -19,8 +19,9 @@ async function seed() {
 }
 
 seed()
-  .then(() => process.exit(0))
-  .catch((error) => {
+  .then(() => sql.end())
+  .catch(async (error) => {
     console.error("Seed fehlgeschlagen:", error);
+    await sql.end();
     process.exit(1);
   });
