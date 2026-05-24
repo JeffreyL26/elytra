@@ -13,8 +13,8 @@ CREATE TABLE "brokers" (
 	"is_dummy" boolean DEFAULT false NOT NULL,
 	"is_active" boolean DEFAULT true NOT NULL,
 	"notes" text,
-	"created_at" timestamp DEFAULT now() NOT NULL,
-	"updated_at" timestamp DEFAULT now() NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
 	CONSTRAINT "brokers_slug_unique" UNIQUE("slug")
 );
 --> statement-breakpoint
@@ -27,17 +27,17 @@ CREATE TABLE "customer_profiles" (
 	"phone_numbers" jsonb,
 	"postal_addresses" jsonb,
 	"date_of_birth" date,
-	"created_at" timestamp DEFAULT now() NOT NULL,
-	"updated_at" timestamp DEFAULT now() NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
 	CONSTRAINT "customer_profiles_user_id_unique" UNIQUE("user_id")
 );
 --> statement-breakpoint
 CREATE TABLE "users" (
 	"id" text PRIMARY KEY NOT NULL,
 	"email" text NOT NULL,
-	"email_verified_at" timestamp,
-	"created_at" timestamp DEFAULT now() NOT NULL,
-	"updated_at" timestamp DEFAULT now() NOT NULL,
+	"email_verified_at" timestamp with time zone,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
 	CONSTRAINT "users_email_unique" UNIQUE("email")
 );
 --> statement-breakpoint
@@ -47,10 +47,10 @@ CREATE TABLE "opt_out_processes" (
 	"broker_id" text NOT NULL,
 	"process_token" text NOT NULL,
 	"status" "process_status" DEFAULT 'pending' NOT NULL,
-	"last_contacted_at" timestamp,
-	"next_action_at" timestamp,
-	"created_at" timestamp DEFAULT now() NOT NULL,
-	"updated_at" timestamp DEFAULT now() NOT NULL,
+	"last_contacted_at" timestamp with time zone,
+	"next_action_at" timestamp with time zone,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
 	CONSTRAINT "opt_out_processes_process_token_unique" UNIQUE("process_token")
 );
 --> statement-breakpoint
@@ -59,7 +59,7 @@ CREATE TABLE "process_events" (
 	"process_id" text NOT NULL,
 	"event_type" "event_type" NOT NULL,
 	"payload" jsonb,
-	"created_at" timestamp DEFAULT now() NOT NULL
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
 ALTER TABLE "customer_profiles" ADD CONSTRAINT "customer_profiles_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint

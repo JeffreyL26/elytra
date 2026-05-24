@@ -23,6 +23,10 @@ export const customerProfiles = pgTable("customer_profiles", {
   phoneNumbers: jsonb("phone_numbers").$type<string[]>(),
   postalAddresses: jsonb("postal_addresses").$type<PostalAddress[]>(),
   dateOfBirth: date("date_of_birth"),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
 });

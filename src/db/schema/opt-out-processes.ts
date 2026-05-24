@@ -37,10 +37,14 @@ export const optOutProcesses = pgTable(
       .unique()
       .$defaultFn(() => createId()),
     status: processStatusEnum("status").notNull().default("pending"),
-    lastContactedAt: timestamp("last_contacted_at"),
-    nextActionAt: timestamp("next_action_at"),
-    createdAt: timestamp("created_at").notNull().defaultNow(),
-    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+    lastContactedAt: timestamp("last_contacted_at", { withTimezone: true }),
+    nextActionAt: timestamp("next_action_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
   },
   (table) => [
     uniqueIndex("opt_out_processes_user_broker_uq").on(

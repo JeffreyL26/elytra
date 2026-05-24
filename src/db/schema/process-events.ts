@@ -22,7 +22,9 @@ export const processEvents = pgTable(
       .references(() => optOutProcesses.id, { onDelete: "cascade" }),
     eventType: eventTypeEnum("event_type").notNull(),
     payload: jsonb("payload"),
-    createdAt: timestamp("created_at").notNull().defaultNow(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
   },
   (table) => [
     index("process_events_process_created_idx").on(
