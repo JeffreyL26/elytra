@@ -13,7 +13,7 @@
     "db:down": "docker compose down",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:seed": "tsx src/db/seed.ts",
+    "db:seed": "tsx --env-file=.env src/db/seed.ts",
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
