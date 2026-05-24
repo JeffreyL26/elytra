@@ -1,0 +1,15 @@
+# Normalisiere alle Textdateien auf LF im Repo und im Working Tree.
+* text=auto eol=lf
+
+# Binärdateien nicht anfassen (keine EOL-Konvertierung, kein Diff-Text).
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.pdf binary

@@ -1,11 +1,7 @@
 import { boolean, pgEnum, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 import { createId } from "@/lib/ids";
 
-export const optOutMethodEnum = pgEnum("opt_out_method", [
-  "email",
-  "form",
-  "mixed",
-]);
+export const optOutMethodEnum = pgEnum("opt_out_method", ["email", "form", "mixed"]);
 
 export const brokers = pgTable("brokers", {
   id: text("id")
@@ -21,10 +17,6 @@ export const brokers = pgTable("brokers", {
   isDummy: boolean("is_dummy").notNull().default(false),
   isActive: boolean("is_active").notNull().default(true),
   notes: text("notes"),
-  createdAt: timestamp("created_at", { withTimezone: true })
-    .notNull()
-    .defaultNow(),
-  updatedAt: timestamp("updated_at", { withTimezone: true })
-    .notNull()
-    .defaultNow(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });

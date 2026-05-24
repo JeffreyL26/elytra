@@ -1,10 +1,4 @@
-import {
-  pgEnum,
-  pgTable,
-  text,
-  timestamp,
-  uniqueIndex,
-} from "drizzle-orm/pg-core";
+import { pgEnum, pgTable, text, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
 import { createId } from "@/lib/ids";
 import { brokers } from "./brokers";
 import { users } from "./users";
@@ -39,17 +33,8 @@ export const optOutProcesses = pgTable(
     status: processStatusEnum("status").notNull().default("pending"),
     lastContactedAt: timestamp("last_contacted_at", { withTimezone: true }),
     nextActionAt: timestamp("next_action_at", { withTimezone: true }),
-    createdAt: timestamp("created_at", { withTimezone: true })
-      .notNull()
-      .defaultNow(),
-    updatedAt: timestamp("updated_at", { withTimezone: true })
-      .notNull()
-      .defaultNow(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
-  (table) => [
-    uniqueIndex("opt_out_processes_user_broker_uq").on(
-      table.userId,
-      table.brokerId,
-    ),
-  ],
+  (table) => [uniqueIndex("opt_out_processes_user_broker_uq").on(table.userId, table.brokerId)],
 );
