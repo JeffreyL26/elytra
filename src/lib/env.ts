@@ -14,7 +14,8 @@ export const env = createEnv({
     MAIL_FROM_ADDRESS: z.string().email().optional(),
     MAIL_FROM_DOMAIN: z.string().min(1).optional(),
     REPLY_DOMAIN: z.string().min(1).optional(),
-    POSTMARK_INBOUND_WEBHOOK_SECRET: z.string().min(1).optional(),
+    POSTMARK_INBOUND_WEBHOOK_USERNAME: z.string().min(1).optional(),
+    POSTMARK_INBOUND_WEBHOOK_PASSWORD: z.string().min(1).optional(),
   },
   client: {},
   runtimeEnv: {
@@ -26,7 +27,8 @@ export const env = createEnv({
     MAIL_FROM_ADDRESS: process.env.MAIL_FROM_ADDRESS,
     MAIL_FROM_DOMAIN: process.env.MAIL_FROM_DOMAIN,
     REPLY_DOMAIN: process.env.REPLY_DOMAIN,
-    POSTMARK_INBOUND_WEBHOOK_SECRET: process.env.POSTMARK_INBOUND_WEBHOOK_SECRET,
+    POSTMARK_INBOUND_WEBHOOK_USERNAME: process.env.POSTMARK_INBOUND_WEBHOOK_USERNAME,
+    POSTMARK_INBOUND_WEBHOOK_PASSWORD: process.env.POSTMARK_INBOUND_WEBHOOK_PASSWORD,
   },
   emptyStringAsUndefined: true,
 });
