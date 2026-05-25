@@ -17,6 +17,7 @@ export default defineConfig({
   test: {
     environment: "node",
     env: {
+      ANTHROPIC_API_KEY: "test-anthropic-key",
       MAIL_FROM_ADDRESS: "removals@jba-team.com",
       MAIL_FROM_DOMAIN: "jba-team.com",
       REPLY_DOMAIN: "reply.jba-team.com",
