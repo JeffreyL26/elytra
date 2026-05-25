@@ -4,8 +4,9 @@ Automatisierter Opt-Out-Service für DSGVO-basierte Datenlöschanfragen bei
 Data-Brokern. Dieses Repository enthält den Monolithen (Next.js) inklusive
 Public-Website und internem Admin-UI (ELYTRA) sowie das Datenmodell.
 
-> Aktueller Stand: **Phase 1 — Foundation** (Projektgerüst, Datenmodell,
-> Seed-Daten, Smoke-Test).
+> Aktueller Stand: **Phase 2 — Mail-Pipeline** abgeschlossen (Worker via
+> pg-boss, Outbound-Versand via SES im Dummy-Modus, Postmark-Inbound-Webhook,
+> vier-stufiges Reply-Matching, LLM-Klassifikation).
 
 ## Voraussetzungen
 
@@ -92,33 +93,56 @@ klassifiziert; andernfalls greift das Sicherheitsnetz (Klassifikations-Fehler �
 
 ## Projektstruktur
 
+Unit-/Integrationstests liegen als `*.test.ts` neben dem jeweiligen Code.
+
 ```
 inkognigo/
 ├── src/
-│   ├── app/                      # Next.js App Router
+│   ├── app/                                  # Next.js App Router (Web-Prozess)
 │   │   └── api/
-│   │       └── brokers/
-│   │           └── route.ts      # GET /api/brokers (Smoke-Test)
+│   │       ├── brokers/route.ts              # GET /api/brokers (Smoke-Test)
+│   │       └── webhooks/
+│   │           └── postmark-inbound/
+│   │               └── route.ts              # Postmark Inbound-Webhook
 │   ├── db/
 │   │   ├── schema/
-│   │   │   ├── index.ts          # Re-Exports aller Schemas
+│   │   │   ├── index.ts                      # Re-Exports aller Schemas
 │   │   │   ├── users.ts
 │   │   │   ├── customer-profiles.ts
 │   │   │   ├── brokers.ts
 │   │   │   ├── opt-out-processes.ts
-│   │   │   └── process-events.ts
-│   │   ├── migrations/           # Drizzle-generiert
-│   │   ├── client.ts             # DB-Connection + Drizzle-Instance
-│   │   └── seed.ts               # Seed-Script (Dummy-Broker)
+│   │   │   ├── process-events.ts
+│   │   │   └── process-mails.ts              # Outbound/Inbound-Mails pro Prozess
+│   │   ├── migrations/                       # Drizzle-generiert
+│   │   ├── client.ts                         # exports { sql, db }
+│   │   └── seed.ts                           # Seed-Script (Dummy-Broker)
 │   ├── lib/
-│   │   ├── env.ts                # zod-validierte env vars
-│   │   └── ids.ts                # cuid2-Wrapper
+│   │   ├── env.ts                            # zod-validierte env vars
+│   │   ├── ids.ts                            # cuid2 (createId + createProcessToken)
+│   │   ├── branding.ts                       # SERVICE_NAME
+│   │   ├── mail/
+│   │   │   ├── send.ts                       # SES-Wrapper (Dummy-Modus first)
+│   │   │   ├── match-inbound.ts              # Vier-stufiges Reply-Matching
+│   │   │   └── templates/
+│   │   │       └── opt-out-request.ts        # DSGVO-Mail-Template (DE/EN)
+│   │   └── llm/
+│   │       └── classify-inbound.ts           # LLM-Klassifikation (Claude Tool-Use)
+│   ├── worker/                               # Worker-Prozess (pnpm worker)
+│   │   ├── index.ts                          # Entry-Point + Queue-Registrierung
+│   │   ├── queue.ts                          # pg-boss-Instanz (Worker)
+│   │   ├── producer.ts                       # send-only enqueue (Web-Prozess)
+│   │   └── jobs/
+│   │       ├── send-opt-out-mail.ts
+│   │       └── process-inbound-mail.ts
+│   ├── scripts/
+│   │   └── e2e-smoke.ts                       # End-to-End-Smoke (pnpm e2e)
 │   └── data/
-│       └── dummy-brokers.ts      # Statische Dummy-Broker-Definitionen
-├── docker-compose.yml            # nur Postgres
+│       └── dummy-brokers.ts                  # Statische Dummy-Broker-Definitionen
+├── docker-compose.yml                        # nur Postgres
 ├── drizzle.config.ts
 ├── biome.json
 ├── tsconfig.json
+├── vitest.config.ts
 └── package.json
 ```
 
