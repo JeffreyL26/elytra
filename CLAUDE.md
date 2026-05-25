@@ -264,6 +264,7 @@ Foundation komplett: Datenmodell, Migrations, Seed, Smoke-Test, Doku, Quality-Ga
    - [ ] `pnpm add @aws-sdk/client-ses`
    - [ ] `src/lib/mail/send.ts`: `sendMail({ from, to, replyTo, subject, textBody, htmlBody })` → Promise mit Message-ID
    - [ ] **Dummy-Modus:** wenn `broker.is_dummy === true`, kein echter SES-Call, sondern nur Log + Fake-Message-ID. Vor SES-Production-Access: ALLE Broker dummy. Production-Switch über Broker-Flag, nicht über Code-Pfad.
+   - [ ] **Message-ID-Header bewusst selbst setzen** (deshalb `SendRawEmail` statt `SendEmail`): Format `<proc-<token>-<rand>@MAIL_FROM_DOMAIN>`, gespeichert als `process_mails.provider_message_id`. Grund: Nur so greift das Stufe-3-Reply-Matching (`In-Reply-To`/`References`, Aufgabe 7) in Production — bei `SendEmail` vergäbe SES eine eigene, nicht referenzierbare Message-ID. Die SES-API-Response-ID landet zusätzlich in `raw_payload` (Bounce-Tracking). **Nicht wegrefactoren.**
    - [ ] Job `src/worker/jobs/send-opt-out-mail.ts`: Input `{ processId }` → lädt Process+User+Broker, baut Mail, schickt via `sendMail`, schreibt Eintrag in `process_mails`, schreibt `mail_sent` Event, updated `opt_out_processes.last_contacted_at` und `status='contacted'`
 
 6. **Inbound-Webhook (Postmark)**

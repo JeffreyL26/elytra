@@ -63,7 +63,7 @@ describe("sendOptOutMail (integration)", () => {
     const mails = await db.select().from(processMails).where(eq(processMails.processId, processId));
     expect(mails).toHaveLength(1);
     expect(mails[0].direction).toBe("outbound");
-    expect(mails[0].providerMessageId).toMatch(/^dummy-/);
+    expect(mails[0].providerMessageId).toMatch(/^<proc-[a-z0-9]+-[a-z0-9]+@.+>$/);
     expect(mails[0].sentAt).not.toBeNull();
 
     const events = await db

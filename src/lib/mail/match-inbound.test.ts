@@ -37,7 +37,9 @@ function makeInbound(overrides: Partial<ProcessMailRow>): ProcessMailRow {
 
 beforeAll(async () => {
   token = createProcessToken();
-  outboundMsgId = `outbound-msg-${createId()}@ses`;
+  // Bracketed Message-ID-Form -- exakt so, wie send.ts sie als Header setzt
+  // und in provider_message_id ablegt.
+  outboundMsgId = `<proc-${token}-${createId().slice(0, 8)}@jba-team.com>`;
 
   const emailDummy = dummyBrokers.find((b) => b.slug === "dummy-broker-email");
   if (!emailDummy) {
@@ -129,7 +131,7 @@ describe("matchInbound", () => {
       makeInbound({
         toAddress: "noreply@broker.example",
         subject: "Ihre Anfrage",
-        headers: { "In-Reply-To": `<${outboundMsgId}>` },
+        headers: { "In-Reply-To": outboundMsgId },
       }),
     );
     expect(result).toEqual({ processId, matchStage: 3, confidence: "medium" });
@@ -141,7 +143,7 @@ describe("matchInbound", () => {
         toAddress: "noreply@broker.example",
         subject: "Ihre Anfrage",
         headers: {
-          References: `<other-${createId()}@x> <${outboundMsgId}> <another@y>`,
+          References: `<other-${createId()}@x> ${outboundMsgId} <another@y>`,
         },
       }),
     );

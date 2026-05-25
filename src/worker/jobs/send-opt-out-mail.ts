@@ -53,13 +53,14 @@ export async function sendOptOutMail(processId: string): Promise<void> {
 
   const mail = buildOptOutRequest(profile, broker, proc.processToken, "de");
 
-  const { messageId } = await sendMail({
+  const { messageId, providerResponseId } = await sendMail({
     from,
     to: toAddress,
     replyTo,
     subject: mail.subject,
     textBody: mail.textBody,
     htmlBody: mail.htmlBody,
+    processToken: proc.processToken,
     dummy: broker.isDummy,
   });
 
@@ -73,6 +74,8 @@ export async function sendOptOutMail(processId: string): Promise<void> {
       subject: mail.subject,
       bodyText: mail.textBody,
       bodyHtml: mail.htmlBody,
+      // SES-API-ID zusaetzlich aufbewahren (Bounce-Tracking); null im Dummy.
+      rawPayload: providerResponseId ? { sesMessageId: providerResponseId } : null,
       sentAt: new Date(),
     });
     await tx.insert(processEvents).values({

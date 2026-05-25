@@ -70,13 +70,16 @@ function extractReplyTokens(candidates: string[], replyDomain: string): string[]
   return [...tokens];
 }
 
-// Message-IDs (ohne spitze Klammern) aus In-Reply-To und References.
+// Message-IDs (inkl. spitzer Klammern) aus In-Reply-To und References.
+// Klammern bleiben erhalten, damit der Vergleich gegen die in derselben Form
+// gespeicherte provider_message_id der Outbound-Mail aufgeht (send.ts setzt
+// den Message-ID-Header als <...> und speichert exakt diese Form).
 function collectReferencedMessageIds(mail: ProcessMailRow): string[] {
   const raw = [...getHeader(mail.headers, "In-Reply-To"), ...getHeader(mail.headers, "References")];
   const ids = new Set<string>();
   for (const value of raw) {
-    for (const match of value.matchAll(/<([^>]+)>/g)) {
-      ids.add(match[1]);
+    for (const match of value.matchAll(/<[^>]+>/g)) {
+      ids.add(match[0]);
     }
   }
   return [...ids];
