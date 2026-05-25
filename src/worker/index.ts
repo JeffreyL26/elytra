@@ -1,5 +1,11 @@
-import type { Job } from "pg-boss";
+import type { Job, JobWithMetadata } from "pg-boss";
 import { sql } from "@/db/client";
+import {
+  markSendFailed,
+  SEND_OPT_OUT_MAIL_QUEUE,
+  type SendOptOutMailPayload,
+  sendOptOutMail,
+} from "@/worker/jobs/send-opt-out-mail";
 import { boss, HELLO_WORLD_QUEUE } from "@/worker/queue";
 
 type HelloWorldPayload = { message: string };
@@ -10,14 +16,41 @@ async function handleHelloWorld(jobs: Job<HelloWorldPayload>[]): Promise<void> {
   }
 }
 
+async function handleSendOptOutMail(jobs: JobWithMetadata<SendOptOutMailPayload>[]): Promise<void> {
+  for (const job of jobs) {
+    try {
+      await sendOptOutMail(job.data.processId);
+    } catch (error) {
+      // Nur beim finalen Versuch den Prozess als failed markieren; davor
+      // greift pg-boss-Retry (Exponential Backoff).
+      if (job.retryCount >= job.retryLimit) {
+        await markSendFailed(job.data.processId, error);
+      }
+      throw error;
+    }
+  }
+}
+
 async function main(): Promise<void> {
   // Vor start() registrieren, damit auch Start-/Laufzeitfehler sichtbar sind.
   boss.on("error", (error) => console.error("[pg-boss] error:", error));
   boss.on("warning", (warning) => console.warn("[pg-boss] warning:", warning));
 
   await boss.start();
+
   await boss.createQueue(HELLO_WORLD_QUEUE);
   await boss.work(HELLO_WORLD_QUEUE, handleHelloWorld);
+
+  // retryLimit 2 => 3 Versuche insgesamt (1 + 2 Retries), Exponential Backoff.
+  await boss.createQueue(SEND_OPT_OUT_MAIL_QUEUE, {
+    retryLimit: 2,
+    retryBackoff: true,
+  });
+  await boss.work<SendOptOutMailPayload>(
+    SEND_OPT_OUT_MAIL_QUEUE,
+    { includeMetadata: true },
+    handleSendOptOutMail,
+  );
 
   console.log("Worker ready");
 }
