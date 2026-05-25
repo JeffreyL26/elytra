@@ -128,7 +128,7 @@ export async function POST(request: Request): Promise<Response> {
   // 4. Job nur bei neuer Zeile enqueuen (Duplikat -> kein Re-Processing).
   if (insertedId) {
     try {
-      await enqueue(PROCESS_INBOUND_MAIL_QUEUE, { mailId: insertedId });
+      await enqueue(PROCESS_INBOUND_MAIL_QUEUE, { processMailId: insertedId });
     } catch (error) {
       // Nach erfolgreichem Insert: intern loggen, trotzdem 200 (die Mail ist
       // sicher gespeichert; ein erneuter Enqueue kann nachgeholt werden).

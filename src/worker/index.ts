@@ -1,11 +1,16 @@
 import type { Job, JobWithMetadata } from "pg-boss";
 import { sql } from "@/db/client";
 import {
+  type ProcessInboundMailPayload,
+  processInboundMail,
+} from "@/worker/jobs/process-inbound-mail";
+import {
   markSendFailed,
   SEND_OPT_OUT_MAIL_QUEUE,
   type SendOptOutMailPayload,
   sendOptOutMail,
 } from "@/worker/jobs/send-opt-out-mail";
+import { PROCESS_INBOUND_MAIL_QUEUE } from "@/worker/producer";
 import { boss, HELLO_WORLD_QUEUE } from "@/worker/queue";
 
 type HelloWorldPayload = { message: string };
@@ -31,6 +36,12 @@ async function handleSendOptOutMail(jobs: JobWithMetadata<SendOptOutMailPayload>
   }
 }
 
+async function handleProcessInboundMail(jobs: Job<ProcessInboundMailPayload>[]): Promise<void> {
+  for (const job of jobs) {
+    await processInboundMail(job.data.processMailId);
+  }
+}
+
 async function main(): Promise<void> {
   // Vor start() registrieren, damit auch Start-/Laufzeitfehler sichtbar sind.
   boss.on("error", (error) => console.error("[pg-boss] error:", error));
@@ -51,6 +62,14 @@ async function main(): Promise<void> {
     { includeMetadata: true },
     handleSendOptOutMail,
   );
+
+  // Inbound-Verarbeitung: LLM-Fehler werden im Job abgefangen; DB-Transient-
+  // Fehler werfen und werden via Retry erneut versucht.
+  await boss.createQueue(PROCESS_INBOUND_MAIL_QUEUE, {
+    retryLimit: 2,
+    retryBackoff: true,
+  });
+  await boss.work<ProcessInboundMailPayload>(PROCESS_INBOUND_MAIL_QUEUE, handleProcessInboundMail);
 
   console.log("Worker ready");
 }

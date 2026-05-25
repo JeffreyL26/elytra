@@ -94,7 +94,7 @@ describe("POST /api/webhooks/postmark-inbound", () => {
     expect(enqueueMock).toHaveBeenCalledTimes(1);
     expect(enqueueMock).toHaveBeenCalledWith(
       "process-inbound-mail",
-      expect.objectContaining({ mailId: expect.any(String) }),
+      expect.objectContaining({ processMailId: expect.any(String) }),
     );
 
     const rows = await db
