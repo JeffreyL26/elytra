@@ -1,0 +1,201 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`buildOptOutRequest > erzeugt die deutsche Loeschanfrage mit Geburtsdatum und Telefon 1`] = `
+{
+  "htmlBody": "<p>Sehr geehrte Damen und Herren,</p>
+<p>wir wenden uns im Auftrag und in Vollmacht der nachfolgend genannten betroffenen Person an Sie. Eine schriftliche Vollmacht zur Wahrnehmung ihrer Betroffenenrechte liegt uns vor und wird Ihnen auf Wunsch vorgelegt.</p>
+<p>Betroffene Person:<br>
+Name: Erika Mustermann<br>
+Geburtsdatum: 14.03.1985<br>
+Anschrift: Musterstraße 12, 10115 Berlin, DE<br>
+E-Mail-Adressen: erika.mustermann@example.com, e.mustermann@example.org<br>
+Telefonnummern: +49 30 1234567, +49 170 9876543</p>
+<p>Namens und im Auftrag der betroffenen Person fordern wir Sie auf, sämtliche zu dieser Person bei Dummy Broker (E-Mail) gespeicherten personenbezogenen Daten gemäß Art. 17 DSGVO (Recht auf Löschung) unverzüglich und vollständig zu löschen.</p>
+<p>Soweit Sie personenbezogene Daten der betroffenen Person zu Zwecken der Direktwerbung verarbeiten, legen wir hiermit zugleich gemäß Art. 21 Abs. 2 DSGVO Widerspruch gegen diese Verarbeitung ein.</p>
+<p>Wir bitten Sie ferner um Auskunft nach Art. 15 DSGVO darüber, welche personenbezogenen Daten der betroffenen Person bei Ihnen verarbeitet wurden und an welche Empfänger oder Kategorien von Empfängern diese Daten offengelegt wurden.</p>
+<p>Darüber hinaus bitten wir Sie, die betroffene Person in eine interne Sperrliste aufzunehmen, um eine erneute Erhebung und Speicherung ihrer Daten über Dritt- oder Fremdquellen künftig zu verhindern.</p>
+<p>Bitte bestätigen Sie uns die vollständige Löschung der Daten sowie die Aufnahme in die Sperrliste schriftlich. Nach Art. 12 Abs. 3 DSGVO haben Sie uns hierüber unverzüglich, in jedem Fall aber innerhalb eines Monats nach Eingang dieses Antrags, zu unterrichten.</p>
+<p>Für Rückfragen antworten Sie bitte direkt auf diese E-Mail; unsere Antwortadresse enthält ein Aktenzeichen zur Zuordnung.</p>
+<p>Mit freundlichen Grüßen<br>
+InkogniGO<br>
+– im Auftrag der betroffenen Person –</p>
+<p>Aktenzeichen: test1234abcd5678</p>",
+  "subject": "[Ref: test1234abcd5678] Datenlöschanfrage gemäß Art. 17 DSGVO",
+  "textBody": "Sehr geehrte Damen und Herren,
+
+wir wenden uns im Auftrag und in Vollmacht der nachfolgend genannten betroffenen Person an Sie. Eine schriftliche Vollmacht zur Wahrnehmung ihrer Betroffenenrechte liegt uns vor und wird Ihnen auf Wunsch vorgelegt.
+
+Betroffene Person:
+Name: Erika Mustermann
+Geburtsdatum: 14.03.1985
+Anschrift: Musterstraße 12, 10115 Berlin, DE
+E-Mail-Adressen: erika.mustermann@example.com, e.mustermann@example.org
+Telefonnummern: +49 30 1234567, +49 170 9876543
+
+Namens und im Auftrag der betroffenen Person fordern wir Sie auf, sämtliche zu dieser Person bei Dummy Broker (E-Mail) gespeicherten personenbezogenen Daten gemäß Art. 17 DSGVO (Recht auf Löschung) unverzüglich und vollständig zu löschen.
+
+Soweit Sie personenbezogene Daten der betroffenen Person zu Zwecken der Direktwerbung verarbeiten, legen wir hiermit zugleich gemäß Art. 21 Abs. 2 DSGVO Widerspruch gegen diese Verarbeitung ein.
+
+Wir bitten Sie ferner um Auskunft nach Art. 15 DSGVO darüber, welche personenbezogenen Daten der betroffenen Person bei Ihnen verarbeitet wurden und an welche Empfänger oder Kategorien von Empfängern diese Daten offengelegt wurden.
+
+Darüber hinaus bitten wir Sie, die betroffene Person in eine interne Sperrliste aufzunehmen, um eine erneute Erhebung und Speicherung ihrer Daten über Dritt- oder Fremdquellen künftig zu verhindern.
+
+Bitte bestätigen Sie uns die vollständige Löschung der Daten sowie die Aufnahme in die Sperrliste schriftlich. Nach Art. 12 Abs. 3 DSGVO haben Sie uns hierüber unverzüglich, in jedem Fall aber innerhalb eines Monats nach Eingang dieses Antrags, zu unterrichten.
+
+Für Rückfragen antworten Sie bitte direkt auf diese E-Mail; unsere Antwortadresse enthält ein Aktenzeichen zur Zuordnung.
+
+Mit freundlichen Grüßen
+InkogniGO
+– im Auftrag der betroffenen Person –
+
+Aktenzeichen: test1234abcd5678",
+}
+`;
+
+exports[`buildOptOutRequest > erzeugt die deutsche Loeschanfrage ohne optionale Felder 1`] = `
+{
+  "htmlBody": "<p>Sehr geehrte Damen und Herren,</p>
+<p>wir wenden uns im Auftrag und in Vollmacht der nachfolgend genannten betroffenen Person an Sie. Eine schriftliche Vollmacht zur Wahrnehmung ihrer Betroffenenrechte liegt uns vor und wird Ihnen auf Wunsch vorgelegt.</p>
+<p>Betroffene Person:<br>
+Name: Erika Mustermann<br>
+Anschrift: Musterstraße 12, 10115 Berlin, DE<br>
+E-Mail-Adressen: erika.mustermann@example.com, e.mustermann@example.org</p>
+<p>Namens und im Auftrag der betroffenen Person fordern wir Sie auf, sämtliche zu dieser Person bei Dummy Broker (E-Mail) gespeicherten personenbezogenen Daten gemäß Art. 17 DSGVO (Recht auf Löschung) unverzüglich und vollständig zu löschen.</p>
+<p>Soweit Sie personenbezogene Daten der betroffenen Person zu Zwecken der Direktwerbung verarbeiten, legen wir hiermit zugleich gemäß Art. 21 Abs. 2 DSGVO Widerspruch gegen diese Verarbeitung ein.</p>
+<p>Wir bitten Sie ferner um Auskunft nach Art. 15 DSGVO darüber, welche personenbezogenen Daten der betroffenen Person bei Ihnen verarbeitet wurden und an welche Empfänger oder Kategorien von Empfängern diese Daten offengelegt wurden.</p>
+<p>Darüber hinaus bitten wir Sie, die betroffene Person in eine interne Sperrliste aufzunehmen, um eine erneute Erhebung und Speicherung ihrer Daten über Dritt- oder Fremdquellen künftig zu verhindern.</p>
+<p>Bitte bestätigen Sie uns die vollständige Löschung der Daten sowie die Aufnahme in die Sperrliste schriftlich. Nach Art. 12 Abs. 3 DSGVO haben Sie uns hierüber unverzüglich, in jedem Fall aber innerhalb eines Monats nach Eingang dieses Antrags, zu unterrichten.</p>
+<p>Für Rückfragen antworten Sie bitte direkt auf diese E-Mail; unsere Antwortadresse enthält ein Aktenzeichen zur Zuordnung.</p>
+<p>Mit freundlichen Grüßen<br>
+InkogniGO<br>
+– im Auftrag der betroffenen Person –</p>
+<p>Aktenzeichen: test1234abcd5678</p>",
+  "subject": "[Ref: test1234abcd5678] Datenlöschanfrage gemäß Art. 17 DSGVO",
+  "textBody": "Sehr geehrte Damen und Herren,
+
+wir wenden uns im Auftrag und in Vollmacht der nachfolgend genannten betroffenen Person an Sie. Eine schriftliche Vollmacht zur Wahrnehmung ihrer Betroffenenrechte liegt uns vor und wird Ihnen auf Wunsch vorgelegt.
+
+Betroffene Person:
+Name: Erika Mustermann
+Anschrift: Musterstraße 12, 10115 Berlin, DE
+E-Mail-Adressen: erika.mustermann@example.com, e.mustermann@example.org
+
+Namens und im Auftrag der betroffenen Person fordern wir Sie auf, sämtliche zu dieser Person bei Dummy Broker (E-Mail) gespeicherten personenbezogenen Daten gemäß Art. 17 DSGVO (Recht auf Löschung) unverzüglich und vollständig zu löschen.
+
+Soweit Sie personenbezogene Daten der betroffenen Person zu Zwecken der Direktwerbung verarbeiten, legen wir hiermit zugleich gemäß Art. 21 Abs. 2 DSGVO Widerspruch gegen diese Verarbeitung ein.
+
+Wir bitten Sie ferner um Auskunft nach Art. 15 DSGVO darüber, welche personenbezogenen Daten der betroffenen Person bei Ihnen verarbeitet wurden und an welche Empfänger oder Kategorien von Empfängern diese Daten offengelegt wurden.
+
+Darüber hinaus bitten wir Sie, die betroffene Person in eine interne Sperrliste aufzunehmen, um eine erneute Erhebung und Speicherung ihrer Daten über Dritt- oder Fremdquellen künftig zu verhindern.
+
+Bitte bestätigen Sie uns die vollständige Löschung der Daten sowie die Aufnahme in die Sperrliste schriftlich. Nach Art. 12 Abs. 3 DSGVO haben Sie uns hierüber unverzüglich, in jedem Fall aber innerhalb eines Monats nach Eingang dieses Antrags, zu unterrichten.
+
+Für Rückfragen antworten Sie bitte direkt auf diese E-Mail; unsere Antwortadresse enthält ein Aktenzeichen zur Zuordnung.
+
+Mit freundlichen Grüßen
+InkogniGO
+– im Auftrag der betroffenen Person –
+
+Aktenzeichen: test1234abcd5678",
+}
+`;
+
+exports[`buildOptOutRequest > erzeugt die englische Loeschanfrage mit Geburtsdatum und Telefon 1`] = `
+{
+  "htmlBody": "<p>Dear Sir or Madam,</p>
+<p>we are contacting you on behalf of and under power of attorney for the data subject named below. A written authorisation to exercise their data subject rights is on file and can be provided upon request.</p>
+<p>Data subject:<br>
+Name: Erika Mustermann<br>
+Date of birth: 1985-03-14<br>
+Address: Musterstraße 12, 10115 Berlin, DE<br>
+Email addresses: erika.mustermann@example.com, e.mustermann@example.org<br>
+Phone numbers: +49 30 1234567, +49 170 9876543</p>
+<p>On behalf of the data subject, we hereby request that you erase all personal data stored about this person at Dummy Broker (E-Mail) without undue delay and in full, pursuant to Art. 17 GDPR (right to erasure).</p>
+<p>Insofar as you process the data subject's personal data for direct marketing purposes, we hereby also object to such processing pursuant to Art. 21(2) GDPR.</p>
+<p>We further request information pursuant to Art. 15 GDPR regarding which personal data of the data subject have been processed by you and to which recipients or categories of recipients such data have been disclosed.</p>
+<p>In addition, we ask you to add the data subject to an internal suppression list in order to prevent their data from being collected and stored again via third-party or external sources in the future.</p>
+<p>Please confirm in writing the complete erasure of the data as well as the addition to the suppression list. Pursuant to Art. 12(3) GDPR, you are required to inform us about the action taken without undue delay and in any event within one month of receipt of this request.</p>
+<p>For any questions, please reply directly to this email; our reply address contains a reference code for case assignment.</p>
+<p>Kind regards<br>
+InkogniGO<br>
+– on behalf of the data subject –</p>
+<p>Reference: test1234abcd5678</p>",
+  "subject": "[Ref: test1234abcd5678] Data erasure request pursuant to Art. 17 GDPR",
+  "textBody": "Dear Sir or Madam,
+
+we are contacting you on behalf of and under power of attorney for the data subject named below. A written authorisation to exercise their data subject rights is on file and can be provided upon request.
+
+Data subject:
+Name: Erika Mustermann
+Date of birth: 1985-03-14
+Address: Musterstraße 12, 10115 Berlin, DE
+Email addresses: erika.mustermann@example.com, e.mustermann@example.org
+Phone numbers: +49 30 1234567, +49 170 9876543
+
+On behalf of the data subject, we hereby request that you erase all personal data stored about this person at Dummy Broker (E-Mail) without undue delay and in full, pursuant to Art. 17 GDPR (right to erasure).
+
+Insofar as you process the data subject's personal data for direct marketing purposes, we hereby also object to such processing pursuant to Art. 21(2) GDPR.
+
+We further request information pursuant to Art. 15 GDPR regarding which personal data of the data subject have been processed by you and to which recipients or categories of recipients such data have been disclosed.
+
+In addition, we ask you to add the data subject to an internal suppression list in order to prevent their data from being collected and stored again via third-party or external sources in the future.
+
+Please confirm in writing the complete erasure of the data as well as the addition to the suppression list. Pursuant to Art. 12(3) GDPR, you are required to inform us about the action taken without undue delay and in any event within one month of receipt of this request.
+
+For any questions, please reply directly to this email; our reply address contains a reference code for case assignment.
+
+Kind regards
+InkogniGO
+– on behalf of the data subject –
+
+Reference: test1234abcd5678",
+}
+`;
+
+exports[`buildOptOutRequest > erzeugt die englische Loeschanfrage ohne optionale Felder 1`] = `
+{
+  "htmlBody": "<p>Dear Sir or Madam,</p>
+<p>we are contacting you on behalf of and under power of attorney for the data subject named below. A written authorisation to exercise their data subject rights is on file and can be provided upon request.</p>
+<p>Data subject:<br>
+Name: Erika Mustermann<br>
+Address: Musterstraße 12, 10115 Berlin, DE<br>
+Email addresses: erika.mustermann@example.com, e.mustermann@example.org</p>
+<p>On behalf of the data subject, we hereby request that you erase all personal data stored about this person at Dummy Broker (E-Mail) without undue delay and in full, pursuant to Art. 17 GDPR (right to erasure).</p>
+<p>Insofar as you process the data subject's personal data for direct marketing purposes, we hereby also object to such processing pursuant to Art. 21(2) GDPR.</p>
+<p>We further request information pursuant to Art. 15 GDPR regarding which personal data of the data subject have been processed by you and to which recipients or categories of recipients such data have been disclosed.</p>
+<p>In addition, we ask you to add the data subject to an internal suppression list in order to prevent their data from being collected and stored again via third-party or external sources in the future.</p>
+<p>Please confirm in writing the complete erasure of the data as well as the addition to the suppression list. Pursuant to Art. 12(3) GDPR, you are required to inform us about the action taken without undue delay and in any event within one month of receipt of this request.</p>
+<p>For any questions, please reply directly to this email; our reply address contains a reference code for case assignment.</p>
+<p>Kind regards<br>
+InkogniGO<br>
+– on behalf of the data subject –</p>
+<p>Reference: test1234abcd5678</p>",
+  "subject": "[Ref: test1234abcd5678] Data erasure request pursuant to Art. 17 GDPR",
+  "textBody": "Dear Sir or Madam,
+
+we are contacting you on behalf of and under power of attorney for the data subject named below. A written authorisation to exercise their data subject rights is on file and can be provided upon request.
+
+Data subject:
+Name: Erika Mustermann
+Address: Musterstraße 12, 10115 Berlin, DE
+Email addresses: erika.mustermann@example.com, e.mustermann@example.org
+
+On behalf of the data subject, we hereby request that you erase all personal data stored about this person at Dummy Broker (E-Mail) without undue delay and in full, pursuant to Art. 17 GDPR (right to erasure).
+
+Insofar as you process the data subject's personal data for direct marketing purposes, we hereby also object to such processing pursuant to Art. 21(2) GDPR.
+
+We further request information pursuant to Art. 15 GDPR regarding which personal data of the data subject have been processed by you and to which recipients or categories of recipients such data have been disclosed.
+
+In addition, we ask you to add the data subject to an internal suppression list in order to prevent their data from being collected and stored again via third-party or external sources in the future.
+
+Please confirm in writing the complete erasure of the data as well as the addition to the suppression list. Pursuant to Art. 12(3) GDPR, you are required to inform us about the action taken without undue delay and in any event within one month of receipt of this request.
+
+For any questions, please reply directly to this email; our reply address contains a reference code for case assignment.
+
+Kind regards
+InkogniGO
+– on behalf of the data subject –
+
+Reference: test1234abcd5678",
+}
+`;
