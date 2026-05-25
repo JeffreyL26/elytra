@@ -10,9 +10,11 @@ export const processMails = pgTable(
     id: text("id")
       .primaryKey()
       .$defaultFn(() => createId()),
-    processId: text("process_id")
-      .notNull()
-      .references(() => optOutProcesses.id, { onDelete: "cascade" }),
+    // Nullable: Inbound-Mails treffen ein, bevor das Matching (Aufgabe 7) den
+    // Prozess bestimmt. Der process-inbound-mail-Job setzt process_id nach.
+    processId: text("process_id").references(() => optOutProcesses.id, {
+      onDelete: "cascade",
+    }),
     direction: mailDirectionEnum("direction").notNull(),
     providerMessageId: text("provider_message_id"),
     fromAddress: text("from_address").notNull(),

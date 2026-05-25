@@ -1,0 +1,1 @@
+ALTER TABLE "process_mails" ALTER COLUMN "process_id" DROP NOT NULL;
