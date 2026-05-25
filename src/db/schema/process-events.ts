@@ -9,6 +9,7 @@ export const eventTypeEnum = pgEnum("event_type", [
   "status_changed",
   "manual_intervention",
   "error",
+  "email_classified",
 ]);
 
 export const processEvents = pgTable(
