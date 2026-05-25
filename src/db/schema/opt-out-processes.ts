@@ -1,5 +1,5 @@
 import { pgEnum, pgTable, text, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
-import { createId } from "@/lib/ids";
+import { createId, createProcessToken } from "@/lib/ids";
 import { brokers } from "./brokers";
 import { users } from "./users";
 
@@ -29,7 +29,7 @@ export const optOutProcesses = pgTable(
     processToken: text("process_token")
       .notNull()
       .unique()
-      .$defaultFn(() => createId()),
+      .$defaultFn(() => createProcessToken()),
     status: processStatusEnum("status").notNull().default("pending"),
     lastContactedAt: timestamp("last_contacted_at", { withTimezone: true }),
     nextActionAt: timestamp("next_action_at", { withTimezone: true }),
