@@ -74,8 +74,10 @@ export async function sendOptOutMail(processId: string): Promise<void> {
       subject: mail.subject,
       bodyText: mail.textBody,
       bodyHtml: mail.htmlBody,
-      // SES-API-ID zusaetzlich aufbewahren (Bounce-Tracking); null im Dummy.
-      rawPayload: providerResponseId ? { sesMessageId: providerResponseId } : null,
+      // Postmark-API-MessageID fuer Bounce-Tracking in headers ablegen;
+      // null im Dummy. Schluessel fuers Reply-Matching ist provider_message_id
+      // (unser eigener Header), NICHT die Postmark-API-ID.
+      headers: providerResponseId ? { "X-Postmark-MessageId": providerResponseId } : null,
       sentAt: new Date(),
     });
     await tx.insert(processEvents).values({

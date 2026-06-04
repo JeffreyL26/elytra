@@ -1,30 +1,21 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-// SES-SDK mocken, bevor send.ts es importiert (vitest hoistet vi.mock).
-// SESClient/SendRawEmailCommand als Klassen, da send.ts sie mit `new` aufruft.
+// Postmark-SDK mocken, bevor send.ts es importiert (vitest hoistet vi.mock).
+// ServerClient als Klasse, da send.ts ihn mit `new` aufruft.
 const mocks = vi.hoisted(() => {
-  const sesSend = vi.fn();
+  const sendEmail = vi.fn();
   const construct = vi.fn();
-  const rawCommand = vi.fn();
-  class SESClient {
-    send = sesSend;
-    constructor(config: unknown) {
-      construct(config);
+  class ServerClient {
+    sendEmail = sendEmail;
+    constructor(token: unknown) {
+      construct(token);
     }
   }
-  class SendRawEmailCommand {
-    input: unknown;
-    constructor(input: unknown) {
-      this.input = input;
-      rawCommand(input);
-    }
-  }
-  return { sesSend, construct, rawCommand, SESClient, SendRawEmailCommand };
+  return { sendEmail, construct, ServerClient };
 });
 
-vi.mock("@aws-sdk/client-ses", () => ({
-  SESClient: mocks.SESClient,
-  SendRawEmailCommand: mocks.SendRawEmailCommand,
+vi.mock("postmark", () => ({
+  ServerClient: mocks.ServerClient,
 }));
 
 import { sendMail } from "@/lib/mail/send";
@@ -46,13 +37,13 @@ beforeEach(() => {
 });
 
 describe("sendMail", () => {
-  it("Dummy-Pfad: kein SES-Call, strukturierte Message-ID, [DUMMY]-Log", async () => {
+  it("Dummy-Pfad: kein Postmark-Call, strukturierte Message-ID, [DUMMY]-Log", async () => {
     const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     const result = await sendMail({ ...baseInput, dummy: true });
 
     expect(mocks.construct).not.toHaveBeenCalled();
-    expect(mocks.sesSend).not.toHaveBeenCalled();
+    expect(mocks.sendEmail).not.toHaveBeenCalled();
     expect(result.messageId).toMatch(MESSAGE_ID_PATTERN);
     expect(result.providerResponseId).toBeNull();
     expect(logSpy).toHaveBeenCalledWith(
@@ -62,21 +53,36 @@ describe("sendMail", () => {
     logSpy.mockRestore();
   });
 
-  it("Real-Pfad: SendRawEmail mit Custom-Message-ID-Header, API-ID durchgereicht", async () => {
-    mocks.sesSend.mockResolvedValue({ MessageId: "ses-api-id-123" });
+  it("Real-Pfad: Postmark.sendEmail mit Custom-Message-ID-Header, API-ID durchgereicht", async () => {
+    mocks.sendEmail.mockResolvedValue({
+      MessageID: "postmark-msg-id-123",
+      To: baseInput.to,
+      SubmittedAt: "2026-05-25T00:00:00Z",
+      ErrorCode: 0,
+      Message: "OK",
+    });
 
     const result = await sendMail({ ...baseInput, dummy: false });
 
     expect(mocks.construct).toHaveBeenCalledTimes(1);
-    expect(mocks.sesSend).toHaveBeenCalledTimes(1);
+    expect(mocks.sendEmail).toHaveBeenCalledTimes(1);
     expect(result.messageId).toMatch(MESSAGE_ID_PATTERN);
-    expect(result.providerResponseId).toBe("ses-api-id-123");
+    expect(result.providerResponseId).toBe("postmark-msg-id-123");
 
-    // Der Custom-Message-ID-Header muss in der gesendeten Roh-Mail stehen.
-    const commandInput = mocks.rawCommand.mock.calls[0]?.[0] as {
-      RawMessage: { Data: Uint8Array };
-    };
-    const rawText = Buffer.from(commandInput.RawMessage.Data).toString("utf8");
-    expect(rawText).toContain(`Message-ID: ${result.messageId}`);
+    // Der Custom-Message-ID-Header muss explizit mitgesendet werden, damit der
+    // Broker ihn in In-Reply-To reflektiert (Stufe-3-Matching).
+    expect(mocks.sendEmail).toHaveBeenCalledWith(
+      expect.objectContaining({
+        From: baseInput.from,
+        To: baseInput.to,
+        ReplyTo: baseInput.replyTo,
+        Subject: baseInput.subject,
+        TextBody: baseInput.textBody,
+        HtmlBody: baseInput.htmlBody,
+        Headers: expect.arrayContaining([
+          expect.objectContaining({ Name: "Message-ID", Value: result.messageId }),
+        ]),
+      }),
+    );
   });
 });
