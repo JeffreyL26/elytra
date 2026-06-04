@@ -22,7 +22,7 @@ Kunden registrieren sich auf der Website, geben eine Vertretungs-Vollmacht ab, h
 **Phase 2 (Mail-Pipeline, Worker, LLM — wird in Phase 2 hinzugefügt):**
 - **Queue:** pg-boss (Job-Queue in Postgres, kein Redis nötig)
 - **Worker-Runtime:** eigener Node-Prozess (`pnpm worker`), separat vom Web-Server
-- **Mail outbound:** AWS SES (Region `eu-central-1` Frankfurt)
+- **Mail outbound:** Postmark Transactional API (Phase-3b-Wechsel; siehe Update unten)
 - **Mail inbound:** Postmark Inbound Webhooks auf Wildcard-Subdomain
 - **LLM:** Anthropic Claude API (`claude-haiku-4-5-20251001` für Klassifikation)
 - **Mail-Templates:** TypeScript-Funktionen in `src/lib/mail/templates/`
@@ -216,7 +216,9 @@ Foundation komplett: Datenmodell, Migrations, Seed, Smoke-Test, Doku, Quality-Ga
 ### Externe Services (vor Phase 2 vorbereitet)
 
 - **AWS-Account**: existiert, Region `eu-central-1` Frankfurt. SES-Production-Access-Antrag läuft (Wartezeit ~24h).
+  - **Update (Phase 3b):** SES-Production-Access **abgelehnt**. Outbound läuft jetzt über Postmark (siehe Aufgabe-5-Update). AWS-Account bleibt erhalten für später, wird in Phase 2 aber nicht mehr benötigt.
 - **Postmark**: Account existiert, Sender-/Inbound-Domain wird in Phase 2 verifiziert (nicht vor SES, da DNS-Records gemeinsam gesetzt werden).
+  - **Update (Phase 3b):** Postmark deckt jetzt **Outbound + Inbound** ab. Server-Token in `.env` als `POSTMARK_SERVER_TOKEN`.
 - **Anthropic API**: Account existiert, API-Key vorhanden (in `.env` als `ANTHROPIC_API_KEY`).
 - **Cloudflare**: Domain `jba-team.com` registriert, DNS-Management aktiv, Email Routing für Account-Mails konfiguriert (`management@jba-team.com` → Gmail).
 
@@ -266,6 +268,8 @@ Foundation komplett: Datenmodell, Migrations, Seed, Smoke-Test, Doku, Quality-Ga
    - [ ] **Dummy-Modus:** wenn `broker.is_dummy === true`, kein echter SES-Call, sondern nur Log + Fake-Message-ID. Vor SES-Production-Access: ALLE Broker dummy. Production-Switch über Broker-Flag, nicht über Code-Pfad.
    - [ ] **Message-ID-Header bewusst selbst setzen** (deshalb `SendRawEmail` statt `SendEmail`): Format `<proc-<token>-<rand>@MAIL_FROM_DOMAIN>`, gespeichert als `process_mails.provider_message_id`. Grund: Nur so greift das Stufe-3-Reply-Matching (`In-Reply-To`/`References`, Aufgabe 7) in Production — bei `SendEmail` vergäbe SES eine eigene, nicht referenzierbare Message-ID. Die SES-API-Response-ID landet zusätzlich in `raw_payload` (Bounce-Tracking). **Nicht wegrefactoren.**
    - [ ] Job `src/worker/jobs/send-opt-out-mail.ts`: Input `{ processId }` → lädt Process+User+Broker, baut Mail, schickt via `sendMail`, schreibt Eintrag in `process_mails`, schreibt `mail_sent` Event, updated `opt_out_processes.last_contacted_at` und `status='contacted'`
+
+   **Update (Phase 3b — SES → Postmark):** AWS-SES-Production-Access wurde abgelehnt. Outbound läuft jetzt über **Postmark** (`postmark` SDK, `new ServerClient(env.POSTMARK_SERVER_TOKEN).sendEmail({…})`). `SendRawEmail` ist damit hinfällig — der Custom-`Message-ID`-Header geht per `Headers: [{ Name: "Message-ID", Value: messageId }]` in den `sendEmail`-Call (Postmark akzeptiert/leitet ihn unverändert weiter). Die Postmark-API-`MessageID` landet zum Bounce-Tracking in `process_mails.headers` als `X-Postmark-MessageId` (nicht mehr in `raw_payload`); Schlüssel fürs Reply-Matching bleibt unser selbstgesetzter `Message-ID`-Header in `provider_message_id`.
 
 6. **Inbound-Webhook (Postmark)**
    - [ ] `src/app/api/webhooks/postmark-inbound/route.ts`: POST-Handler
@@ -345,6 +349,9 @@ pnpm format                      # biome format --write
 - **Mail-Templates als TS-Funktionen statt Markdown/DB:** Rechtliche Texte gehören unter Code-Review. Git als Versions- und Audit-Geschichte. Kein UI nötig, kein A/B-Testing-Bedarf.
 - **LLM-Klassifikation direkt in Phase 2 statt später:** Ohne Klassifikation würde der gesamte Inbound-Loop nur in `manual_review` münden — ELYTRA müsste dafür gebaut werden, bevor die Pipeline überhaupt sinnvoll funktioniert. Bei ~150 Zeilen Code lohnt das Nachrüsten nicht.
 - **Confidence-Threshold 0.7:** Liberal genug, dass die meisten klaren Fälle automatisch durchgehen; streng genug, dass mehrdeutige Mails (wo der Sachbearbeiter wertvoller ist als der LLM) manuell landen. Kann später aus Real-World-Daten kalibriert werden.
+
+**Phase 3b:**
+- **Postmark statt AWS SES für Outbound:** AWS-SES-Production-Access wurde abgelehnt. Postmark übernimmt jetzt **beide** Richtungen (Outbound + Inbound) — vereinfacht Domain-/DNS-Setup (eine Verifikation statt zwei) und reduziert Vendor-Sprawl. Custom-`Message-ID`-Header bleibt unsere Verantwortung (`Headers`-Param in `sendEmail`), damit Stufe-3-Matching weiter funktioniert; Postmarks API-MessageID wandert nur als Bounce-Tracking-Schlüssel in `process_mails.headers`.
 
 ## Was Claude bei der Arbeit beachten soll
 
