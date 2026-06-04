@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
+import { SERVICE_NAME } from "@/lib/branding";
 
 export const metadata: Metadata = {
-  title: "InkogniGO",
+  title: SERVICE_NAME,
   description: "Automatisierter Opt-Out-Service für DSGVO-Datenlöschanfragen",
 };
 
