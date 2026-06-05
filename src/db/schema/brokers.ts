@@ -3,6 +3,13 @@ import { createId } from "@/lib/ids";
 
 export const optOutMethodEnum = pgEnum("opt_out_method", ["email", "form", "mixed"]);
 
+export const responsivenessTierEnum = pgEnum("responsiveness_tier", [
+  "fast",
+  "normal",
+  "slow",
+  "unknown",
+]);
+
 export const brokers = pgTable("brokers", {
   id: text("id")
     .primaryKey()
@@ -14,6 +21,17 @@ export const brokers = pgTable("brokers", {
   optOutMethod: optOutMethodEnum("opt_out_method").notNull(),
   optOutEmail: text("opt_out_email"),
   optOutFormUrl: text("opt_out_form_url"),
+  // ISO-639-1-Sprachcode fuer die Broker-Korrespondenz. Type-Constraint nur im
+  // TS (kein pgEnum), damit weitere Sprachen ohne DB-Migration moeglich sind.
+  language: text("language").$type<"de" | "en" | "fr" | "es">().notNull().default("de"),
+  // Vom Worker beim Inbound-Match gesetzt; nullable bis zur ersten Antwort.
+  lastResponseAt: timestamp("last_response_at", { withTimezone: true }),
+  responsivenessTier: responsivenessTierEnum("responsiveness_tier").notNull().default("unknown"),
+  // Verlangt der Broker bei der Erstanfrage die Vollmacht als Anhang?
+  // Schema-vorbereitet fuer Phase 3c; aktuell von keinem Template genutzt.
+  requiresAuthorizationAttachment: boolean("requires_authorization_attachment")
+    .notNull()
+    .default(false),
   isDummy: boolean("is_dummy").notNull().default(false),
   isActive: boolean("is_active").notNull().default(true),
   notes: text("notes"),
