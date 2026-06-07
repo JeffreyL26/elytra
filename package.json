@@ -17,6 +17,7 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:seed": "tsx --env-file=.env src/db/seed.ts",
+    "db:seed:real": "tsx --env-file=.env src/db/seed-real-brokers.ts",
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
