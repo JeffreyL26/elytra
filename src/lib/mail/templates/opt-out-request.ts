@@ -104,13 +104,12 @@ const EN_LABELS: IdentificationLabels = {
 // TODO[legal-review]: Vor Versand an reale Broker muss dieser Absatz
 // von einem Datenschutzanwalt geprüft werden. Aktueller Text ist auf
 // Art. 12 Abs. 2 DSGVO basierte Eigenkonstruktion, kein zitierter
-// Mustertext. Insb. die Formulierung "unterbricht die Frist nicht"
-// ist rechtlich nicht trivial und sollte abgesegnet werden.
+// Mustertext.
 const ART_12_2_PARAGRAPH_DE =
-  "Gemäß Art. 12 Abs. 2 DSGVO ist diese E-Mail ein zulässiger Kommunikationsweg für die Geltendmachung meiner Betroffenenrechte. Sollten Sie auf ein Online-Formular oder einen anderen Kanal verweisen wollen, möchte ich darauf hinweisen, dass dies keine Erfüllung der vorliegenden Anfrage darstellt und die Bearbeitungsfrist nach Art. 12 Abs. 3 DSGVO ab Eingang dieser E-Mail läuft.";
+  "Wir weisen darauf hin, dass diese E-Mail gemäß Art. 12 Abs. 2 DSGVO einen zulässigen Kommunikationsweg für die Geltendmachung der Betroffenenrechte unserer Auftraggeberin / unseres Auftraggebers darstellt. Ein Verweis auf ein Online-Formular oder einen anderen Kanal stellt keine Erfüllung der vorliegenden Anfrage dar.";
 
 const ART_12_2_PARAGRAPH_EN =
-  "Pursuant to Article 12(2) GDPR, this email constitutes a valid communication channel for the exercise of my data subject rights. If you intend to refer me to an online form or another channel, please note that such a referral does not constitute fulfilment of this request and does not interrupt the response period under Article 12(3) GDPR, which begins upon receipt of this email.";
+  "We hereby note that, pursuant to Article 12(2) GDPR, this email constitutes a valid communication channel for the exercise of our client's data subject rights. A referral to an online form or another channel does not constitute fulfilment of this request.";
 
 function buildGerman(profile: OptOutRecipient, broker: OptOutBroker, token: string): OptOutMail {
   const subject = `[Ref: ${token}] Datenlöschanfrage gemäß Art. 17 DSGVO`;
