@@ -101,6 +101,17 @@ const EN_LABELS: IdentificationLabels = {
   formatDate: (isoDate) => isoDate,
 };
 
+// TODO[legal-review]: Vor Versand an reale Broker muss dieser Absatz
+// von einem Datenschutzanwalt geprüft werden. Aktueller Text ist auf
+// Art. 12 Abs. 2 DSGVO basierte Eigenkonstruktion, kein zitierter
+// Mustertext. Insb. die Formulierung "unterbricht die Frist nicht"
+// ist rechtlich nicht trivial und sollte abgesegnet werden.
+const ART_12_2_PARAGRAPH_DE =
+  "Gemäß Art. 12 Abs. 2 DSGVO ist diese E-Mail ein zulässiger Kommunikationsweg für die Geltendmachung meiner Betroffenenrechte. Sollten Sie auf ein Online-Formular oder einen anderen Kanal verweisen wollen, möchte ich darauf hinweisen, dass dies keine Erfüllung der vorliegenden Anfrage darstellt und die Bearbeitungsfrist nach Art. 12 Abs. 3 DSGVO ab Eingang dieser E-Mail läuft.";
+
+const ART_12_2_PARAGRAPH_EN =
+  "Pursuant to Article 12(2) GDPR, this email constitutes a valid communication channel for the exercise of my data subject rights. If you intend to refer me to an online form or another channel, please note that such a referral does not constitute fulfilment of this request and does not interrupt the response period under Article 12(3) GDPR, which begins upon receipt of this email.";
+
 function buildGerman(profile: OptOutRecipient, broker: OptOutBroker, token: string): OptOutMail {
   const subject = `[Ref: ${token}] Datenlöschanfrage gemäß Art. 17 DSGVO`;
 
@@ -114,6 +125,8 @@ ${formatIdentification(profile, DE_LABELS)}
 Namens und im Auftrag der betroffenen Person fordern wir Sie auf, sämtliche zu dieser Person bei ${broker.name} gespeicherten personenbezogenen Daten gemäß Art. 17 DSGVO (Recht auf Löschung) unverzüglich und vollständig zu löschen.
 
 Soweit Sie personenbezogene Daten der betroffenen Person zu Zwecken der Direktwerbung verarbeiten, legen wir hiermit zugleich gemäß Art. 21 Abs. 2 DSGVO Widerspruch gegen diese Verarbeitung ein.
+
+${ART_12_2_PARAGRAPH_DE}
 
 Wir bitten Sie ferner um Auskunft nach Art. 15 DSGVO darüber, welche personenbezogenen Daten der betroffenen Person bei Ihnen verarbeitet wurden und an welche Empfänger oder Kategorien von Empfängern diese Daten offengelegt wurden.
 
@@ -145,6 +158,8 @@ ${formatIdentification(profile, EN_LABELS)}
 On behalf of the data subject, we hereby request that you erase all personal data stored about this person at ${broker.name} without undue delay and in full, pursuant to Art. 17 GDPR (right to erasure).
 
 Insofar as you process the data subject's personal data for direct marketing purposes, we hereby also object to such processing pursuant to Art. 21(2) GDPR.
+
+${ART_12_2_PARAGRAPH_EN}
 
 We further request information pursuant to Art. 15 GDPR regarding which personal data of the data subject have been processed by you and to which recipients or categories of recipients such data have been disclosed.
 
