@@ -128,6 +128,9 @@ export async function classifyInbound(input: ClassifyInput): Promise<Classificat
   const response = await client.messages.create({
     model: CLASSIFY_MODEL,
     max_tokens: 512,
+    // Deterministisch: gleiche Mail muss bei Job-Retry gleich klassifiziert
+    // werden -- feste Kategorien duerfen nicht zwischen Laeufen schwanken.
+    temperature: 0,
     system: SYSTEM_PROMPT,
     tools: [CLASSIFY_TOOL],
     tool_choice: { type: "tool", name: CLASSIFY_TOOL.name },
