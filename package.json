@@ -26,6 +26,7 @@
     "@t3-oss/env-nextjs": "^0.13.11",
     "drizzle-orm": "^0.45.2",
     "next": "16.2.6",
+    "pdf-parse": "^2.4.5",
     "pg-boss": "^12.18.2",
     "postgres": "^3.4.9",
     "postmark": "^4.0.7",
@@ -40,6 +41,7 @@
     "@types/react-dom": "^19",
     "@vitest/ui": "^4.1.7",
     "drizzle-kit": "^0.31.10",
+    "pdf-lib": "^1.17.1",
     "tsx": "^4.22.3",
     "typescript": "^5",
     "vitest": "^4.1.7"

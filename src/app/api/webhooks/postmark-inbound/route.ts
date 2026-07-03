@@ -1,28 +1,12 @@
 import { createHash, timingSafeEqual } from "node:crypto";
-import { z } from "zod";
 import { db } from "@/db/client";
 import { processMails } from "@/db/schema";
 import { env } from "@/lib/env";
+import { parseInbound } from "@/lib/mail/parse-inbound";
 import { enqueue, PROCESS_INBOUND_MAIL_QUEUE } from "@/worker/producer";
 
 // DB-Zugriff zur Request-Zeit -> kein statisches Prerendering.
 export const dynamic = "force-dynamic";
-
-// Postmark Inbound-Payload: strikt auf den Feldern, die wir brauchen,
-// passthrough fuer alles andere (Doku: postmarkapp.com/developer/webhooks).
-const postmarkInboundSchema = z
-  .object({
-    MessageID: z.string().min(1),
-    From: z.string(),
-    To: z.string(),
-    ToFull: z.array(z.object({ Email: z.string() }).passthrough()),
-    Subject: z.string(),
-    TextBody: z.string(),
-    HtmlBody: z.string(),
-    Headers: z.array(z.object({ Name: z.string(), Value: z.string() })),
-    Date: z.string(),
-  })
-  .passthrough();
 
 // Laengen-neutraler Vergleich: beide Seiten auf 32-Byte-SHA-256 bringen,
 // dann timingSafeEqual. Kein Length-Leak, keine Exception bei Ungleichlaenge.
@@ -81,37 +65,32 @@ export async function POST(request: Request): Promise<Response> {
     console.warn("[postmark-inbound] body is not valid JSON");
     return new Response("Bad Request", { status: 400 });
   }
-  const parsed = postmarkInboundSchema.safeParse(rawBody);
-  if (!parsed.success) {
+  const mail = parseInbound(rawBody);
+  if (!mail) {
     console.warn("[postmark-inbound] payload failed schema validation");
     return new Response("Unprocessable Entity", { status: 400 });
   }
-  const payload = parsed.data;
 
   // Logging: Metadaten, niemals der Body (der liegt sicher in der DB).
   console.log(
-    `[postmark-inbound] ${new Date().toISOString()} auth=ok MessageID=${payload.MessageID} From=${payload.From} To=${payload.To} Subject=${JSON.stringify(payload.Subject)}`,
+    `[postmark-inbound] ${new Date().toISOString()} auth=ok MessageID=${mail.messageId} From=${mail.fromAddress} To=${mail.toAddress} Subject=${JSON.stringify(mail.subject)} Attachments=${mail.attachments.length}`,
   );
 
-  // 3. Idempotenter Insert (UNIQUE auf provider_message_id).
-  const headers: Record<string, string> = {};
-  for (const header of payload.Headers) {
-    headers[header.Name] = header.Value;
-  }
-
+  // 3. Idempotenter Insert (UNIQUE auf provider_message_id). Attachment-
+  // Inhalte bleiben ausschliesslich im raw_payload-JSONB.
   let insertedId: string | null = null;
   try {
     const inserted = await db
       .insert(processMails)
       .values({
         direction: "inbound",
-        providerMessageId: payload.MessageID,
-        fromAddress: payload.From,
-        toAddress: payload.To,
-        subject: payload.Subject,
-        bodyText: payload.TextBody,
-        bodyHtml: payload.HtmlBody,
-        headers,
+        providerMessageId: mail.messageId,
+        fromAddress: mail.fromAddress,
+        toAddress: mail.toAddress,
+        subject: mail.subject,
+        bodyText: mail.bodyText,
+        bodyHtml: mail.bodyHtml,
+        headers: mail.headers,
         rawPayload: rawBody as Record<string, unknown>,
         receivedAt: new Date(),
       })
