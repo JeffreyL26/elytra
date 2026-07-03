@@ -10,6 +10,7 @@ import {
   type SendOptOutMailPayload,
   sendOptOutMail,
 } from "@/worker/jobs/send-opt-out-mail";
+import { assertWorkerEnv } from "@/worker/preflight";
 import { PROCESS_INBOUND_MAIL_QUEUE } from "@/worker/producer";
 import { boss, HELLO_WORLD_QUEUE } from "@/worker/queue";
 
@@ -43,6 +44,9 @@ async function handleProcessInboundMail(jobs: Job<ProcessInboundMailPayload>[]):
 }
 
 async function main(): Promise<void> {
+  // Fail-Fast: kritische Env-Werte pruefen, BEVOR pg-boss Jobs konsumiert.
+  assertWorkerEnv();
+
   // Vor start() registrieren, damit auch Start-/Laufzeitfehler sichtbar sind.
   boss.on("error", (error) => console.error("[pg-boss] error:", error));
   boss.on("warning", (warning) => console.warn("[pg-boss] warning:", warning));
