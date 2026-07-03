@@ -11,6 +11,13 @@ vi.mock("@anthropic-ai/sdk", () => ({
 }));
 
 import {
+  yasniNoDataHeldBody,
+  yasniNoDataHeldFrom,
+  yasniNoDataHeldPdfText,
+  yasniNoDataHeldSubject,
+} from "@/lib/llm/__fixtures__/yasni-no-data-held";
+import {
+  buildUserContent,
   CLASSIFY_MODEL,
   CLASSIFY_PROMPT_VERSION,
   classifyInbound,
@@ -47,6 +54,7 @@ beforeEach(() => {
 describe("classifyInbound", () => {
   it.each([
     ["success", 0.95],
+    ["no_data_held", 0.92],
     ["blacklisted", 0.9],
     ["in_progress", 0.85],
     ["rejected", 0.88],
@@ -78,6 +86,38 @@ describe("classifyInbound", () => {
       type: "tool",
       name: "classify_email",
     });
+  });
+
+  it("Yasni-Fixture: Anhang-Text landet markiert im Prompt, Kategorie no_data_held", async () => {
+    mockToolUse("no_data_held", 0.9, "Broker haelt keine Daten zur Person");
+    const result = await classifyInbound({
+      subject: yasniNoDataHeldSubject,
+      textBody: yasniNoDataHeldBody,
+      fromAddress: yasniNoDataHeldFrom,
+      attachments: [{ name: "auskunft.pdf", text: yasniNoDataHeldPdfText }],
+    });
+    expect(result.category).toBe("no_data_held");
+    expect(result.needsManualReview).toBe(false);
+
+    const args = messagesCreate.mock.calls[0]?.[0];
+    const content = args.messages[0].content as string;
+    expect(content).toContain("[E-Mail-Body]");
+    expect(content).toContain(yasniNoDataHeldBody);
+    expect(content).toContain("[Anhang 1: auskunft.pdf]");
+    expect(content).toContain("keine Suchergebnisse und kein Exposé");
+  });
+
+  it("fuehrt nicht extrahierbare Anhaenge mit Name und Note auf", () => {
+    const content = buildUserContent({
+      ...input,
+      attachments: [
+        { name: "auskunft.pdf", text: "Inhalt", note: "gekuerzt auf 15000 Zeichen" },
+        { name: "scan.png", text: null, note: "nicht extrahierbar (image/png)" },
+      ],
+    });
+    expect(content).toContain("[Anhang 1: auskunft.pdf — gekuerzt auf 15000 Zeichen]");
+    expect(content).toContain("Inhalt");
+    expect(content).toContain("[Anhang 2: scan.png — nicht extrahierbar (image/png)]");
   });
 
   it("wirft, wenn keine tool_use-Antwort kommt", async () => {
