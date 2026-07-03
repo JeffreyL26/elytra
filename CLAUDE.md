@@ -1,8 +1,8 @@
-# InkogniGO — Projekt-Kontext für Claude Code
+# GoKognito — Projekt-Kontext für Claude Code
 
 ## Über das Projekt
 
-InkogniGO ist ein automatisierter Opt-Out-Service für DSGVO-basierte Datenlöschanfragen bei Data-Brokern. Zielmarkt: EU, primär Deutschland.
+GoKognito ist ein automatisierter Opt-Out-Service für DSGVO-basierte Datenlöschanfragen bei Data-Brokern. Zielmarkt: EU, primär Deutschland.
 
 **Ablauf:**
 Kunden registrieren sich auf der Website, geben eine Vertretungs-Vollmacht ab, hinterlegen ihre persönlichen Daten und buchen einen Plan. Das Backend versendet automatisiert Opt-Out-Anfragen an Data-Broker (per E-Mail oder durch Formular-Automation), klassifiziert eingehende Antworten mittels LLM und aktualisiert den Status pro Prozess. Ein internes Admin-UI ("ELYTRA") dient der Überwachung und manuellen Eingriffen.
@@ -49,7 +49,7 @@ Kunden registrieren sich auf der Website, geben eine Vertretungs-Vollmacht ab, h
 ## Projektstruktur
 
 ```
-inkognigo/
+gokognito/
 ├── src/
 │   ├── app/                              # Next.js App Router (Web-Prozess)
 │   │   └── api/
@@ -207,7 +207,7 @@ Foundation komplett: Datenmodell, Migrations, Seed, Smoke-Test, Doku, Quality-Ga
 - **DB-Client ist sauber exportiert**: `src/db/client.ts` exportiert sowohl `sql` (postgres-Client) als auch `db` (Drizzle-Instance). Skripte sollten `await sql.end()` aufrufen für sauberes Connection-Shutdown — `process.exit(0)` ist als Pattern nicht mehr nötig.
 - **Biome ignoriert generierte Migrations** (`!src/db/migrations/`): nie formatieren, nie linten. Drizzle besitzt diese Dateien.
 - **Line Endings sind LF-erzwungen** via `.gitattributes` (`* text=auto eol=lf`). Auf Windows-Entwicklungs-Maschinen wichtig.
-- **Domain ist `jba-team.com`** (temporär für Development; ggf. Rebrand vor Launch). Alle Domain-Referenzen MÜSSEN in `.env`-Variablen liegen, nie hartcodiert — sonst wird Rebrand teuer.
+- **Domain ist `jba-team.com`** (Development). Brand-Domain GoKognito folgt vor Launch; alle Domain-Referenzen liegen in `.env`, Wechsel ist eine env-Änderung.
 
 ## Aktuelle Phase: Phase 2 — Worker, Mail-Pipeline, LLM-Klassifikation
 

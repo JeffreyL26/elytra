@@ -1,4 +1,4 @@
-# InkogniGO
+# GoKognito
 
 Automatisierter Opt-Out-Service für DSGVO-basierte Datenlöschanfragen bei
 Data-Brokern. Dieses Repository enthält den Monolithen (Next.js) inklusive
@@ -96,7 +96,7 @@ klassifiziert; andernfalls greift das Sicherheitsnetz (Klassifikations-Fehler �
 Unit-/Integrationstests liegen als `*.test.ts` neben dem jeweiligen Code.
 
 ```
-inkognigo/
+gokognito/
 ├── src/
 │   ├── app/                                  # Next.js App Router (Web-Prozess)
 │   │   └── api/
