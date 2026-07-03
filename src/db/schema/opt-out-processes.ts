@@ -12,6 +12,10 @@ export const processStatusEnum = pgEnum("process_status", [
   "no_response",
   "manual_review",
   "failed",
+  // Terminal wie success: Broker haelt keine (relevanten) Daten zur Person.
+  // Momentaufnahme -- Recurring-Re-Checks (Phase 3b.8) koennen den Prozess
+  // ueber next_action_at wieder aufgreifen.
+  "no_data_held",
 ]);
 
 export const optOutProcesses = pgTable(

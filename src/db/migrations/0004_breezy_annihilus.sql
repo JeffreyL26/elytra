@@ -1,0 +1,1 @@
+ALTER TYPE "public"."process_status" ADD VALUE 'no_data_held';

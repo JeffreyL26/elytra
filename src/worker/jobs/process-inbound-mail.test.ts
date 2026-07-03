@@ -132,6 +132,28 @@ describe("processInboundMail", () => {
     expect(proc.status).toBe("success");
   });
 
+  it("Klassifikation no_data_held: Terminal-Status no_data_held", async () => {
+    const token = createProcessToken();
+    const processId = await createProcess(token);
+    const mailId = await insertInbound(`proc-${token}@${REPLY_DOMAIN}`, "AW: Auskunft");
+    mockClassification("no_data_held", 0.9, "Broker haelt keine Daten zur Person");
+
+    await processInboundMail(mailId);
+
+    const [proc] = await db.select().from(optOutProcesses).where(eq(optOutProcesses.id, processId));
+    expect(proc.status).toBe("no_data_held");
+
+    const events = await db
+      .select()
+      .from(processEvents)
+      .where(eq(processEvents.processId, processId));
+    const classified = events.find((e) => e.eventType === "email_classified");
+    expect(classified?.payload).toMatchObject({
+      category: "no_data_held",
+      attachments: [],
+    });
+  });
+
   it("Stufe 4 (kein Match): Mail bleibt unzugeordnet, kein LLM-Call", async () => {
     const mailId = await insertInbound("fremde-adresse@nirgendwo.example", "Irgendwas");
 

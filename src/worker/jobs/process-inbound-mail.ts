@@ -18,6 +18,7 @@ type ProcessStatus = (typeof processStatusEnum.enumValues)[number];
 // Mapping LLM-Kategorie -> Prozess-Status. null = Status bleibt unveraendert.
 const STATUS_MAP: Record<InboundCategory, ProcessStatus | null> = {
   success: "success",
+  no_data_held: "no_data_held",
   blacklisted: "blacklisted",
   in_progress: "in_progress",
   rejected: "failed",
