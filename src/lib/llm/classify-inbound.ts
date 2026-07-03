@@ -1,6 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { z } from "zod";
 import { env } from "@/lib/env";
+import type { AttachmentText } from "@/lib/mail/extract-attachment-text";
 
 export const CLASSIFY_MODEL = "claude-haiku-4-5-20251001";
 // Bei Prompt-/Tool-Aenderungen hochzaehlen -- wird mit jeder Klassifikation
@@ -22,6 +23,9 @@ export interface ClassifyInput {
   subject: string | null;
   textBody: string | null;
   fromAddress: string;
+  // Extrahierte Anhang-Texte (extractAttachmentTexts). Die Substanz einer
+  // Antwort kann vollstaendig im Anhang stecken (realer Fall: Yasni, PDF).
+  attachments?: AttachmentText[];
 }
 
 export interface Classification {
@@ -75,6 +79,29 @@ const toolInputSchema = z.object({
   reasoning: z.string(),
 });
 
+// Baut den User-Content: Body und Anhang-Texte klar markiert. Nicht
+// extrahierbare Anhaenge werden mit Name + Grund aufgefuehrt, damit das
+// Modell weiss, dass Inhalt fehlt (-> tendenziell niedrigere Confidence).
+export function buildUserContent(input: ClassifyInput): string {
+  const parts = [
+    `Betreff: ${input.subject ?? "(kein Betreff)"}`,
+    `Von: ${input.fromAddress}`,
+    "",
+    "[E-Mail-Body]",
+    input.textBody ?? "(kein Text)",
+  ];
+  (input.attachments ?? []).forEach((attachment, index) => {
+    const label = attachment.note
+      ? `[Anhang ${index + 1}: ${attachment.name} — ${attachment.note}]`
+      : `[Anhang ${index + 1}: ${attachment.name}]`;
+    parts.push("", label);
+    if (attachment.text !== null) {
+      parts.push(attachment.text);
+    }
+  });
+  return parts.join("\n");
+}
+
 export async function classifyInbound(input: ClassifyInput): Promise<Classification> {
   // Point-of-Use-Check: ohne Key keine Klassifikation.
   const apiKey = env.ANTHROPIC_API_KEY;
@@ -83,10 +110,7 @@ export async function classifyInbound(input: ClassifyInput): Promise<Classificat
   }
 
   const client = new Anthropic({ apiKey });
-  const userContent = `Betreff: ${input.subject ?? "(kein Betreff)"}
-Von: ${input.fromAddress}
-
-${input.textBody ?? "(kein Text)"}`;
+  const userContent = buildUserContent(input);
 
   const response = await client.messages.create({
     model: CLASSIFY_MODEL,

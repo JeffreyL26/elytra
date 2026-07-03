@@ -6,6 +6,7 @@ import {
   classifyInbound,
   type InboundCategory,
 } from "@/lib/llm/classify-inbound";
+import { extractAttachmentTexts } from "@/lib/mail/extract-attachment-text";
 import { matchInbound } from "@/lib/mail/match-inbound";
 
 export interface ProcessInboundMailPayload {
@@ -95,12 +96,17 @@ export async function processInboundMail(processMailId: string): Promise<void> {
     .limit(1);
   const oldStatus = proc?.status ?? null;
 
+  // Anhang-Texte (z. B. PDF-Datenauskunft) fliessen mit in die Klassifikation
+  // -- die Substanz einer Antwort kann vollstaendig im Anhang stecken.
+  const attachments = await extractAttachmentTexts(mail.rawPayload);
+
   let classification: Classification;
   try {
     classification = await classifyInbound({
       subject: mail.subject,
       textBody: mail.bodyText,
       fromAddress: mail.fromAddress,
+      attachments,
     });
   } catch (error) {
     // API-Fehler sind selten durch Retry behebbar (Rate-Limit, Key, Down) ->
@@ -130,6 +136,12 @@ export async function processInboundMail(processMailId: string): Promise<void> {
       model: classification.model,
       promptVersion: classification.promptVersion,
       needsManualReview: classification.needsManualReview,
+      // Audit: welche Anhaenge sahen wir, und kam ihr Text beim LLM an?
+      attachments: attachments.map(({ name, text, note }) => ({
+        name,
+        extracted: text !== null,
+        ...(note ? { note } : {}),
+      })),
     },
   });
 
