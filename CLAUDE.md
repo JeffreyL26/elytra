@@ -157,7 +157,8 @@ Ein Prozess = ein User × ein Broker.
 - `user_id` references `users.id`
 - `broker_id` references `brokers.id`
 - `process_token` text unique not null — **16 Zeichen cuid2** (in Phase 2 angepasst, siehe unten)
-- `status` enum `process_status` (`'pending' | 'contacted' | 'in_progress' | 'success' | 'blacklisted' | 'no_response' | 'manual_review' | 'failed'`), default `'pending'`
+- `status` enum `process_status` (`'pending' | 'contacted' | 'in_progress' | 'success' | 'blacklisted' | 'no_response' | 'manual_review' | 'failed' | 'no_data_held'`), default `'pending'`
+  - `no_data_held` (Phase 3b.4.6): Broker bestätigt, dass keine (relevanten) Daten zur Person vorliegen. Terminal-Status wie `success`, aber eine **Momentaufnahme** — Recurring-Re-Checks (Phase 3b.8) dürfen auch Terminal-Status über `next_action_at` wieder aufgreifen.
 - `last_contacted_at`, `next_action_at` timestamptz nullable
 - `created_at`, `updated_at` timestamptz
 - unique index auf (`user_id`, `broker_id`)
@@ -233,7 +234,7 @@ Foundation komplett: Datenmodell, Migrations, Seed, Smoke-Test, Doku, Quality-Ga
    3. `In-Reply-To` / `References` Header → match auf `process_mails.provider_message_id` der gesendeten Outbound-Mail
    4. Fallback: Status `manual_review`, sichtbar in ELYTRA (Phase 5)
 5. **Mail-Templates:** TypeScript-Funktionen in `src/lib/mail/templates/`, Signatur `(profile, broker, processToken, locale: 'de' | 'en') => { subject, textBody, htmlBody }`. Snapshot-Tests mit vitest.
-6. **LLM-Klassifikation:** `claude-haiku-4-5-20251001` via offizielles `@anthropic-ai/sdk`. Strukturierter Output via Tool-Use (garantiertes JSON). Kategorien: `success`, `blacklisted`, `in_progress`, `rejected`, `unrelated`. Bei `confidence < 0.7` → automatisch `manual_review`. Modell-Version + Prompt-Version werden im Event-Payload mit geloggt.
+6. **LLM-Klassifikation:** `claude-haiku-4-5-20251001` via offizielles `@anthropic-ai/sdk`. Strukturierter Output via Tool-Use (garantiertes JSON). Kategorien: `success`, `no_data_held`, `blacklisted`, `in_progress`, `rejected`, `unrelated`. Bei `confidence < 0.7` → automatisch `manual_review`. PDF-Anhänge werden textextrahiert (`extract-attachment-text.ts`, pdf-parse, kein OCR) und fließen markiert in den Klassifikations-Prompt ein — die Substanz einer Antwort kann vollständig im Anhang stecken (realer Fall: Yasni, siehe `docs/real-broker-responses/`). Modell-Version + Prompt-Version werden im Event-Payload mit geloggt.
 
 ### Aufgabenliste Phase 2 (in Reihenfolge abarbeiten)
 
