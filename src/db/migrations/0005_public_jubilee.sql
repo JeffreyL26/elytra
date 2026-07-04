@@ -1,0 +1,1 @@
+ALTER TABLE "opt_out_processes" ADD COLUMN "is_self_request" boolean DEFAULT false NOT NULL;

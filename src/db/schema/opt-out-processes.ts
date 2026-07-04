@@ -1,4 +1,4 @@
-import { pgEnum, pgTable, text, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
+import { boolean, pgEnum, pgTable, text, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
 import { createId, createProcessToken } from "@/lib/ids";
 import { brokers } from "./brokers";
 import { users } from "./users";
@@ -35,6 +35,9 @@ export const optOutProcesses = pgTable(
       .unique()
       .$defaultFn(() => createProcessToken()),
     status: processStatusEnum("status").notNull().default("pending"),
+    // Selbst-Anfrage (Betroffener = Absender, Ich-Form, keine Vollmacht):
+    // steuert die Template-Variante. Erster Real-Versand (3b.5) laeuft so.
+    isSelfRequest: boolean("is_self_request").notNull().default(false),
     lastContactedAt: timestamp("last_contacted_at", { withTimezone: true }),
     nextActionAt: timestamp("next_action_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
