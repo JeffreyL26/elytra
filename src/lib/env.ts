@@ -13,6 +13,14 @@ export const env = createEnv({
     REPLY_DOMAIN: z.string().min(1).optional(),
     POSTMARK_INBOUND_WEBHOOK_USERNAME: z.string().min(1).optional(),
     POSTMARK_INBOUND_WEBHOOK_PASSWORD: z.string().min(1).optional(),
+    // Self-Request-Testprofil (Phase 3b.4.5): nur lokal in .env befuellt,
+    // ausschliesslich vom Seed-Script db:seed:self gelesen. Keine echten
+    // personenbezogenen Daten im Repo.
+    SELF_NAME: z.string().min(1).optional(),
+    SELF_STREET: z.string().min(1).optional(),
+    SELF_POSTAL_CODE: z.string().min(1).optional(),
+    SELF_CITY: z.string().min(1).optional(),
+    SELF_EMAIL: z.string().email().optional(),
   },
   client: {},
   runtimeEnv: {
@@ -24,6 +32,11 @@ export const env = createEnv({
     REPLY_DOMAIN: process.env.REPLY_DOMAIN,
     POSTMARK_INBOUND_WEBHOOK_USERNAME: process.env.POSTMARK_INBOUND_WEBHOOK_USERNAME,
     POSTMARK_INBOUND_WEBHOOK_PASSWORD: process.env.POSTMARK_INBOUND_WEBHOOK_PASSWORD,
+    SELF_NAME: process.env.SELF_NAME,
+    SELF_STREET: process.env.SELF_STREET,
+    SELF_POSTAL_CODE: process.env.SELF_POSTAL_CODE,
+    SELF_CITY: process.env.SELF_CITY,
+    SELF_EMAIL: process.env.SELF_EMAIL,
   },
   emptyStringAsUndefined: true,
 });
