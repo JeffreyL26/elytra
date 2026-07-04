@@ -104,12 +104,18 @@ const EN_LABELS: IdentificationLabels = {
 // TODO[legal-review]: Vor Versand an reale Broker muss dieser Absatz
 // von einem Datenschutzanwalt geprüft werden. Aktueller Text ist auf
 // Art. 12 Abs. 2 DSGVO basierte Eigenkonstruktion, kein zitierter
-// Mustertext.
+// Mustertext. Gilt fuer BEIDE Varianten (Vertretung + Self).
 const ART_12_2_PARAGRAPH_DE =
   "Wir weisen darauf hin, dass diese E-Mail gemäß Art. 12 Abs. 2 DSGVO einen zulässigen Kommunikationsweg für die Geltendmachung der Betroffenenrechte unserer Auftraggeberin / unseres Auftraggebers darstellt. Ein Verweis auf ein Online-Formular oder einen anderen Kanal stellt keine Erfüllung der vorliegenden Anfrage dar.";
 
 const ART_12_2_PARAGRAPH_EN =
   "We hereby note that, pursuant to Article 12(2) GDPR, this email constitutes a valid communication channel for the exercise of our client's data subject rights. A referral to an online form or another channel does not constitute fulfilment of this request.";
+
+const ART_12_2_SELF_DE =
+  "Ich weise darauf hin, dass diese E-Mail gemäß Art. 12 Abs. 2 DSGVO einen zulässigen Kommunikationsweg für die Geltendmachung meiner Betroffenenrechte darstellt. Ein Verweis auf ein Online-Formular oder einen anderen Kanal stellt keine Erfüllung der vorliegenden Anfrage dar.";
+
+const ART_12_2_SELF_EN =
+  "I hereby note that, pursuant to Article 12(2) GDPR, this email constitutes a valid communication channel for the exercise of my data subject rights. A referral to an online form or another channel does not constitute fulfilment of this request.";
 
 function buildGerman(profile: OptOutRecipient, broker: OptOutBroker, token: string): OptOutMail {
   const subject = `[Ref: ${token}] Datenlöschanfrage gemäß Art. 17 DSGVO`;
@@ -177,12 +183,108 @@ Reference: ${token}`;
   return { subject, textBody, htmlBody: textToHtml(textBody) };
 }
 
+// Self-Variante (Ich-Form): Betroffener ist selbst Absender, keine Vollmacht,
+// keine Service-Signatur (SERVICE_NAME darf hier NICHT auftauchen -- eine
+// Selbst-Anfrage kommt von einer Privatperson). Wording orientiert an der real versendeten
+// (und beantworteten) Yasni-Anfrage vom 16.06.2026, um die Vergleichbarkeit
+// des automatisierten Versands zu maximieren.
+function buildGermanSelf(profile: OptOutRecipient, token: string): OptOutMail {
+  const subject = `[Ref: ${token}] Auskunfts- und Löschersuchen gemäß Art. 15, 17, 21 DSGVO`;
+  const name = formatName(profile);
+
+  const textBody = `Sehr geehrte Damen und Herren,
+
+ich, ${name}, mache hiermit als betroffene Person meine Rechte nach der Datenschutz-Grundverordnung (DSGVO) Ihnen gegenüber geltend.
+
+Zu meiner Identifikation:
+${formatIdentification(profile, DE_LABELS)}
+
+1. Auskunft (Art. 15 Abs. 1 DSGVO)
+
+Ich ersuche Sie um Auskunft darüber, ob personenbezogene Daten zu meiner Person von Ihnen verarbeitet werden, sowie — soweit dies der Fall ist — um Auskunft über:
+a) die Verarbeitungszwecke (Art. 15 Abs. 1 lit. a DSGVO),
+b) die Kategorien personenbezogener Daten, die verarbeitet werden (Art. 15 Abs. 1 lit. b DSGVO),
+c) die Empfänger oder Kategorien von Empfängern, gegenüber denen die personenbezogenen Daten offengelegt worden sind oder noch offengelegt werden (Art. 15 Abs. 1 lit. c DSGVO),
+d) die geplante Dauer der Speicherung bzw. die Kriterien für die Festlegung dieser Dauer (Art. 15 Abs. 1 lit. d DSGVO),
+e) alle verfügbaren Informationen über die Herkunft der Daten, soweit diese nicht bei mir selbst erhoben wurden (Art. 15 Abs. 1 lit. g DSGVO).
+
+2. Löschung (Art. 17 Abs. 1 DSGVO)
+
+Soweit Sie personenbezogene Daten zu meiner Person verarbeiten, fordere ich Sie auf, diese gemäß Art. 17 Abs. 1 DSGVO unverzüglich und vollständig zu löschen.
+
+3. Widerspruch gegen Direktwerbung (Art. 21 Abs. 2 DSGVO)
+
+Soweit personenbezogene Daten zu meiner Person zu Zwecken der Direktwerbung verarbeitet werden, lege ich hiermit gemäß Art. 21 Abs. 2 DSGVO Widerspruch gegen diese Verarbeitung ein. Nach Art. 21 Abs. 3 DSGVO dürfen meine personenbezogenen Daten danach nicht mehr für Zwecke der Direktwerbung verarbeitet werden.
+
+${ART_12_2_SELF_DE}
+
+Nach Art. 12 Abs. 3 DSGVO haben Sie mich über die aufgrund dieses Antrags getroffenen Maßnahmen unverzüglich, in jedem Fall aber innerhalb eines Monats nach Eingang dieses Antrags, zu unterrichten.
+
+Für Rückfragen antworten Sie bitte direkt auf diese E-Mail; die Antwortadresse enthält ein Aktenzeichen zur Zuordnung.
+
+Mit freundlichen Grüßen
+${name}
+
+Aktenzeichen: ${token}`;
+
+  return { subject, textBody, htmlBody: textToHtml(textBody) };
+}
+
+function buildEnglishSelf(profile: OptOutRecipient, token: string): OptOutMail {
+  const subject = `[Ref: ${token}] Access and erasure request pursuant to Art. 15, 17, 21 GDPR`;
+  const name = formatName(profile);
+
+  const textBody = `Dear Sir or Madam,
+
+I, ${name}, hereby exercise my rights as a data subject under the General Data Protection Regulation (GDPR) vis-à-vis your organisation.
+
+For identification purposes:
+${formatIdentification(profile, EN_LABELS)}
+
+1. Access request (Art. 15(1) GDPR)
+
+I request information as to whether personal data concerning me are processed by you and, where that is the case, access to the following information:
+a) the purposes of the processing (Art. 15(1)(a) GDPR),
+b) the categories of personal data concerned (Art. 15(1)(b) GDPR),
+c) the recipients or categories of recipients to whom the personal data have been or will be disclosed (Art. 15(1)(c) GDPR),
+d) the envisaged period for which the personal data will be stored, or the criteria used to determine that period (Art. 15(1)(d) GDPR),
+e) any available information as to the source of the data, where the personal data are not collected from me (Art. 15(1)(g) GDPR).
+
+2. Erasure (Art. 17(1) GDPR)
+
+Insofar as you process personal data concerning me, I request that you erase such data without undue delay and in full pursuant to Art. 17(1) GDPR.
+
+3. Objection to direct marketing (Art. 21(2) GDPR)
+
+Insofar as personal data concerning me are processed for direct marketing purposes, I hereby object to such processing pursuant to Art. 21(2) GDPR. Pursuant to Art. 21(3) GDPR, my personal data may no longer be processed for direct marketing purposes thereafter.
+
+${ART_12_2_SELF_EN}
+
+Pursuant to Art. 12(3) GDPR, you are required to inform me about the action taken on this request without undue delay and in any event within one month of its receipt.
+
+For any questions, please reply directly to this email; the reply address contains a reference code for case assignment.
+
+Kind regards
+${name}
+
+Reference: ${token}`;
+
+  return { subject, textBody, htmlBody: textToHtml(textBody) };
+}
+
 export function buildOptOutRequest(
   profile: OptOutRecipient,
   broker: OptOutBroker,
   token: string,
   locale: Locale = "de",
+  // true = Selbst-Anfrage (Ich-Form, ohne Vollmacht/Service-Signatur).
+  // Bewusst nur das Flag statt des Prozess-Objekts: das Template kennt nur,
+  // was es fuer den Text braucht.
+  isSelfRequest = false,
 ): OptOutMail {
+  if (isSelfRequest) {
+    return locale === "en" ? buildEnglishSelf(profile, token) : buildGermanSelf(profile, token);
+  }
   return locale === "en"
     ? buildEnglish(profile, broker, token)
     : buildGerman(profile, broker, token);

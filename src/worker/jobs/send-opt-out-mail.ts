@@ -51,7 +51,7 @@ export async function sendOptOutMail(processId: string): Promise<void> {
   }
   const replyTo = `proc-${proc.processToken}@${replyDomain}`;
 
-  const mail = buildOptOutRequest(profile, broker, proc.processToken, "de");
+  const mail = buildOptOutRequest(profile, broker, proc.processToken, "de", proc.isSelfRequest);
 
   const { messageId, providerResponseId } = await sendMail({
     from,
