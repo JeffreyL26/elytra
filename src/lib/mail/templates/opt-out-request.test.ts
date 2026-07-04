@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { dummyBrokers } from "@/data/dummy-brokers";
+import { SERVICE_NAME } from "@/lib/branding";
 import { buildOptOutRequest, type OptOutRecipient } from "@/lib/mail/templates/opt-out-request";
 
 // Variante ohne optionale Felder (dateOfBirth/phoneNumbers leer).
@@ -47,5 +48,33 @@ describe("buildOptOutRequest", () => {
 
   it("erzeugt die englische Loeschanfrage mit Geburtsdatum und Telefon", () => {
     expect(buildOptOutRequest(profileFull, broker, TOKEN, "en")).toMatchSnapshot();
+  });
+
+  it("erzeugt die deutsche Selbst-Anfrage ohne optionale Felder", () => {
+    expect(buildOptOutRequest(profileMinimal, broker, TOKEN, "de", true)).toMatchSnapshot();
+  });
+
+  it("erzeugt die deutsche Selbst-Anfrage mit Geburtsdatum und Telefon", () => {
+    expect(buildOptOutRequest(profileFull, broker, TOKEN, "de", true)).toMatchSnapshot();
+  });
+
+  it("erzeugt die englische Selbst-Anfrage ohne optionale Felder", () => {
+    expect(buildOptOutRequest(profileMinimal, broker, TOKEN, "en", true)).toMatchSnapshot();
+  });
+
+  it("erzeugt die englische Selbst-Anfrage mit Geburtsdatum und Telefon", () => {
+    expect(buildOptOutRequest(profileFull, broker, TOKEN, "en", true)).toMatchSnapshot();
+  });
+
+  // Eine Selbst-Anfrage kommt von einer Privatperson -- keine Brand-Fusszeile,
+  // kein Service-Name darf aus dem Basis-Template durchsickern.
+  it.each([
+    "de",
+    "en",
+  ] as const)("Selbst-Anfrage (%s) enthaelt den Service-Namen nicht", (locale) => {
+    const mail = buildOptOutRequest(profileFull, broker, TOKEN, locale, true);
+    expect(mail.subject).not.toContain(SERVICE_NAME);
+    expect(mail.textBody).not.toContain(SERVICE_NAME);
+    expect(mail.htmlBody).not.toContain(SERVICE_NAME);
   });
 });
