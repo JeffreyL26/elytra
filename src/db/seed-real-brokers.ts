@@ -15,8 +15,11 @@ const COMMON = {
   requiresAuthorizationAttachment: false,
 } as const satisfies Partial<NewBroker>;
 
-// 18 reale Data-Broker: 3 aktiv (erster E2E-Test), 8 inaktiv (E-Mail-Kanal),
-// 7 inaktiv (Mixed: Form bevorzugt, E-Mail funktioniert als Fallback).
+// 25 reale Data-Broker: 3 aktiv (erster E2E-Test), 22 inaktiv vorgeseedet.
+// Inaktiv gegliedert: 8 E-Mail-Kanal, 7 Mixed (Form bevorzugt, E-Mail als
+// Fallback), 4 Tier 1 (E-Mail-Kanal oeffentlich dokumentiert, hohe Konfidenz),
+// 3 Tier 2 (Kontaktpunkt verifiziert, Verifikation potenziell an die
+// Betroffenen-Adresse gebunden -- Fall-B-Test-Kandidaten).
 const realBrokers: NewBroker[] = [
   // --- Aktiv fuer ersten E2E-Test (is_active: true) ---
   {
@@ -209,6 +212,96 @@ const realBrokers: NewBroker[] = [
     language: "en",
     isActive: false,
     notes: "Mixed: DPO Greg Damon, Mail-Adresse auf Website verschleiert",
+  },
+
+  // --- Tier 1: E-Mail-Kanal öffentlich dokumentiert, hohe Konfidenz ---
+  {
+    ...COMMON,
+    slug: "dealfront",
+    name: "Dealfront Group GmbH",
+    country: "DE",
+    websiteUrl: "https://www.dealfront.com",
+    optOutEmail: "privacy@dealfront.com",
+    language: "de",
+    isActive: false,
+    notes:
+      "E-Mail-Kanal explizit dokumentiert, 30-Tage-Antwortzusage; Konzern-DPO dpo@dealfront.com; DE/FI-Gruppe, betreibt eigenen Crawler (haelt Daten ueber DE-Personen)",
+  },
+  {
+    ...COMMON,
+    slug: "cognism",
+    name: "Cognism Ltd",
+    country: "GB",
+    websiteUrl: "https://www.cognism.com",
+    optOutEmail: "compliance@cognism.com",
+    language: "en",
+    isActive: false,
+    notes:
+      "Mixed: Opt-out-Form (cognism.com/data-opt-out) parallel; DPO compliance@cognism.com; UK-GDPR (Aufsicht ICO), nicht EU-DSGVO",
+  },
+  {
+    ...COMMON,
+    slug: "lusha",
+    name: "Lusha Systems Ltd",
+    country: "IL",
+    websiteUrl: "https://www.lusha.com",
+    optOutEmail: "privacy@lusha.com",
+    language: "en",
+    isActive: false,
+    notes:
+      "Mixed: Privacy Team fuehrt Loeschung per E-Mail durch; Formular-Weg (OneTrust) mit Verifikation an Betroffenen-Adresse; Joint Controller US/IL",
+  },
+  {
+    ...COMMON,
+    slug: "revoptimal",
+    name: "RevOptimal, LLC",
+    country: "US",
+    websiteUrl: "https://revoptimal.com",
+    optOutEmail: "privacy@revoptimal.com",
+    language: "en",
+    isActive: false,
+    notes: "DSAR-Form parallel; EU-Vertreter (Art. 27): Superset, revoptimal.com@supersetreps.com",
+  },
+
+  // --- Tier 2: Kontaktpunkt verifiziert, aber Verifikation potenziell an die
+  // geharvestete Betroffenen-Adresse gebunden (Fall B, Formular-bevorzugt).
+  // Bewusst inaktive Test-Kandidaten: spaeter pruefen, ob der Bevollmaechtigten-
+  // E-Mail-Weg akzeptiert wird oder Bestaetigung im Kundenpostfach erzwungen wird. ---
+  {
+    ...COMMON,
+    slug: "liveintent",
+    name: "LiveIntent, Inc.",
+    country: "US",
+    websiteUrl: "https://www.liveintent.com",
+    optOutEmail: "privacy@liveintent.com",
+    language: "en",
+    isActive: false,
+    notes:
+      "Fall B: Verifikations-Link geht laut Policy an die hinterlegte Betroffenen-Adresse; Primaerweg Privacy-Portal, E-Mail fuer Appeals. Test-Kandidat: Bevollmaechtigten-Weg pruefen",
+  },
+  {
+    ...COMMON,
+    slug: "uplead",
+    name: "UpLead LLC",
+    country: "US",
+    websiteUrl: "https://www.uplead.com",
+    optOutEmail: "privacy@uplead.com",
+    language: "en",
+    isActive: false,
+    notes:
+      "Fall B: GDPR-Requests via EU-Vertreter EDPO (Formular); Opt-out verlangt Ownership-Bestaetigung per Mail/SMS an Betroffenen-Adresse. Test-Kandidat",
+  },
+  {
+    ...COMMON,
+    slug: "rocketreach",
+    name: "RocketReach LLC",
+    country: "US",
+    websiteUrl: "https://rocketreach.co",
+    optOutEmail: "privacy@rocketreach.co",
+    language: "en",
+    isActive: false,
+    notes:
+      "Fall B + schwacher EU-Nexus: kein Art.-27-Vertreter, LU-DPA konnte Beschwerde mangels EU-Praesenz nicht durchsetzen (noyb-kritisiert); Verifikations-Mail nur bei Profil-Match. Guter Test-Kandidat fuer Phase-3c-Eskalationslogik",
   },
 ];
 
