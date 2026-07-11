@@ -15,6 +15,14 @@ export function assertWorkerEnv(): void {
     missing.push("ANTHROPIC_API_KEY");
   }
 
+  // Self-Sends nutzen SELF_EMAIL als From-Adresse. Solange Self-Mode der
+  // aktive Versandpfad ist (Phase 3b.5), hart geprueft -- ein Send-Job ohne
+  // SELF_EMAIL wuerde sonst erst zur Laufzeit scheitern. Beim Wechsel auf
+  // produktiven Vertretungs-Mode ggf. lockern.
+  if (!env.SELF_EMAIL) {
+    missing.push("SELF_EMAIL");
+  }
+
   // Bewusst NICHT hart geprueft: POSTMARK_SERVER_TOKEN wird nur fuer echten
   // Outbound gebraucht (broker.is_dummy === false). Solange Dummy-Modus gilt,
   // wuerde ein harter Check den Worker grundlos am Start hindern; der
@@ -23,10 +31,10 @@ export function assertWorkerEnv(): void {
 
   if (missing.length > 0) {
     console.error(
-      `FATAL: ${missing.join(", ")} fehlt — der Worker klassifiziert Inbound-Mails und kann ohne Key nicht sicher laufen. Key in .env setzen.`,
+      `FATAL: ${missing.join(", ")} fehlt — der Worker klassifiziert Inbound-Mails und versendet Self-Requests; ohne diese Werte kann er nicht sicher laufen. Werte in .env setzen.`,
     );
     process.exit(1);
   }
 
-  console.log("Preflight OK: Anthropic-Key vorhanden");
+  console.log("Preflight OK: ANTHROPIC_API_KEY + SELF_EMAIL vorhanden");
 }

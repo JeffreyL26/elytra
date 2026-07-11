@@ -44,10 +44,14 @@ export async function sendOptOutMail(processId: string): Promise<void> {
   }
 
   // From-Adresse und Reply-To ausschliesslich aus env (kein Hardcoding).
-  const from = env.MAIL_FROM_ADDRESS;
+  // Self-Requests kommen von der Privatadresse (SELF_EMAIL), Vertretungs-
+  // Anfragen vom Service (MAIL_FROM_ADDRESS). Fail-fast dafuer liegt im
+  // Worker-Preflight; dieser Check ist das Point-of-Use-Sicherheitsnetz.
+  const from = proc.isSelfRequest ? env.SELF_EMAIL : env.MAIL_FROM_ADDRESS;
   const replyDomain = env.REPLY_DOMAIN;
   if (!from || !replyDomain) {
-    throw new Error("MAIL_FROM_ADDRESS/REPLY_DOMAIN missing — set them in .env");
+    const fromVar = proc.isSelfRequest ? "SELF_EMAIL" : "MAIL_FROM_ADDRESS";
+    throw new Error(`${fromVar}/REPLY_DOMAIN missing — set them in .env`);
   }
   const replyTo = `proc-${proc.processToken}@${replyDomain}`;
 
