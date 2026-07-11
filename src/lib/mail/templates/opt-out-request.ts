@@ -134,7 +134,7 @@ wir wenden uns im Auftrag und in Vollmacht der nachfolgend genannten betroffenen
 Betroffene Person:
 ${formatIdentification(profile, DE_LABELS)}
 
-Namens und im Auftrag der betroffenen Person fordern wir Sie auf, sämtliche zu dieser Person bei ${broker.name} gespeicherten personenbezogenen Daten gemäß Art. 17 DSGVO (Recht auf Löschung) unverzüglich und vollständig zu löschen.
+Namens und im Auftrag der betroffenen Person fordern wir Sie auf, sämtliche zu dieser Person bei ${broker.name} gespeicherten personenbezogenen Daten gemäß Art. 17 DSGVO (Recht auf Löschung) unverzüglich und vollständig zu löschen. Soweit die Verarbeitung auf Art. 6 Abs. 1 lit. f DSGVO gestützt wird, ergibt sich die Löschpflicht spätestens aus Art. 17 Abs. 1 lit. c DSGVO in Verbindung mit dem nachstehend erklärten Widerspruch.
 
 Soweit Sie personenbezogene Daten der betroffenen Person zu Zwecken der Direktwerbung verarbeiten, legen wir hiermit zugleich gemäß Art. 21 Abs. 2 DSGVO Widerspruch gegen diese Verarbeitung ein.
 
@@ -167,7 +167,7 @@ we are contacting you on behalf of and under power of attorney for the data subj
 Data subject:
 ${formatIdentification(profile, EN_LABELS)}
 
-On behalf of the data subject, we hereby request that you erase all personal data stored about this person at ${broker.name} without undue delay and in full, pursuant to Art. 17 GDPR (right to erasure).
+On behalf of the data subject, we hereby request that you erase all personal data stored about this person at ${broker.name} without undue delay and in full, pursuant to Art. 17 GDPR (right to erasure). Insofar as the processing is based on Art. 6(1)(f) GDPR, the obligation to erase follows at the latest from Art. 17(1)(c) GDPR in conjunction with the objection declared below.
 
 Insofar as you process the data subject's personal data for direct marketing purposes, we hereby also object to such processing pursuant to Art. 21(2) GDPR.
 
@@ -217,7 +217,7 @@ e) alle verfügbaren Informationen über die Herkunft der Daten, soweit diese ni
 
 2. Löschung (Art. 17 Abs. 1 DSGVO)
 
-Soweit Sie personenbezogene Daten zu meiner Person verarbeiten, fordere ich Sie auf, diese gemäß Art. 17 Abs. 1 DSGVO unverzüglich und vollständig zu löschen.
+Soweit Sie personenbezogene Daten zu meiner Person verarbeiten, fordere ich Sie auf, diese gemäß Art. 17 Abs. 1 DSGVO unverzüglich und vollständig zu löschen. Soweit die Verarbeitung auf Art. 6 Abs. 1 lit. f DSGVO gestützt wird, ergibt sich die Löschpflicht spätestens aus Art. 17 Abs. 1 lit. c DSGVO in Verbindung mit dem unter Ziffer 3 erklärten Widerspruch.
 
 3. Widerspruch gegen Direktwerbung (Art. 21 Abs. 2 DSGVO)
 
@@ -259,7 +259,7 @@ e) any available information as to the source of the data, where the personal da
 
 2. Erasure (Art. 17(1) GDPR)
 
-Insofar as you process personal data concerning me, I request that you erase such data without undue delay and in full pursuant to Art. 17(1) GDPR.
+Insofar as you process personal data concerning me, I request that you erase such data without undue delay and in full pursuant to Art. 17(1) GDPR. Insofar as the processing is based on Art. 6(1)(f) GDPR, the obligation to erase follows at the latest from Art. 17(1)(c) GDPR in conjunction with the objection declared under section 3.
 
 3. Objection to direct marketing (Art. 21(2) GDPR)
 
