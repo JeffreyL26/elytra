@@ -20,7 +20,13 @@ export const env = createEnv({
     SELF_STREET: z.string().min(1).optional(),
     SELF_POSTAL_CODE: z.string().min(1).optional(),
     SELF_CITY: z.string().min(1).optional(),
+    // SELF_EMAIL: Absenderadresse (From) des Self-Requests. NICHT zwingend eine
+    // Adresse, unter der Broker die Person kennen.
     SELF_EMAIL: z.string().email().optional(),
+    // SELF_IDENTITY_EMAILS: kommaseparierte Identifikationsadressen fuers
+    // customer_profile (unter denen reale Broker die Person finden). Fallback
+    // auf SELF_EMAIL, wenn nicht gesetzt.
+    SELF_IDENTITY_EMAILS: z.string().min(1).optional(),
   },
   client: {},
   runtimeEnv: {
@@ -37,6 +43,7 @@ export const env = createEnv({
     SELF_POSTAL_CODE: process.env.SELF_POSTAL_CODE,
     SELF_CITY: process.env.SELF_CITY,
     SELF_EMAIL: process.env.SELF_EMAIL,
+    SELF_IDENTITY_EMAILS: process.env.SELF_IDENTITY_EMAILS,
   },
   emptyStringAsUndefined: true,
 });

@@ -23,17 +23,20 @@ async function seedSelfProfile(): Promise<void> {
   const profileData = {
     firstName,
     lastName,
-    emailAddresses: [self.email],
+    // Identifikationsadressen (Broker finden die Person darunter), nicht die
+    // Absenderadresse.
+    emailAddresses: self.identityEmails,
     // Zielmarkt Deutschland; das Testprofil ist eine deutsche Anschrift.
     postalAddresses: [
       { street: self.street, postalCode: self.postalCode, city: self.city, country: "DE" },
     ],
   };
 
+  // Account-/Lookup-Key ist die Absenderadresse (SELF_EMAIL).
   const [existingUser] = await db
     .select({ id: users.id })
     .from(users)
-    .where(eq(users.email, self.email))
+    .where(eq(users.email, self.senderEmail))
     .limit(1);
 
   if (existingUser) {
@@ -56,7 +59,10 @@ async function seedSelfProfile(): Promise<void> {
     return;
   }
 
-  const [user] = await db.insert(users).values({ email: self.email }).returning({ id: users.id });
+  const [user] = await db
+    .insert(users)
+    .values({ email: self.senderEmail })
+    .returning({ id: users.id });
   await db.insert(customerProfiles).values({ userId: user.id, ...profileData });
   console.log(`Self-Profile neu angelegt (user ${user.id}).`);
 }
