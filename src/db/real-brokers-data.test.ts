@@ -21,6 +21,15 @@ const profile: OptOutRecipient = {
 
 const TOKEN = "test1234abcd5678";
 
+describe("Broker-Stammdaten Integritaet", () => {
+  it("hat ausschliesslich gueltige country-Codes (ISO-3166-1-alpha-2 oder leer)", () => {
+    const invalid = realBrokers
+      .filter((b) => b.country != null && !/^[A-Z]{2}$/.test(b.country))
+      .map((b) => `${b.slug}="${b.country}"`);
+    expect(invalid).toEqual([]);
+  });
+});
+
 describe("DE-Welle (da-*) Broker-Stammdaten", () => {
   it("umfasst genau 18 Eintraege", () => {
     expect(waveBrokers).toHaveLength(18);

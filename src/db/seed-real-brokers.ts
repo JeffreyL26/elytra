@@ -3,11 +3,28 @@ import { db, sql } from "@/db/client";
 import { realBrokers } from "@/db/real-brokers-data";
 import { brokers } from "@/db/schema";
 
+// country ist im Schema nur text() ohne Constraint. Diese Pre-Seed-Pruefung
+// faengt ungueltige Codes (z. B. "ALL") beim Seeden ab, statt sie erst im
+// Versand auffallen zu lassen. Erwartet ISO-3166-1-alpha-2: genau 2 Zeichen,
+// uppercase A-Z. null/undefined ist erlaubt (country ist nullable).
+function assertValidCountries(): void {
+  const invalid = realBrokers
+    .filter((b) => b.country != null && !/^[A-Z]{2}$/.test(b.country))
+    .map((b) => `${b.slug}="${b.country}"`);
+  if (invalid.length > 0) {
+    throw new Error(
+      `Ungueltige country-Codes (erwartet ISO-3166-1-alpha-2, 2x uppercase): ${invalid.join(", ")}`,
+    );
+  }
+}
+
 // Idempotent: pro Broker auf slug pruefen, dann update statt insert.
 // responsiveness_tier und last_response_at sind worker-verwaltete
 // Laufzeitfelder -- beim Update bewusst NICHT ueberschrieben, damit ein
 // Re-Seed keinen real beobachteten Antwort-Status zuruecksetzt.
 async function seedRealBrokers() {
+  assertValidCountries();
+
   let insertedCount = 0;
   let updatedCount = 0;
 

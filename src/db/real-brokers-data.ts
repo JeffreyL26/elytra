@@ -450,19 +450,18 @@ export const realBrokers: NewBroker[] = [
     ...COMMON,
     slug: "da-zeotap",
     name: "zeotap GmbH",
-    // Quelle liefert country "ALL" (global) -- kein ISO-3166-alpha-2. Faithful
-    // uebernommen; ggf. spaeter normalisieren.
-    country: "ALL",
+    country: "DE",
     websiteUrl: "https://zeotap.com/",
     optOutEmail: "privacy@zeotap.com",
-    language: "en",
+    language: "de",
     isActive: false,
   },
   {
     ...COMMON,
     slug: "da-criteo",
     name: "Criteo",
-    country: "ALL",
+    // Criteo SA, Paris -- globaler DPO, Korrespondenz auf Englisch.
+    country: "FR",
     websiteUrl: "https://www.criteo.com/",
     optOutEmail: "dpo@criteo.com",
     language: "en",
@@ -482,10 +481,10 @@ export const realBrokers: NewBroker[] = [
     ...COMMON,
     slug: "da-meinestadt-de",
     name: "meinestadt.de GmbH",
-    country: "ALL",
+    country: "DE",
     websiteUrl: "https://www.meinestadt.de",
     optOutEmail: "datenschutz@meinestadt.de",
-    language: "en",
+    language: "de",
     isActive: false,
   },
   {
