@@ -20,6 +20,13 @@ export type OptOutBroker = Pick<Broker, "name">;
 
 export type Locale = "de" | "en";
 
+// Broker-Sprache (ISO 639-1, brokers.language) -> Template-Locale. Es gibt
+// nur de/en-Templates; alle anderen Sprachen fallen auf Englisch zurueck
+// (Lingua franca fuer DSGVO-Korrespondenz).
+export function toTemplateLocale(language: string): Locale {
+  return language === "de" ? "de" : "en";
+}
+
 export interface OptOutMail {
   subject: string;
   textBody: string;

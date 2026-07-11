@@ -15,6 +15,7 @@ import { sendOptOutMail } from "@/worker/jobs/send-opt-out-mail";
 
 let userId: string;
 let processId: string;
+let enProcessId: string;
 
 beforeAll(async () => {
   const emailDummy = dummyBrokers.find((b) => b.slug === "dummy-broker-email");
@@ -25,6 +26,22 @@ beforeAll(async () => {
     .insert(brokers)
     .values(emailDummy)
     .onConflictDoUpdate({ target: brokers.slug, set: { isDummy: true } })
+    .returning();
+
+  // Englischsprachiger Dummy: belegt, dass die Locale aus broker.language
+  // kommt (nicht hartcodiert "de").
+  const [enBroker] = await db
+    .insert(brokers)
+    .values({
+      slug: "dummy-broker-email-en",
+      name: "Dummy EN Broker Inc.",
+      optOutMethod: "email",
+      optOutEmail: "privacy@dummy-en.example",
+      language: "en",
+      isDummy: true,
+      isActive: true,
+    })
+    .onConflictDoUpdate({ target: brokers.slug, set: { isDummy: true, language: "en" } })
     .returning();
 
   const [user] = await db
@@ -46,6 +63,12 @@ beforeAll(async () => {
     .values({ userId, brokerId: broker.id })
     .returning();
   processId = proc.id;
+
+  const [enProc] = await db
+    .insert(optOutProcesses)
+    .values({ userId, brokerId: enBroker.id })
+    .returning();
+  enProcessId = enProc.id;
 });
 
 afterAll(async () => {
@@ -74,5 +97,20 @@ describe("sendOptOutMail (integration)", () => {
 
     const [proc] = await db.select().from(optOutProcesses).where(eq(optOutProcesses.id, processId));
     expect(proc.status).toBe("contacted");
+
+    // Deutscher Broker (language: "de") -> deutsches Template.
+    expect(mails[0].subject).toContain("Datenlöschanfrage gemäß Art. 17 DSGVO");
+  });
+
+  it("rendert bei englischsprachigem Broker das englische Template", async () => {
+    await sendOptOutMail(enProcessId);
+
+    const mails = await db
+      .select()
+      .from(processMails)
+      .where(eq(processMails.processId, enProcessId));
+    expect(mails).toHaveLength(1);
+    expect(mails[0].subject).toContain("Data erasure request pursuant to Art. 17 GDPR");
+    expect(mails[0].bodyText).toContain("Dear Sir or Madam");
   });
 });

@@ -9,7 +9,7 @@ import {
 } from "@/db/schema";
 import { env } from "@/lib/env";
 import { sendMail } from "@/lib/mail/send";
-import { buildOptOutRequest } from "@/lib/mail/templates/opt-out-request";
+import { buildOptOutRequest, toTemplateLocale } from "@/lib/mail/templates/opt-out-request";
 
 export const SEND_OPT_OUT_MAIL_QUEUE = "send-opt-out-mail";
 
@@ -51,7 +51,13 @@ export async function sendOptOutMail(processId: string): Promise<void> {
   }
   const replyTo = `proc-${proc.processToken}@${replyDomain}`;
 
-  const mail = buildOptOutRequest(profile, broker, proc.processToken, "de", proc.isSelfRequest);
+  const mail = buildOptOutRequest(
+    profile,
+    broker,
+    proc.processToken,
+    toTemplateLocale(broker.language),
+    proc.isSelfRequest,
+  );
 
   const { messageId, providerResponseId } = await sendMail({
     from,
