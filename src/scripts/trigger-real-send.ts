@@ -1,0 +1,195 @@
+// Trigger fuer den ersten realen Self-Request-Versand (Phase 3b.5).
+//
+//   Dry-Run (Default, KEINE DB-Schreibvorgaenge, kein Postmark-Call):
+//     pnpm tsx --env-file=.env src/scripts/trigger-real-send.ts --broker <slug>
+//
+//   Echter Versand (interaktive "JA"-Bestaetigung):
+//     pnpm tsx --env-file=.env src/scripts/trigger-real-send.ts --broker <slug> --send
+//
+// Der Versand laeuft ueber sendOptOutMail() -- derselbe Code-Pfad wie der
+// Worker (Template, Message-ID, process_mails, Events, Status). broker.is_dummy
+// wird dort bedingungslos respektiert.
+
+import { createInterface } from "node:readline/promises";
+import { and, eq } from "drizzle-orm";
+import { db, sql } from "@/db/client";
+import { brokers, customerProfiles, optOutProcesses, users } from "@/db/schema";
+import { env } from "@/lib/env";
+import { createProcessToken } from "@/lib/ids";
+import { buildOptOutRequest, toTemplateLocale } from "@/lib/mail/templates/opt-out-request";
+import { sendOptOutMail } from "@/worker/jobs/send-opt-out-mail";
+
+interface CliArgs {
+  brokerSlug: string;
+  send: boolean;
+}
+
+function parseArgs(argv: string[]): CliArgs {
+  const send = argv.includes("--send");
+  const brokerIndex = argv.indexOf("--broker");
+  const brokerSlug = brokerIndex !== -1 ? argv[brokerIndex + 1] : undefined;
+  if (!brokerSlug || brokerSlug.startsWith("--")) {
+    console.error(
+      "Usage: pnpm tsx --env-file=.env src/scripts/trigger-real-send.ts --broker <slug> [--send]",
+    );
+    process.exit(1);
+  }
+  return { brokerSlug, send };
+}
+
+// Preflight (FEST VEREINBART -- send.ts allein ist Fail-Late): im --send-Modus
+// sind alle Werte hart; im Dry-Run brechen nur die fuers Rendering noetigen
+// Werte ab, der Rest wird als FEHLT ausgewiesen.
+function preflight(send: boolean): void {
+  const checks: Array<[name: string, value: string | undefined, neededForDryRun: boolean]> = [
+    ["POSTMARK_SERVER_TOKEN", env.POSTMARK_SERVER_TOKEN, false],
+    ["ANTHROPIC_API_KEY", env.ANTHROPIC_API_KEY, false],
+    ["MAIL_FROM_ADDRESS", env.MAIL_FROM_ADDRESS, false],
+    ["MAIL_FROM_DOMAIN", env.MAIL_FROM_DOMAIN, false],
+    ["REPLY_DOMAIN", env.REPLY_DOMAIN, true],
+    ["SELF_EMAIL", env.SELF_EMAIL, true],
+  ];
+
+  console.log("Preflight:");
+  const missing: string[] = [];
+  for (const [name, value, neededForDryRun] of checks) {
+    const ok = Boolean(value);
+    console.log(`  ${ok ? "OK    " : "FEHLT "} ${name}`);
+    if (!ok && (send || neededForDryRun)) {
+      missing.push(name);
+    }
+  }
+  if (missing.length > 0) {
+    console.error(`\nABBRUCH: ${missing.join(", ")} fehlt — in .env setzen.`);
+    process.exit(1);
+  }
+}
+
+async function main(): Promise<void> {
+  const args = parseArgs(process.argv.slice(2));
+  preflight(args.send);
+
+  // SELF_EMAIL ist nach preflight() garantiert gesetzt.
+  const selfEmail = env.SELF_EMAIL;
+  if (!selfEmail || !env.REPLY_DOMAIN) {
+    throw new Error("unreachable: preflight already verified SELF_EMAIL/REPLY_DOMAIN");
+  }
+
+  const [user] = await db.select().from(users).where(eq(users.email, selfEmail)).limit(1);
+  if (!user) {
+    console.error(`ABBRUCH: kein User zu SELF_EMAIL gefunden — zuerst 'pnpm db:seed:self' laufen.`);
+    process.exit(1);
+  }
+  const [profile] = await db
+    .select()
+    .from(customerProfiles)
+    .where(eq(customerProfiles.userId, user.id))
+    .limit(1);
+  if (!profile) {
+    console.error("ABBRUCH: customer_profile fehlt — zuerst 'pnpm db:seed:self' laufen.");
+    process.exit(1);
+  }
+
+  const [broker] = await db
+    .select()
+    .from(brokers)
+    .where(eq(brokers.slug, args.brokerSlug))
+    .limit(1);
+  if (!broker) {
+    console.error(`ABBRUCH: Broker '${args.brokerSlug}' nicht gefunden.`);
+    process.exit(1);
+  }
+  if (!broker.optOutEmail) {
+    console.error(`ABBRUCH: Broker '${broker.slug}' hat keine opt_out_email.`);
+    process.exit(1);
+  }
+
+  // Bestehenden (self, broker)-Prozess wiederverwenden, nie doppelt anlegen.
+  const [existing] = await db
+    .select()
+    .from(optOutProcesses)
+    .where(and(eq(optOutProcesses.userId, user.id), eq(optOutProcesses.brokerId, broker.id)))
+    .limit(1);
+
+  // Sicherung: ein bestehender Nicht-Self-Prozess wuerde das Vertretungs-
+  // Template rendern — hier geht es ausschliesslich um Self-Sends.
+  if (existing && !existing.isSelfRequest) {
+    console.error(
+      `ABBRUCH: Prozess ${existing.id} existiert, ist aber KEIN Self-Request (is_self_request=false). Manuell klaeren.`,
+    );
+    process.exit(1);
+  }
+
+  console.log(`\nBroker:  ${broker.name} (${broker.slug}, language=${broker.language})`);
+  console.log(`Dummy:   ${broker.isDummy} | aktiv: ${broker.isActive}`);
+  console.log(
+    existing
+      ? `Prozess: existiert (id=${existing.id}, status=${existing.status}) — wird wiederverwendet`
+      : "Prozess: existiert noch nicht — wird beim Versand angelegt",
+  );
+
+  if (!args.send) {
+    // Dry-Run: ephemeres Token, nichts wird geschrieben.
+    const token = existing?.processToken ?? createProcessToken();
+    const tokenNote = existing ? "(aus bestehendem Prozess)" : "(ephemer, nicht persistiert)";
+    const mail = buildOptOutRequest(
+      profile,
+      broker,
+      token,
+      toTemplateLocale(broker.language),
+      true,
+    );
+
+    console.log("\n===== DRY-RUN (kein Versand, keine DB-Schreibvorgaenge) =====");
+    console.log(`From:     ${selfEmail}`);
+    console.log(`To:       ${broker.optOutEmail}`);
+    console.log(`Reply-To: proc-${token}@${env.REPLY_DOMAIN}  ${tokenNote}`);
+    console.log(`Subject:  ${mail.subject}`);
+    console.log("----- Body (Text) -----");
+    console.log(mail.textBody);
+    console.log("===== ENDE DRY-RUN =====");
+    console.log("\nEchter Versand: gleiche Argumente plus --send");
+    return;
+  }
+
+  // --send: interaktive Bestaetigung mit woertlichem "JA".
+  console.log(`\nECHTER VERSAND an: ${broker.optOutEmail}`);
+  console.log(`Absender (From):   ${selfEmail}`);
+  const rl = createInterface({ input: process.stdin, output: process.stdout });
+  const answer = await rl.question('Tippe woertlich "JA" um zu senden: ');
+  rl.close();
+  if (answer.trim() !== "JA") {
+    console.log("Abgebrochen — es wurde nichts versendet.");
+    return;
+  }
+
+  let processId: string;
+  if (existing) {
+    processId = existing.id;
+  } else {
+    const [created] = await db
+      .insert(optOutProcesses)
+      .values({ userId: user.id, brokerId: broker.id, isSelfRequest: true })
+      .returning();
+    processId = created.id;
+    console.log(`Prozess angelegt: ${processId}`);
+  }
+
+  await sendOptOutMail(processId);
+
+  const [proc] = await db
+    .select()
+    .from(optOutProcesses)
+    .where(eq(optOutProcesses.id, processId))
+    .limit(1);
+  console.log(`\nVersand ausgefuehrt. Prozess ${processId}: status=${proc?.status}`);
+  console.log("Antworten laufen ueber den Inbound-Webhook + Worker ein (pnpm worker).");
+}
+
+main()
+  .then(() => sql.end())
+  .catch(async (error) => {
+    console.error("trigger-real-send fehlgeschlagen:", error);
+    await sql.end();
+    process.exit(1);
+  });
