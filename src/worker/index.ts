@@ -39,7 +39,10 @@ async function handleSendOptOutMail(jobs: JobWithMetadata<SendOptOutMailPayload>
 
 async function handleProcessInboundMail(jobs: Job<ProcessInboundMailPayload>[]): Promise<void> {
   for (const job of jobs) {
-    await processInboundMail(job.data.processMailId);
+    const result = await processInboundMail(job.data.processMailId);
+    console.log(
+      `[${PROCESS_INBOUND_MAIL_QUEUE}] MessageID=${result.messageId ?? "-"} matchStage=${result.matchStage} category=${result.category ?? "-"} confidence=${result.confidence ?? "-"}`,
+    );
   }
 }
 

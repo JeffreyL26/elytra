@@ -170,7 +170,10 @@ describe("processInboundMail", () => {
     const mailId = await insertInbound(`proc-${token}@${REPLY_DOMAIN}`);
     messagesCreate.mockRejectedValue(new Error("rate limited"));
 
-    await expect(processInboundMail(mailId)).resolves.toBeUndefined();
+    await expect(processInboundMail(mailId)).resolves.toMatchObject({
+      category: null,
+      confidence: null,
+    });
 
     const events = await db
       .select()

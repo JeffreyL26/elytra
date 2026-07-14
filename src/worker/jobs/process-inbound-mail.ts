@@ -13,6 +13,14 @@ export interface ProcessInboundMailPayload {
   processMailId: string;
 }
 
+// Schlanke Zusammenfassung fuer das Worker-Log (eine Zeile pro Mail).
+export interface ProcessInboundResult {
+  messageId: string | null;
+  matchStage: 1 | 2 | 3 | 4;
+  category: InboundCategory | null;
+  confidence: number | null;
+}
+
 type ProcessStatus = (typeof processStatusEnum.enumValues)[number];
 
 // Mapping LLM-Kategorie -> Prozess-Status. null = Status bleibt unveraendert.
@@ -58,7 +66,7 @@ async function setStatus(
 // Status-Update, alles als process_events protokolliert. LLM-API-Fehler werden
 // abgefangen (Prozess -> manual_review, kein Throw, damit pg-boss nicht retryt).
 // DB-Fehler propagieren bewusst (transient -> pg-boss-Retry).
-export async function processInboundMail(processMailId: string): Promise<void> {
+export async function processInboundMail(processMailId: string): Promise<ProcessInboundResult> {
   const [mail] = await db
     .select()
     .from(processMails)
@@ -74,7 +82,12 @@ export async function processInboundMail(processMailId: string): Promise<void> {
   // damit in der ELYTRA-"unzugeordnet"-Queue. Kein Event/Status moeglich
   // (process_events.process_id ist NOT NULL), kein LLM-Call.
   if (!match.processId) {
-    return;
+    return {
+      messageId: mail.providerMessageId,
+      matchStage: match.matchStage,
+      category: null,
+      confidence: null,
+    };
   }
   const processId = match.processId;
 
@@ -123,7 +136,12 @@ export async function processInboundMail(processMailId: string): Promise<void> {
       },
     });
     await setStatus(processId, oldStatus, "manual_review", "classify_error");
-    return;
+    return {
+      messageId: mail.providerMessageId,
+      matchStage: match.matchStage,
+      category: null,
+      confidence: null,
+    };
   }
 
   await db.insert(processEvents).values({
@@ -153,4 +171,11 @@ export async function processInboundMail(processMailId: string): Promise<void> {
       : `classified_${classification.category}`;
     await setStatus(processId, oldStatus, targetStatus, reason);
   }
+
+  return {
+    messageId: mail.providerMessageId,
+    matchStage: match.matchStage,
+    category: classification.category,
+    confidence: classification.confidence,
+  };
 }
