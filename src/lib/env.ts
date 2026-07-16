@@ -27,6 +27,9 @@ export const env = createEnv({
     // customer_profile (unter denen reale Broker die Person finden). Fallback
     // auf SELF_EMAIL, wenn nicht gesetzt.
     SELF_IDENTITY_EMAILS: z.string().min(1).optional(),
+    // Retention-Fenster fuer raw_payload-Verdichtung in Tagen (Default 90 im
+    // Retention-Modul). TODO[legal-review]: Policy-/Rechtsentscheidung.
+    RETENTION_DAYS: z.coerce.number().int().min(1).optional(),
   },
   client: {},
   runtimeEnv: {
@@ -44,6 +47,7 @@ export const env = createEnv({
     SELF_CITY: process.env.SELF_CITY,
     SELF_EMAIL: process.env.SELF_EMAIL,
     SELF_IDENTITY_EMAILS: process.env.SELF_IDENTITY_EMAILS,
+    RETENTION_DAYS: process.env.RETENTION_DAYS,
   },
   emptyStringAsUndefined: true,
 });
