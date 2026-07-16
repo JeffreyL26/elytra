@@ -20,11 +20,24 @@ export type OptOutBroker = Pick<Broker, "name">;
 
 export type Locale = "de" | "en";
 
-// Broker-Sprache (ISO 639-1, brokers.language) -> Template-Locale. Es gibt
-// nur de/en-Templates; alle anderen Sprachen fallen auf Englisch zurueck
-// (Lingua franca fuer DSGVO-Korrespondenz).
-export function toTemplateLocale(language: string): Locale {
-  return language === "de" ? "de" : "en";
+// Sprachen, fuer die reviewte Templates existieren. brokers.language erlaubt
+// auch fr/es -- die fallen BEWUSST auf EN zurueck, bis reviewte Templates
+// existieren. TODO[legal-review]: FR/ES-Templates sind Rechtsinhalt und
+// gehoeren unter denselben Anwalts-Vorbehalt wie die DE/EN-Fassungen.
+export const TEMPLATE_LOCALES = ["de", "en"] as const;
+
+// Broker-Sprache (ISO 639-1, brokers.language) -> Template-Locale. Der
+// EN-Fallback ist kein stiller Pfad mehr: er wird geloggt (mit Broker-Kontext,
+// wenn der Aufrufer ihn mitgibt), damit ein FR-Broker nicht unbemerkt
+// englischen Text bekommt.
+export function toTemplateLocale(language: string, context?: { brokerSlug?: string }): Locale {
+  if ((TEMPLATE_LOCALES as readonly string[]).includes(language)) {
+    return language as Locale;
+  }
+  console.warn(
+    `[template-locale] ${context?.brokerSlug ?? "(broker unbekannt)"}: Sprache '${language}' hat kein reviewtes Template — EN-Fallback.`,
+  );
+  return "en";
 }
 
 export interface OptOutMail {

@@ -59,7 +59,7 @@ export async function sendOptOutMail(processId: string): Promise<void> {
     profile,
     broker,
     proc.processToken,
-    toTemplateLocale(broker.language),
+    toTemplateLocale(broker.language, { brokerSlug: broker.slug }),
     proc.isSelfRequest,
   );
 

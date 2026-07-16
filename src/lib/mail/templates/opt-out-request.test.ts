@@ -1,7 +1,11 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { dummyBrokers } from "@/data/dummy-brokers";
 import { SERVICE_NAME } from "@/lib/branding";
-import { buildOptOutRequest, type OptOutRecipient } from "@/lib/mail/templates/opt-out-request";
+import {
+  buildOptOutRequest,
+  type OptOutRecipient,
+  toTemplateLocale,
+} from "@/lib/mail/templates/opt-out-request";
 
 // Variante ohne optionale Felder (dateOfBirth/phoneNumbers leer).
 const profileMinimal: OptOutRecipient = {
@@ -76,5 +80,33 @@ describe("buildOptOutRequest", () => {
     expect(mail.subject).not.toContain(SERVICE_NAME);
     expect(mail.textBody).not.toContain(SERVICE_NAME);
     expect(mail.htmlBody).not.toContain(SERVICE_NAME);
+  });
+});
+
+describe("toTemplateLocale", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it.each(["de", "en"] as const)("laesst %s ohne Warnung durch", (language) => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    expect(toTemplateLocale(language, { brokerSlug: "irgendein-broker" })).toBe(language);
+    expect(warn).not.toHaveBeenCalled();
+  });
+
+  it.each(["fr", "es"])("loggt den EN-Fallback fuer %s mit Broker-Kontext", (language) => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    expect(toTemplateLocale(language, { brokerSlug: "kompass" })).toBe("en");
+    expect(warn).toHaveBeenCalledTimes(1);
+    const message = warn.mock.calls[0]?.[0] as string;
+    expect(message).toContain("kompass");
+    expect(message).toContain(language);
+    expect(message).toContain("EN-Fallback");
+  });
+
+  it("loggt den Fallback auch ohne Broker-Kontext (mit Platzhalter)", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    expect(toTemplateLocale("fr")).toBe("en");
+    expect(warn.mock.calls[0]?.[0]).toContain("(broker unbekannt)");
   });
 });

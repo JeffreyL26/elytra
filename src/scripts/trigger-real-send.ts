@@ -16,7 +16,11 @@ import { db, sql } from "@/db/client";
 import { brokers, customerProfiles, optOutProcesses, users } from "@/db/schema";
 import { env } from "@/lib/env";
 import { createProcessToken } from "@/lib/ids";
-import { buildOptOutRequest, toTemplateLocale } from "@/lib/mail/templates/opt-out-request";
+import {
+  buildOptOutRequest,
+  TEMPLATE_LOCALES,
+  toTemplateLocale,
+} from "@/lib/mail/templates/opt-out-request";
 import { sendOptOutMail } from "@/worker/jobs/send-opt-out-mail";
 
 interface CliArgs {
@@ -122,6 +126,14 @@ async function main(): Promise<void> {
 
   console.log(`\nBroker:  ${broker.name} (${broker.slug}, language=${broker.language})`);
   console.log(`Dummy:   ${broker.isDummy} | aktiv: ${broker.isActive}`);
+
+  // Sichtbare Warnung, BEVOR gerendert/gesendet wird: ein Broker mit fr/es
+  // bekaeme den EN-Text -- das soll niemand versehentlich ausloesen.
+  if (!(TEMPLATE_LOCALES as readonly string[]).includes(broker.language)) {
+    console.warn(
+      `\n*** WARNUNG: Broker '${broker.slug}' hat Sprache '${broker.language}', wofuer KEIN reviewtes Template existiert — die Mail wuerde auf ENGLISCH rausgehen (EN-Fallback). ***`,
+    );
+  }
   console.log(
     existing
       ? `Prozess: existiert (id=${existing.id}, status=${existing.status}) — wird wiederverwendet`
@@ -136,7 +148,7 @@ async function main(): Promise<void> {
       profile,
       broker,
       token,
-      toTemplateLocale(broker.language),
+      toTemplateLocale(broker.language, { brokerSlug: broker.slug }),
       true,
     );
 
