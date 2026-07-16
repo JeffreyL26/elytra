@@ -40,12 +40,37 @@ export const customerProfileSchema = z.object({
   // Optional (nullish: die DB-Spalten sind nullable, eine API darf null senden).
   phoneNumbers: z.array(z.string().trim().min(1, "Telefonnummer darf nicht leer sein")).nullish(),
   // date-Spalte liefert/erwartet "YYYY-MM-DD"; das Template zerlegt genau diese
-  // Form (formatDateDe).
+  // Form (formatDateDe). Nach der Format-Pruefung folgt eine echte
+  // Kalenderpruefung -- die Regex allein liesse 2026-13-45 durch.
   dateOfBirth: z
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}$/, "dateOfBirth muss im Format YYYY-MM-DD vorliegen")
+    .refine(isCalendarDate, "dateOfBirth ist kein gueltiges Kalenderdatum")
+    .refine(isPlausibleBirthDate, "dateOfBirth muss zwischen 1900 und heute liegen")
     .nullish(),
 });
+
+// Gueltiger Monat 1-12 und gueltiger Tag fuer den jeweiligen Monat inkl.
+// Schaltjahr. Date.UTC(y, m, 0) liefert den letzten Tag des Monats m.
+function isCalendarDate(value: string): boolean {
+  const [year, month, day] = value.split("-").map(Number);
+  if (month < 1 || month > 12) {
+    return false;
+  }
+  const daysInMonth = new Date(Date.UTC(year, month, 0)).getUTCDate();
+  return day >= 1 && day <= daysInMonth;
+}
+
+// Jahr plausibel (ab 1900) und nicht in der Zukunft. ISO-Strings vergleichen
+// lexikografisch korrekt -- kein Timezone-Drift durch Date-Parsing.
+function isPlausibleBirthDate(value: string): boolean {
+  const year = Number(value.slice(0, 4));
+  if (year < 1900) {
+    return false;
+  }
+  const today = new Date().toISOString().slice(0, 10);
+  return value <= today;
+}
 
 export type CustomerProfileInput = z.infer<typeof customerProfileSchema>;
 

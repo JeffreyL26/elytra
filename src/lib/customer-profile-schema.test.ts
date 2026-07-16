@@ -96,6 +96,50 @@ describe("customerProfileSchema", () => {
   it("wirft bei ungueltigem dateOfBirth-Format", () => {
     expectInvalid({ ...validProfile, dateOfBirth: "14.03.1985" });
   });
+
+  describe("dateOfBirth Kalenderpruefung", () => {
+    it("lehnt 2026-13-45 ab (kein Kalenderdatum trotz gueltigem Format)", () => {
+      expectInvalid({ ...validProfile, dateOfBirth: "2026-13-45" });
+    });
+
+    it("lehnt 2025-02-29 ab (2025 ist kein Schaltjahr)", () => {
+      expectInvalid({ ...validProfile, dateOfBirth: "2025-02-29" });
+    });
+
+    it("akzeptiert 2024-02-29 (Schaltjahr)", () => {
+      const result = customerProfileSchema.safeParse({
+        ...validProfile,
+        dateOfBirth: "2024-02-29",
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it("lehnt ein Zukunftsdatum ab", () => {
+      const future = new Date(Date.now() + 2 * 86_400_000).toISOString().slice(0, 10);
+      expectInvalid({ ...validProfile, dateOfBirth: future });
+    });
+
+    it("lehnt Jahre vor 1900 ab", () => {
+      expectInvalid({ ...validProfile, dateOfBirth: "1899-12-31" });
+    });
+
+    it("akzeptiert ein valides Datum", () => {
+      const result = customerProfileSchema.safeParse({
+        ...validProfile,
+        dateOfBirth: "1985-03-14",
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it("akzeptiert weiterhin null und undefined (nullish)", () => {
+      expect(customerProfileSchema.safeParse({ ...validProfile, dateOfBirth: null }).success).toBe(
+        true,
+      );
+      expect(
+        customerProfileSchema.safeParse({ ...validProfile, dateOfBirth: undefined }).success,
+      ).toBe(true);
+    });
+  });
 });
 
 describe("parseCustomerProfile", () => {
