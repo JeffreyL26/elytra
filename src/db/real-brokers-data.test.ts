@@ -8,6 +8,11 @@ import {
 
 const waveBrokers = realBrokers.filter((b) => b.slug.startsWith("da-"));
 
+// EU-Welle 2 (eigene Recherche 07/2026) -- kein gemeinsames Slug-Praefix,
+// daher explizite Liste.
+const EU_WAVE_2_SLUGS = ["kaspr", "databyte", "hunter-io", "kompass", "herold", "sovendus"];
+const euWave2Brokers = realBrokers.filter((b) => EU_WAVE_2_SLUGS.includes(b.slug));
+
 const profile: OptOutRecipient = {
   firstName: "Max",
   lastName: "Mustermann",
@@ -27,6 +32,19 @@ describe("Broker-Stammdaten Integritaet", () => {
       .filter((b) => b.country != null && !/^[A-Z]{2}$/.test(b.country))
       .map((b) => `${b.slug}="${b.country}"`);
     expect(invalid).toEqual([]);
+  });
+});
+
+describe("EU-Welle 2 Broker-Stammdaten", () => {
+  it("umfasst genau 6 Eintraege", () => {
+    expect(euWave2Brokers.map((b) => b.slug).sort()).toEqual([...EU_WAVE_2_SLUGS].sort());
+  });
+
+  // Guard gegen versehentliche Aktivierung ueber den Seed.
+  it("hat KEINEN aktiven Broker in der Welle (alle isActive: false)", () => {
+    for (const broker of euWave2Brokers) {
+      expect(broker.isActive, `${broker.slug} muss inaktiv sein`).toBe(false);
+    }
   });
 });
 

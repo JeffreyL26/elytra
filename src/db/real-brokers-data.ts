@@ -16,12 +16,13 @@ const COMMON = {
   requiresAuthorizationAttachment: false,
 } as const satisfies Partial<NewBroker>;
 
-// 43 reale Data-Broker: 3 aktiv (erster E2E-Test), 40 inaktiv vorgeseedet.
+// 49 reale Data-Broker: 3 aktiv (erster E2E-Test), 46 inaktiv vorgeseedet.
 // Inaktiv gegliedert: 8 E-Mail-Kanal, 7 Mixed (Form bevorzugt, E-Mail als
 // Fallback), 4 Tier 1 (E-Mail-Kanal oeffentlich dokumentiert, hohe Konfidenz),
 // 3 Tier 2 (Kontaktpunkt verifiziert, Verifikation potenziell an die
 // Betroffenen-Adresse gebunden -- Fall-B-Test-Kandidaten), 18 DE-Welle
-// (Slug-Praefix "da-", Quelle datenanfragen.de, CC0).
+// (Slug-Praefix "da-", Quelle datenanfragen.de, CC0), 6 EU-Welle 2 (eigene
+// Recherche 07/2026, kein Praefix).
 export const realBrokers: NewBroker[] = [
   // --- Aktiv fuer ersten E2E-Test (is_active: true) ---
   {
@@ -496,5 +497,85 @@ export const realBrokers: NewBroker[] = [
     optOutEmail: "privacy.de@liveramp.com",
     language: "de",
     isActive: false,
+  },
+
+  // --- EU-Welle 2 (eigene Recherche 07/2026): B2B-Sales-Intelligence,
+  // Verzeichnisse + Post-Checkout-Netzwerk. E-Mail-Kanal jeweils verifiziert,
+  // keine Ausweispflicht fuer Loeschung/Widerspruch. Kein "da-"-Praefix
+  // (eigene Recherche, nicht datenanfragen.de). Alle inaktiv vorgeseedet.
+  //
+  // Bewusst NICHT aufgenommen (auskunftei-nah bzw. trefferschwach): Dun &
+  // Bradstreet, Bureau van Dijk (Moody's), Nomination SAS, Vainu.io. ---
+  {
+    ...COMMON,
+    slug: "kaspr",
+    name: "Kaspr SAS",
+    country: "FR",
+    websiteUrl: "https://www.kaspr.io",
+    optOutEmail: "privacy@kaspr.io",
+    language: "en",
+    isActive: false,
+    notes:
+      "E-Mail-Opt-out explizit in FAQ dokumentiert (Betreffvorschlag 'Opt-out Kaspr'); datarequests.org bestaetigt erfolgreiche Anfragen. Cognism-Tochter, LinkedIn-Kontaktdaten, hohe DACH-Relevanz. SayMine-Formular existiert parallel (dort Fall B), Mail-Weg eigenstaendig",
+  },
+  {
+    ...COMMON,
+    slug: "databyte",
+    name: "databyte GmbH",
+    country: "DE",
+    websiteUrl: "https://www.databyte.de",
+    optOutEmail: "datenschutz@databyte.de",
+    language: "de",
+    isActive: false,
+    notes:
+      "DS-Erklaerung verweist alle Betroffenenersuchen an datenschutz@databyte.de; benannter DSB (Michael Schopenhauer). B2B-Datenbank DACH mit Funktionstraeger-/Entscheiderdaten, gleiche Kategorie wie Dealfront",
+  },
+  {
+    ...COMMON,
+    slug: "hunter-io",
+    name: "Hunter (Hunter.io)",
+    country: "US",
+    websiteUrl: "https://hunter.io",
+    optOutEmail: "privacy@hunter.io",
+    language: "en",
+    isActive: false,
+    notes:
+      "Privacy Policy: 'To exercise these rights, contact privacy@hunter.io', keine Ausweispflicht. US-Sitz (Delaware), Art.-27-Vertreter in Irland (Instant EU GDPR Representative Ltd). Claim-Feature (hunter.io/claim) ist der Fall-B-Selfservice-Weg mit Verifikation an Betroffenen-Adresse — fuer Bevollmaechtigten-Weg irrelevant",
+  },
+  {
+    ...COMMON,
+    slug: "kompass",
+    name: "Kompass International SASU",
+    country: "FR",
+    websiteUrl: "https://www.kompass.com",
+    optOutEmail: "dpo@kompass.com",
+    language: "en",
+    isActive: false,
+    notes:
+      "B2B-Verzeichnis 70 Laender inkl. DE, haelt Ansprechpartner-Daten. Policy: Ausweiskopie NUR fuer Auskunft/Portabilitaet/Erbenrechte verlangt — Loeschung und Widerspruch ausdruecklich ohne. Zweitadresse Compliance.privacy@kompass.com als Fallback dokumentiert",
+  },
+  {
+    ...COMMON,
+    slug: "herold",
+    name: "HEROLD Business Data GmbH",
+    country: "AT",
+    websiteUrl: "https://www.herold.at",
+    optOutEmail: "datenschutz@herold.at",
+    language: "de",
+    isActive: false,
+    notes:
+      "Adressverlag/Direktmarketing (oesterr. Sonderrecht § 151 GewO): Untersagung + Loeschung per Mail mehrfach in DS-Erklaerung dokumentiert. Caveat: Telefonbuch-Grunddaten (Weisse Seiten) kann Herold nicht aendern, nur der Telefonanbieter — betrifft primaer AT-Personen. Relevanz steigt mit AT-Kunden",
+  },
+  {
+    ...COMMON,
+    slug: "sovendus",
+    name: "Sovendus GmbH",
+    country: "DE",
+    websiteUrl: "https://www.sovendus.com",
+    optOutEmail: "data-protection@sovendus.com",
+    language: "de",
+    isActive: false,
+    notes:
+      "Verifiziert via datenanfragen.de (Hermann-Veit-Str. 6, 76135 Karlsruhe). Eigenstaendiger Verantwortlicher im Post-Checkout-/Gutschein-Netzwerk (u.a. Check24, Otto, SportScheck, laut Eigenangabe 3.000+ Partner-Shops); erhaelt bei Angebot-Klick Klarname/Adresse/Mail. Werbewiderspruch nach Art. 21 Abs. 3 rechtlich verankert: Sovendus fuehrt dauerhafte interne Blacklist zum Abgleich mit kuenftigen Werbedateien -> realistischer Loesch-/Widerspruchsprozess, keine Ausweispflicht dokumentiert. VOR AKTIVIERUNG PRUEFEN: aktuelle Policy-Fassung verifizieren — Alt-Fassungen nennen abweichende Postadresse (Bahnhofplatz 12) und UK-Mail (data-protection@sovendus.co.uk); erst nach Bestaetigung der hier hinterlegten Adresse auf isActive: true setzen",
   },
 ];
