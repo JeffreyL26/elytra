@@ -22,9 +22,9 @@ export interface AttentionProcess {
   reason: string | null;
   // Nur bei reason=conflict_terminal: von-wo, versucht-was, aus welchem Pfad.
   conflict: { from: string | null; attempted: string | null; source: string | null } | null;
-  // Nur bei status=failed, falls die Outbound-Zeile Bounce-Infos traegt
-  // (headers.bounceType/bouncedAt -- Bounce-Handling ist noch nicht gebaut,
-  // das Feld ist vorbereitet).
+  // Nur bei status=failed, falls die Outbound-Zeile Bounce-Infos traegt.
+  // Quelle heute: headers.bounceType/bouncedAt -- siehe TODO[bounce] in
+  // getAttentionProcesses(), Bounce-Handling existiert noch nicht.
   bounce: { bounceType: string | null; bouncedAt: string | null } | null;
 }
 
@@ -62,6 +62,20 @@ export async function getAttentionProcesses(): Promise<AttentionProcess[]> {
     const payload = (lastChange?.payload ?? {}) as Record<string, unknown>;
     const reason = str(payload.reason);
 
+    // TODO[bounce]: Bounce-Handling ist noch nicht real gebaut -- diese Stelle
+    // liest ERSATZWEISE aus process_mails.headers (dorthin schreibt heute
+    // niemand Bounce-Infos; das Feld bleibt in der Praxis leer).
+    //
+    // Geplante Architektur, sobald gebaut:
+    //   - nullable Spalten bounced_at / bounce_type auf den Outbound-Zeilen
+    //     (KEIN dritter Wert im mail_direction-Enum -- ein Bounce ist eine
+    //     Eigenschaft der gesendeten Mail, keine eigene Richtung),
+    //   - mail_bounced-Event in process_events,
+    //   - Postmark-Bounce-Webhook als Ausloeser.
+    // Dann liest diese CLI die Spalten statt der headers.
+    //
+    // Sinnvoll baubar, sobald der erste echte Bounce auftritt -- spaetestens
+    // vor der Beta.
     let bounce: AttentionProcess["bounce"] = null;
     if (row.status === "failed") {
       const [outbound] = await db

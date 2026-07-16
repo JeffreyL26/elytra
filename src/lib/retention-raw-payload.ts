@@ -7,8 +7,14 @@ import { env } from "@/lib/env";
 // und Volltext (HTML/Text) eingehender Mails -- unverschluesselte PII, die wir
 // nicht dauerhaft brauchen. Nach Ablauf des Fensters wird das Feld auf einen
 // minimalen Audit-/Re-Klassifikations-Extrakt eingedampft. Zeilen werden NIE
-// geloescht, nur das raw_payload-Feld verdichtet; body_text/body_html-Spalten
-// bleiben unberuehrt.
+// geloescht, nur das raw_payload-Feld verdichtet.
+//
+// TODO[G3]: Diese Retention ist UNVOLLSTAENDIG. Verdichtet wird ausschliesslich
+// raw_payload (JSONB). Die Spalten body_text/body_html tragen denselben
+// Volltext weiter und werden NICHT angefasst -- die PII bleibt also in der
+// Zeile, nur an anderer Stelle. Eine vollstaendige PII-Retention muss diese
+// Spalten einbeziehen. Zwingend, BEVOR echte Kundendaten in Produktion gehen
+// (G3-Gate); fuer die Self-Runde toleriert.
 //
 // TODO[legal-review]: Das Retention-Fenster (Default 90 Tage) ist letztlich
 // eine Policy-/Rechtsentscheidung (Speicherbegrenzung Art. 5 Abs. 1 lit. e
