@@ -8,6 +8,7 @@ import {
 } from "@/lib/llm/classify-inbound";
 import { extractAttachmentTexts } from "@/lib/mail/extract-attachment-text";
 import { matchInbound } from "@/lib/mail/match-inbound";
+import { resolveTransition } from "@/lib/status-transitions";
 
 export interface ProcessInboundMailPayload {
   processMailId: string;
@@ -41,24 +42,49 @@ function resolveStatus(classification: Classification): ProcessStatus | null {
   return STATUS_MAP[classification.category];
 }
 
-// Schreibt status_changed + UPDATE nur, wenn sich der Status wirklich aendert.
+// Statuswechsel laeuft ausschliesslich ueber die Uebergangsmatrix
+// (resolveTransition). Drei Ausgaenge:
+//   set      -> uebernehmen, status_changed mit der Aufrufer-reason
+//   confirm  -> Terminalstatus bestaetigt: kein Event, kein UPDATE (kein
+//               Event-Spam). Die Mail bleibt gespeichert und klassifiziert.
+//   conflict -> Terminalstatus widersprochen: manual_review statt incoming,
+//               das Event haelt from/attempted/reason fest, damit ein Mensch
+//               von-wo-nach-wo rekonstruieren kann.
+// Die widersprechende Mail selbst wird NIE verworfen -- manual_review heisst
+// "Mensch schaut", nicht "Information wegwerfen".
 async function setStatus(
   processId: string,
   oldStatus: ProcessStatus | null,
-  newStatus: ProcessStatus,
+  targetStatus: ProcessStatus,
   reason: string,
 ): Promise<void> {
-  if (oldStatus === newStatus) {
+  const { next, kind } = resolveTransition(oldStatus, targetStatus);
+
+  if (kind === "confirm" || oldStatus === next) {
     return;
   }
+
+  const payload =
+    kind === "conflict"
+      ? {
+          from: oldStatus,
+          to: next,
+          attempted: targetStatus,
+          reason: "conflict_terminal",
+          // Provenienz: aus welchem Aufrufpfad kam der widersprechende Wert?
+          // Haelt "LLM unsicher" von "Broker widerspricht sich" unterscheidbar.
+          source: reason,
+        }
+      : { from: oldStatus, to: next, reason };
+
   await db.insert(processEvents).values({
     processId,
     eventType: "status_changed",
-    payload: { from: oldStatus, to: newStatus, reason },
+    payload,
   });
   await db
     .update(optOutProcesses)
-    .set({ status: newStatus, updatedAt: new Date() })
+    .set({ status: next, updatedAt: new Date() })
     .where(eq(optOutProcesses.id, processId));
 }
 

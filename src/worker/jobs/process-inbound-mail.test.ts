@@ -154,6 +154,87 @@ describe("processInboundMail", () => {
     });
   });
 
+  // Befund vom 14.07.2026: die zweite Antwort ueberschrieb den Terminalstatus
+  // kommentarlos. Jetzt muss sie eskalieren -- ohne Information zu verlieren.
+  it("zweite widersprechende Mail: Terminalstatus -> manual_review, beide Mails erhalten", async () => {
+    const token = createProcessToken();
+    const processId = await createProcess(token);
+
+    const firstMailId = await insertInbound(`proc-${token}@${REPLY_DOMAIN}`, "Antwort 1");
+    mockClassification("no_data_held", 0.95, "keine Daten vorhanden");
+    await processInboundMail(firstMailId);
+
+    const [afterFirst] = await db
+      .select()
+      .from(optOutProcesses)
+      .where(eq(optOutProcesses.id, processId));
+    expect(afterFirst.status).toBe("no_data_held");
+
+    // Widerspruch: derselbe Broker meldet jetzt Loeschung.
+    const secondMailId = await insertInbound(`proc-${token}@${REPLY_DOMAIN}`, "Antwort 2");
+    mockClassification("success", 0.95, "Daten vollstaendig geloescht");
+    await processInboundMail(secondMailId);
+
+    const [afterSecond] = await db
+      .select()
+      .from(optOutProcesses)
+      .where(eq(optOutProcesses.id, processId));
+    expect(afterSecond.status).toBe("manual_review");
+
+    // Keine Information verworfen: beide Mails gespeichert und verknuepft.
+    const mails = await db.select().from(processMails).where(eq(processMails.processId, processId));
+    expect(mails.map((m) => m.id).sort()).toEqual([firstMailId, secondMailId].sort());
+
+    const events = await db
+      .select()
+      .from(processEvents)
+      .where(eq(processEvents.processId, processId));
+
+    // Beide Mails wurden klassifiziert -- auch die widersprechende.
+    expect(events.filter((e) => e.eventType === "email_classified")).toHaveLength(2);
+
+    // Der Konflikt ist rekonstruierbar: von-wo, versucht-was, warum.
+    const conflicts = events.filter(
+      (e) =>
+        e.eventType === "status_changed" &&
+        (e.payload as Record<string, unknown>)?.reason === "conflict_terminal",
+    );
+    expect(conflicts).toHaveLength(1);
+    expect(conflicts[0]?.payload).toMatchObject({
+      from: "no_data_held",
+      to: "manual_review",
+      attempted: "success",
+      reason: "conflict_terminal",
+    });
+  });
+
+  it("Bestaetigung desselben Terminalstatus erzeugt kein status_changed (kein Event-Spam)", async () => {
+    const token = createProcessToken();
+    const processId = await createProcess(token);
+
+    const firstMailId = await insertInbound(`proc-${token}@${REPLY_DOMAIN}`, "Antwort 1");
+    mockClassification("success", 0.95, "geloescht");
+    await processInboundMail(firstMailId);
+
+    const secondMailId = await insertInbound(`proc-${token}@${REPLY_DOMAIN}`, "Antwort 2");
+    mockClassification("success", 0.95, "nochmals bestaetigt");
+    await processInboundMail(secondMailId);
+
+    const [proc] = await db.select().from(optOutProcesses).where(eq(optOutProcesses.id, processId));
+    expect(proc.status).toBe("success");
+
+    const events = await db
+      .select()
+      .from(processEvents)
+      .where(eq(processEvents.processId, processId));
+    // Genau ein Statuswechsel (contacted -> success), die Bestaetigung schweigt.
+    expect(events.filter((e) => e.eventType === "status_changed")).toHaveLength(1);
+    // Die bestaetigende Mail ist trotzdem gespeichert und klassifiziert.
+    expect(events.filter((e) => e.eventType === "email_classified")).toHaveLength(2);
+    const mails = await db.select().from(processMails).where(eq(processMails.processId, processId));
+    expect(mails.map((m) => m.id).sort()).toEqual([firstMailId, secondMailId].sort());
+  });
+
   it("Stufe 4 (kein Match): Mail bleibt unzugeordnet, kein LLM-Call", async () => {
     const mailId = await insertInbound("fremde-adresse@nirgendwo.example", "Irgendwas");
 
