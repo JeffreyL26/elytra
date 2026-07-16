@@ -19,6 +19,21 @@ export interface SelfProfileEnv {
   identityEmails: string[];
 }
 
+// "Max Mustermann" -> Vorname "Max", Nachname "Mustermann" (Rest-Woerter
+// gehoeren zum Nachnamen). Mononyme sind ungueltig: customerProfileSchema
+// verlangt einen Nachnamen, ein Broker-Lookup ohne ihn ist wertlos.
+export function splitName(fullName: string): { firstName: string; lastName: string } {
+  const parts = fullName.trim().split(/\s+/).filter(Boolean);
+  if (parts.length < 2) {
+    // Bewusst OHNE den Wert selbst -- die Meldung landet im Log, SELF_NAME ist PII.
+    throw new Error(
+      "Self-Profile-Seed abgebrochen — SELF_NAME muss Vor- UND Nachnamen enthalten (mindestens zwei durch Leerzeichen getrennte Teile). Mononyme werden bewusst nicht unterstuetzt.",
+    );
+  }
+  const [firstName, ...rest] = parts;
+  return { firstName, lastName: rest.join(" ") };
+}
+
 // Zerlegt eine kommaseparierte Liste, trimmt und verwirft leere Eintraege.
 function parseEmailList(raw: string): string[] {
   return raw

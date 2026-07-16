@@ -1,36 +1,38 @@
 import { eq } from "drizzle-orm";
 import { db, sql } from "@/db/client";
 import { customerProfiles, users } from "@/db/schema";
-import { readSelfProfileEnv } from "@/db/self-profile-env";
+import { readSelfProfileEnv, splitName } from "@/db/self-profile-env";
+import { parseCustomerProfile } from "@/lib/customer-profile-schema";
 
 // Seed fuer das Self-Request-Testprofil (Phase 3b.4.5). Liest AUSSCHLIESSLICH
 // aus Env (SELF_*) -- keine personenbezogenen Daten im Repo. Legt user +
 // customer_profile an; bewusst KEINEN opt_out_process, der entsteht erst
 // beim Trigger (3b.5). Idempotent: Lookup ueber SELF_EMAIL, update statt
 // insert. PII wird nicht geloggt.
-
-// "Max Mustermann" -> Vorname "Max", Nachname "Mustermann" (Rest-Woerter
-// gehoeren zum Nachnamen).
-function splitName(fullName: string): { firstName: string; lastName: string | null } {
-  const [firstName, ...rest] = fullName.trim().split(/\s+/);
-  return { firstName, lastName: rest.length > 0 ? rest.join(" ") : null };
-}
+//
+// Validiert gegen customerProfileSchema -- denselben Invarianten wie die
+// kuenftige Profil-API (Spec § 2.2). Der Seed bleibt Dev-/Test-Werkzeug, ist
+// aber kein laxerer Schreibweg.
 
 async function seedSelfProfile(): Promise<void> {
   const self = readSelfProfileEnv();
   const { firstName, lastName } = splitName(self.name);
 
-  const profileData = {
-    firstName,
-    lastName,
-    // Identifikationsadressen (Broker finden die Person darunter), nicht die
-    // Absenderadresse.
-    emailAddresses: self.identityEmails,
-    // Zielmarkt Deutschland; das Testprofil ist eine deutsche Anschrift.
-    postalAddresses: [
-      { street: self.street, postalCode: self.postalCode, city: self.city, country: "DE" },
-    ],
-  };
+  // Validierung VOR jedem Schreibzugriff -- kein halbgueltiges Profil in der DB.
+  const profileData = parseCustomerProfile(
+    {
+      firstName,
+      lastName,
+      // Identifikationsadressen (Broker finden die Person darunter), nicht die
+      // Absenderadresse.
+      emailAddresses: self.identityEmails,
+      // Zielmarkt Deutschland; das Testprofil ist eine deutsche Anschrift.
+      postalAddresses: [
+        { street: self.street, postalCode: self.postalCode, city: self.city, country: "DE" },
+      ],
+    },
+    "Self-Profile-Seed abgebrochen",
+  );
 
   // Account-/Lookup-Key ist die Absenderadresse (SELF_EMAIL).
   const [existingUser] = await db
