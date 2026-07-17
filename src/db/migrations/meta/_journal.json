@@ -50,6 +50,13 @@
       "when": 1784312313677,
       "tag": "0006_adorable_proudstar",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1784315087804,
+      "tag": "0007_aspiring_typhoid_mary",
+      "breakpoints": true
     }
   ]
 }

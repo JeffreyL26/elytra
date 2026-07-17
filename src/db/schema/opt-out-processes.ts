@@ -24,9 +24,12 @@ export const optOutProcesses = pgTable(
     id: text("id")
       .primaryKey()
       .$defaultFn(() => createId()),
+    // onDelete cascade (Multi-Tenant Schritt 5, Konto-Loeschung): User weg ->
+    // Prozesse weg -> deren Mails/Events weg (process_mails/process_events
+    // cascaden auf process_id). Das Mandat erlischt mit dem Konto.
     userId: text("user_id")
       .notNull()
-      .references(() => users.id),
+      .references(() => users.id, { onDelete: "cascade" }),
     brokerId: text("broker_id")
       .notNull()
       .references(() => brokers.id),
