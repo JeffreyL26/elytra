@@ -99,11 +99,23 @@ Unit-/Integrationstests liegen als `*.test.ts` neben dem jeweiligen Code.
 gokognito/
 ├── src/
 │   ├── app/                                  # Next.js App Router (Web-Prozess)
+│   │   ├── (marketing)/                      # Öffentliche Website (eigenes Segment)
+│   │   │   ├── layout.tsx                    # Fonts (next/font, self-hosted) + .site-Wrapper
+│   │   │   ├── marketing.css                 # Design-System der Landing-Page
+│   │   │   └── page.tsx                      # Landing-Page (Server Component)
 │   │   └── api/
 │   │       ├── brokers/route.ts              # GET /api/brokers (Smoke-Test)
 │   │       └── webhooks/
 │   │           └── postmark-inbound/
 │   │               └── route.ts              # Postmark Inbound-Webhook
+│   ├── components/
+│   │   └── marketing/                        # Client Components NUR der Website
+│   │       ├── hero-scene.tsx                # three.js-Partikelszene
+│   │       ├── scroll-choreography.tsx       # GSAP/ScrollTrigger + Lenis
+│   │       ├── nav.tsx, faq.tsx, …           # Nav, FAQ, Akte, Billing-Toggle, Wordmark
+│   │       └── runtime.ts                    # Handle zwischen Szene und Choreographie
+│   ├── content/
+│   │   └── placeholders.ts                   # TODO[content]: Reichweitenzahl + Preise
 │   ├── db/
 │   │   ├── schema/
 │   │   │   ├── index.ts                      # Re-Exports aller Schemas
@@ -138,6 +150,8 @@ gokognito/
 │   │   └── e2e-smoke.ts                       # End-to-End-Smoke (pnpm e2e)
 │   └── data/
 │       └── dummy-brokers.ts                  # Statische Dummy-Broker-Definitionen
+├── tools/
+│   └── branding/                             # Logo-Render-Vorlage (NICHT im Next-Build)
 ├── docker-compose.yml                        # nur Postgres
 ├── drizzle.config.ts
 ├── biome.json
@@ -145,6 +159,43 @@ gokognito/
 ├── vitest.config.ts
 └── package.json
 ```
+
+### Trennung Marketing ↔ App
+
+Die öffentliche Website und der (noch nicht existierende) eingeloggte
+App-/Dashboard-Bereich sind bewusst getrennt. Diese Trennung bitte erhalten:
+
+- **`src/app/(marketing)/` = öffentliche Website**, eigenes Route-Segment mit
+  eigenem `layout.tsx`. Alles darin ist Marketing: Landing-Page-Markup,
+  `marketing.css`, die Fonts. Der App-/Dashboard-Bereich bekommt später ein
+  eigenes Segment (z. B. `src/app/(app)/`) mit eigenem Layout — **nicht** in
+  `(marketing)` einhängen und nicht dessen Layout wiederverwenden.
+- **`src/components/marketing/` = Client Components nur der Website**
+  (three.js, GSAP, Lenis). Nichts davon gehört in App-Views; umgekehrt gehört
+  keine App-/Domänenlogik hier hinein. Geteilter Code lebt in `src/lib/`.
+- **`src/content/placeholders.ts` = Content-Platzhalter der Website**, alle mit
+  `TODO[content]` markiert: die Reichweitenzahl („über 180 Datenhändler") und
+  sämtliche Preise sind **unverifizierte Platzhalter** aus dem Design-Prototyp
+  (die Roadmap nennt abweichend 49 € / 8 €; bei der Reichweitenangabe hängt
+  § 5 UWG dran). Vor Launch verifizieren, Werte nur dort ändern — nicht an den
+  Verwendungsstellen hartcodieren.
+- **Tote Links:** Nav-/Footer-/Plan-CTAs zeigen bis zum Launch auf `href="#"`
+  und tragen `data-placeholder-link`. Der Anchor-Handler in
+  `scroll-choreography.tsx` macht `#`-Links bewusst inert. Echte Anker
+  (`#preise`, `#funktionsweise`) haben das Attribut nicht — daran lässt sich
+  erkennen, was noch nicht verdrahtet ist.
+- **`marketing.css` ist ein globales Stylesheet**, kein CSS-Modul. Next lädt es
+  nur für Routen unter `(marketing)` — ein direkter Aufruf einer anderen Route
+  bekommt es nicht. Aber: Bei **Client-Navigation** von der Website in einen
+  anderen Bereich bleibt das Stylesheet im Dokument, und seine Selektoren (`*`,
+  `body`, `a`, `ul`, `button`, `:root`-Tokens) sind ungescoped — sie wirken
+  dann dort mit (gemessen: `body` bekommt den Ink-Hintergrund, `ul` verliert
+  die Punkte, Links die Unterstreichung). Solange es nur die Website gibt, ist
+  das folgenlos. **Vor dem ersten App-View entscheiden**, ob `marketing.css`
+  aufs Segment gescopt wird (Wrapper-Klasse statt `body`/Element-Selektoren
+  bzw. CSS-Modul) oder bewusst global als Basis für beide Bereiche dient.
+  Die Font-Variablen sind bereits gescopt: sie hängen am `.site`-Wrapper des
+  Marketing-Layouts, nicht an `:root`.
 
 ## Quality
 
