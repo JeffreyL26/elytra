@@ -1,6 +1,7 @@
 import { and, eq } from "drizzle-orm";
 import { db } from "@/db/client";
 import { customerProfiles, optOutProcesses, processMails } from "@/db/schema";
+import type { CustomerProfileInput } from "@/lib/customer-profile-schema";
 
 // Mandanten-Zugriffslayer (Spec docs/specs/multi-tenant-profile.md § 2.3).
 //
@@ -45,6 +46,63 @@ export async function getProcessesForUser(userId: string): Promise<OptOutProcess
     .from(optOutProcesses)
     .where(eq(optOutProcesses.userId, userId))
     .orderBy(optOutProcesses.createdAt);
+}
+
+// SCHREIB-Pfade (Profil-CRUD, api-contract.md § 2). Wie die Reads zwingend an
+// die userId aus der Session geankert -- der Aufrufer reicht NIE eine userId aus
+// dem Request-Body herein (Regel 1). Validierung passiert VOR diesen Funktionen
+// ausschliesslich ueber customerProfileSchema; hier landen nur gepruefte Daten.
+
+// Legt das Profil des Users an. Der eindeutige userId-Index verhindert ein
+// zweites Profil; der Aufrufer prueft Existenz vorab (409 profile_exists).
+export async function createProfileForUser(
+  userId: string,
+  input: CustomerProfileInput,
+): Promise<CustomerProfile> {
+  const [row] = await db
+    .insert(customerProfiles)
+    .values({
+      userId,
+      firstName: input.firstName,
+      lastName: input.lastName,
+      emailAddresses: input.emailAddresses,
+      phoneNumbers: input.phoneNumbers ?? null,
+      postalAddresses: input.postalAddresses,
+      dateOfBirth: input.dateOfBirth ?? null,
+    })
+    .returning();
+  return row;
+}
+
+// Vollstaendiges Replace des Profils (kein Merge -- api-contract.md § 2.3).
+// null = es existierte keines (Aufrufer -> 404).
+export async function replaceProfileForUser(
+  userId: string,
+  input: CustomerProfileInput,
+): Promise<CustomerProfile | null> {
+  const [row] = await db
+    .update(customerProfiles)
+    .set({
+      firstName: input.firstName,
+      lastName: input.lastName,
+      emailAddresses: input.emailAddresses,
+      phoneNumbers: input.phoneNumbers ?? null,
+      postalAddresses: input.postalAddresses,
+      dateOfBirth: input.dateOfBirth ?? null,
+      updatedAt: new Date(),
+    })
+    .where(eq(customerProfiles.userId, userId))
+    .returning();
+  return row ?? null;
+}
+
+// Loescht das Profil des Users. true = eine Zeile entfernt, false = es gab keine.
+export async function deleteProfileForUser(userId: string): Promise<boolean> {
+  const rows = await db
+    .delete(customerProfiles)
+    .where(eq(customerProfiles.userId, userId))
+    .returning({ id: customerProfiles.id });
+  return rows.length > 0;
 }
 
 // Alle Mails aller Prozesse des Users; optional auf einen Prozess eingegrenzt.
