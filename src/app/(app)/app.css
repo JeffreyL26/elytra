@@ -1,0 +1,364 @@
+/* ============================================================
+   GoKognito App-Bereich (eingeloggt).
+   Gleiche visuelle Sprache wie die Marketing-Site (Tokens aus
+   src/app/tokens.css), aber bewusst OHNE deren Interaktions-
+   Schwere: kein three.js, kein Lenis, keine Scroll-Choreografie.
+   Ruhig, schnell, formularorientiert.
+   ============================================================ */
+
+/* Font-Stacks auf dem Wrapper (wie .site im Marketing-Layout): die
+   next/font-Variablen existieren erst hier, nicht auf :root. */
+.app {
+  --serif: var(--font-serif), Georgia, serif;
+  --sans: var(--font-sans), -apple-system, BlinkMacSystemFont, sans-serif;
+  --mono: var(--font-mono), ui-monospace, monospace;
+  font-family: var(--sans);
+  color: var(--text-on-dark);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--ink);
+}
+
+/* Fokus-Konvention (Barrierefreiheit): sichtbarer Ring auf Paper. */
+.app :focus-visible {
+  outline: 2px solid var(--paper);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* ---------- Nav ---------- */
+.app-nav {
+  border-bottom: 1px solid var(--line-dark);
+  background: var(--ink);
+}
+.app-nav__inner {
+  width: min(1240px, 100% - 48px);
+  margin-inline: auto;
+  height: var(--nav-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+.app-nav__links {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.app-nav__link {
+  padding: 10px 14px;
+  font-size: 14px;
+  font-weight: 500;
+  opacity: 0.75;
+  transition: opacity 0.3s;
+  border-radius: 6px;
+}
+.app-nav__link:hover,
+.app-nav__link[aria-current="page"] {
+  opacity: 1;
+}
+.app-nav__link[aria-current="page"] {
+  text-decoration: underline;
+  text-underline-offset: 6px;
+  text-decoration-color: var(--line-dark);
+}
+
+/* ---------- Main ---------- */
+.app-main {
+  flex: 1;
+  width: min(560px, 100% - 48px);
+  margin-inline: auto;
+  padding: clamp(48px, 8vw, 96px) 0 96px;
+}
+.app-main--wide {
+  width: min(720px, 100% - 48px);
+}
+
+.app-title {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(30px, 4.5vw, 42px);
+  letter-spacing: -0.015em;
+  line-height: 1.1;
+  margin-bottom: 12px;
+}
+.app-lead {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text-on-dark-muted);
+  margin-bottom: 36px;
+  max-width: 52ch;
+}
+
+/* ---------- Card ---------- */
+.app-card {
+  background: var(--ink-2);
+  border: 1px solid var(--line-dark);
+  border-radius: var(--radius);
+  padding: clamp(24px, 4vw, 36px);
+}
+.app-card + .app-card {
+  margin-top: 20px;
+}
+.app-card__title {
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: 21px;
+  letter-spacing: -0.01em;
+  margin-bottom: 18px;
+}
+
+/* ---------- Form ---------- */
+.app-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.app-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.app-field__label {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.app-field__hint {
+  font-size: 12.5px;
+  color: var(--text-on-dark-muted);
+}
+.app-input {
+  width: 100%;
+  padding: 13px 16px;
+  font: inherit;
+  font-size: 15px;
+  color: var(--text-on-dark);
+  background: var(--ink-3);
+  border: 1px solid var(--line-dark);
+  border-radius: 8px;
+  transition: border-color 0.3s;
+}
+.app-input:hover {
+  border-color: rgba(242, 238, 230, 0.25);
+}
+.app-input:focus {
+  outline: none;
+  border-color: var(--paper);
+}
+.app-input[aria-invalid="true"] {
+  border-color: rgba(217, 100, 65, 0.7);
+}
+.app-field__error {
+  font-size: 12.5px;
+  color: #e2907a;
+}
+
+.app-fieldset {
+  border: 1px solid var(--line-dark);
+  border-radius: 8px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.app-fieldset legend {
+  padding: 0 8px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-on-dark-muted);
+}
+.app-field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 560px) {
+  .app-field-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Dynamische Listen (z. B. mehrere E-Mail-Adressen) */
+.app-list-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.app-list-row .app-input {
+  flex: 1;
+}
+
+/* ---------- Buttons ---------- */
+.app-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 28px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border-radius: 100px;
+  white-space: nowrap;
+  transition:
+    background-color 0.3s var(--ease-out),
+    border-color 0.3s var(--ease-out),
+    color 0.3s var(--ease-out),
+    opacity 0.3s;
+}
+.app-btn--primary {
+  background: var(--paper);
+  color: var(--ink);
+}
+.app-btn--primary:hover {
+  background: #ffffff;
+}
+.app-btn--ghost {
+  border: 1px solid var(--line-dark);
+  color: var(--text-on-dark);
+}
+.app-btn--ghost:hover {
+  border-color: var(--paper);
+  background: rgba(242, 238, 230, 0.06);
+}
+.app-btn--danger {
+  background: transparent;
+  border: 1px solid rgba(217, 100, 65, 0.55);
+  color: #e2907a;
+}
+.app-btn--danger:hover {
+  background: rgba(217, 100, 65, 0.12);
+  border-color: #e2907a;
+}
+.app-btn--small {
+  padding: 9px 18px;
+  font-size: 13px;
+}
+.app-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ---------- Alerts / Status ---------- */
+.app-alert {
+  border: 1px solid var(--line-dark);
+  border-radius: 8px;
+  padding: 16px 18px;
+  font-size: 14px;
+  line-height: 1.65;
+}
+.app-alert--error {
+  border-color: rgba(217, 100, 65, 0.5);
+  background: rgba(217, 100, 65, 0.08);
+  color: #e2907a;
+}
+.app-alert--success {
+  border-color: rgba(127, 200, 164, 0.4);
+  background: rgba(46, 125, 91, 0.12);
+  color: var(--green-soft);
+}
+.app-alert--info {
+  border-color: rgba(217, 164, 65, 0.4);
+  background: rgba(217, 164, 65, 0.07);
+  color: var(--amber);
+}
+
+/* Passwort-Policy-Checkliste (Live-Spiegel der Server-Policy) */
+.app-policy {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text-on-dark-muted);
+}
+.app-policy__rule {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.app-policy__rule::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  border: 1px solid var(--line-dark);
+  flex-shrink: 0;
+}
+.app-policy__rule.is-met {
+  color: var(--green-soft);
+}
+.app-policy__rule.is-met::before {
+  background: var(--green-soft);
+  border-color: var(--green-soft);
+}
+
+.app-form__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 6px;
+}
+.app-form__alt {
+  font-size: 13.5px;
+  color: var(--text-on-dark-muted);
+}
+.app-form__alt a {
+  color: var(--text-on-dark);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-color: var(--line-dark);
+}
+.app-form__alt a:hover {
+  text-decoration-color: currentColor;
+}
+
+/* ---------- Footer ---------- */
+.app-footer {
+  border-top: 1px solid var(--line-dark);
+  padding: 24px 0;
+}
+.app-footer__inner {
+  width: min(1240px, 100% - 48px);
+  margin-inline: auto;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 12.5px;
+  color: var(--text-on-dark-muted);
+}
+
+/* Screenreader-only */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .app *,
+  .app *::before,
+  .app *::after {
+    /* biome-ignore lint/complexity/noImportantStyles: reduced-motion muss jede Transition uebersteuern */
+    transition-duration: 0.01ms !important;
+    /* biome-ignore lint/complexity/noImportantStyles: siehe oben */
+    animation-duration: 0.01ms !important;
+  }
+}
