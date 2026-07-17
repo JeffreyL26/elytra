@@ -22,6 +22,12 @@ export default defineConfig({
       MAIL_FROM_ADDRESS: "removals@jba-team.com",
       MAIL_FROM_DOMAIN: "jba-team.com",
       REPLY_DOMAIN: "reply.jba-team.com",
+      // Better Auth braucht ein Secret + baseURL. Deterministische Test-Werte;
+      // es wird nie ein echter externer Auth-Call gemacht. Der Customer-Stream
+      // ist BEWUSST NICHT gesetzt -> Verify-Mail laeuft im Log-Modus (kein
+      // echter Postmark-Call, kein Broker-Stream-Missbrauch).
+      BETTER_AUTH_SECRET: "test-better-auth-secret-value-32chars-min",
+      BETTER_AUTH_URL: "http://localhost:3000",
     },
   },
 });
