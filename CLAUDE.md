@@ -48,60 +48,98 @@ Kunden registrieren sich auf der Website, geben eine Vertretungs-Vollmacht ab, h
 
 ## Projektstruktur
 
-> **⚠️ Dieser Baum ist veraltet.** Er kennt den Next-Port der Marketing-Website
-> noch nicht: Es fehlt `src/app/(marketing)/` (Landing-Page-Segment inkl.
-> `_components/` und `_content/placeholders.ts`, beides private folders
-> innerhalb des Segments) und `tools/branding/`. Aktueller Stand: siehe
-> `README.md` → „Projektstruktur". Ein vollständiger Rewrite dieser Sektion ist
-> ein eigener Task — bis dahin gilt die README als Wahrheit, und die
-> Trennungsregeln stehen im Abschnitt direkt unter dem Baum.
+Unit-/Integrationstests liegen als `*.test.ts` neben dem jeweiligen Code und
+sind im Baum ausgelassen. Generierte Drizzle-Migrations (`src/db/migrations/`)
+ebenso. Stand verifiziert gegen `git ls-files`.
 
 ```
 gokognito/
 ├── src/
-│   ├── app/                              # Next.js App Router (Web-Prozess)
-│   │   └── api/
-│   │       ├── brokers/route.ts          # GET /api/brokers (Smoke-Test, Phase 1)
-│   │       └── webhooks/
-│   │           └── postmark-inbound/
-│   │               └── route.ts          # Postmark Inbound-Webhook (Phase 2)
+│   ├── app/                                  # Next.js App Router (Web-Prozess)
+│   │   ├── (marketing)/                      # Öffentliche Website (Route-Segment)
+│   │   │   ├── _components/                   # Client Components, segment-privat
+│   │   │   │   ├── akte-reveal.tsx
+│   │   │   │   ├── billing-toggle.tsx
+│   │   │   │   ├── faq.tsx
+│   │   │   │   ├── hero-scene.tsx
+│   │   │   │   ├── nav.tsx
+│   │   │   │   ├── runtime.ts
+│   │   │   │   ├── scroll-choreography.tsx
+│   │   │   │   └── wordmark.tsx
+│   │   │   ├── _content/
+│   │   │   │   └── placeholders.ts            # Landing-Copy-Platzhalter
+│   │   │   ├── layout.tsx                     # Marketing-Layout (Fonts, .site-Wrapper)
+│   │   │   ├── marketing.css
+│   │   │   └── page.tsx                       # Landing Page
+│   │   ├── api/
+│   │   │   ├── brokers/route.ts               # GET /api/brokers (Smoke-Test)
+│   │   │   └── webhooks/
+│   │   │       └── postmark-inbound/route.ts  # Postmark Inbound-Webhook
+│   │   ├── icon.svg
+│   │   └── layout.tsx                         # Root-Layout
 │   ├── db/
-│   │   ├── schema/
-│   │   │   ├── index.ts
+│   │   ├── schema/                            # index re-exportiert alle Tabellen
 │   │   │   ├── users.ts
 │   │   │   ├── customer-profiles.ts
 │   │   │   ├── brokers.ts
 │   │   │   ├── opt-out-processes.ts
 │   │   │   ├── process-events.ts
-│   │   │   └── process-mails.ts          # Neu in Phase 2
-│   │   ├── migrations/                   # Drizzle-generiert
-│   │   ├── client.ts                     # exports { sql, db }
-│   │   └── seed.ts
+│   │   │   └── process-mails.ts
+│   │   ├── migrations/                        # Drizzle-generiert
+│   │   ├── client.ts                          # exports { sql, db }
+│   │   ├── real-brokers-data.ts               # Reale Broker-Stammdaten (46, DB-frei testbar)
+│   │   ├── seed.ts                            # Dummy-Broker-Seed
+│   │   ├── seed-real-brokers.ts               # Real-Broker-Seed (idempotent, slug-Upsert ohne Delete)
+│   │   ├── seed-self-profile.ts               # Self-Profil aus SELF_*-Env
+│   │   ├── seed-loopback-broker.ts            # Loopback-Test-Broker
+│   │   └── self-profile-env.ts                # readSelfProfileEnv()
 │   ├── lib/
-│   │   ├── env.ts                        # zod-validierte env vars
-│   │   ├── ids.ts                        # cuid2-Wrapper (Standard + 16-char Variante)
-│   │   ├── mail/                         # Mail-Pipeline (Phase 2)
-│   │   │   ├── templates/
-│   │   │   │   └── opt-out-request.ts
-│   │   │   ├── send.ts                   # SES-Wrapper
-│   │   │   ├── parse-inbound.ts          # Postmark-Webhook-Payload normalisieren
-│   │   │   └── match-inbound.ts          # Vier-stufiges Token-Matching
-│   │   ├── llm/                          # LLM-Klassifikation (Phase 2)
-│   │   │   └── classify-inbound.ts
-│   │   └── domain/                       # Domain-Logik (pure Funktionen)
-│   │       └── opt-out-process.ts
-│   ├── worker/                           # Worker-Prozess (Phase 2)
-│   │   ├── index.ts                      # Worker Entry-Point (pnpm worker)
-│   │   ├── queue.ts                      # pg-boss-Instanz
+│   │   ├── env.ts                             # zod-validierte env vars
+│   │   ├── ids.ts                             # cuid2 (createId + createProcessToken)
+│   │   ├── branding.ts                        # SERVICE_NAME
+│   │   ├── user-data-access.ts                # Mandantengetrennter Daten-Zugriffslayer (*ForUser)
+│   │   ├── customer-profile-schema.ts         # Geteiltes Zod-Profil-Schema (API + Seed)
+│   │   ├── customer-status.ts                 # Kundensicht-Projektion aus process_status
+│   │   ├── status-transitions.ts              # Transitions-Matrix (schützt Terminal-Status)
+│   │   ├── attention-processes.ts             # Triage-Query (manual_review u. ä.)
+│   │   ├── retention-raw-payload.ts           # PII-Compaction nach Retention-Fenster
+│   │   ├── mail/
+│   │   │   ├── send.ts                        # Postmark-Wrapper (Dummy-Modus first)
+│   │   │   ├── parse-inbound.ts               # Postmark-Payload normalisieren
+│   │   │   ├── match-inbound.ts               # Vier-stufiges Reply-Matching
+│   │   │   ├── extract-attachment-text.ts     # PDF-Textextraktion (pdf-parse)
+│   │   │   └── templates/
+│   │   │       └── opt-out-request.ts         # DSGVO-Mail-Template (DE/EN)
+│   │   └── llm/
+│   │       ├── classify-inbound.ts            # LLM-Klassifikation (Claude Tool-Use)
+│   │       └── __fixtures__/                  # Reale Broker-Antworten als Test-Fixtures
+│   ├── worker/                                # Worker-Prozess (pnpm worker)
+│   │   ├── index.ts                           # Entry-Point + Queue-Registrierung
+│   │   ├── queue.ts                           # pg-boss-Instanz (Worker)
+│   │   ├── producer.ts                        # send-only enqueue (Web-Prozess)
+│   │   ├── preflight.ts                       # Versand-Preflight-Checks
 │   │   └── jobs/
 │   │       ├── send-opt-out-mail.ts
 │   │       └── process-inbound-mail.ts
+│   ├── scripts/
+│   │   ├── e2e-smoke.ts                       # End-to-End-Smoke (pnpm e2e)
+│   │   ├── trigger-real-send.ts               # Realer Versand (Dry-Run-Default, JA-Bestätigung)
+│   │   ├── retention-raw-payload.ts           # Retention-CLI (raw_payload compaction)
+│   │   ├── list-attention-processes.ts        # Triage-CLI (read-only)
+│   │   └── test-classify-real-response.ts     # Klassifikation gegen reale Antwort prüfen
 │   └── data/
-│       └── dummy-brokers.ts
-├── docker-compose.yml
+│       └── dummy-brokers.ts                   # Statische Dummy-Broker-Definitionen
+├── docs/
+│   ├── specs/                                 # api-contract.md, multi-tenant-profile.md
+│   └── real-broker-responses/                 # Dokumentierte reale Antworten (z. B. Yasni)
+├── tools/
+│   └── branding/                              # Icons (SVG), Wordmark, README
+├── docker-compose.yml                         # nur Postgres
 ├── drizzle.config.ts
+├── next.config.ts
 ├── biome.json
 ├── tsconfig.json
+├── vitest.config.ts
 ├── package.json
 ├── .env.example
 ├── .gitignore
