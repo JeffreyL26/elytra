@@ -270,7 +270,7 @@ Speichert alle Outbound- und Inbound-Mails pro Prozess. Quelle der Wahrheit für
 - `id` cuid2 PK
 - `process_id` references `opt_out_processes.id` on delete cascade
 - `direction` enum `mail_direction` (`'outbound' | 'inbound'`), not null
-- `provider_message_id` text — SES/Postmark Message-ID (eindeutig, indexiert)
+- `provider_message_id` text — Postmark Message-ID (eindeutig, indexiert)
 - `from_address` text not null
 - `to_address` text not null
 - `subject` text
@@ -295,16 +295,19 @@ Foundation komplett: Datenmodell, Migrations, Seed, Smoke-Test, Doku, Quality-Ga
 - **Line Endings sind LF-erzwungen** via `.gitattributes` (`* text=auto eol=lf`). Auf Windows-Entwicklungs-Maschinen wichtig.
 - **Domain ist `jba-team.com`** (Development). Brand-Domain GoKognito folgt vor Launch; alle Domain-Referenzen liegen in `.env`, Wechsel ist eine env-Änderung.
 
-## Aktuelle Phase: Phase 2 — Worker, Mail-Pipeline, LLM-Klassifikation
+## Aktuelle Phase: 3b — Pipeline live, Multi-Tenant-Fundament, Marketing
 
-**Ziel:** Funktionierende End-to-End-Mail-Pipeline gegen Dummy-Broker. Outbound-Mail wird vom Worker via SES (Dummy-Modus zu Beginn) verschickt, eingehende Mail über Postmark-Inbound-Webhook entgegengenommen, durch vier-stufiges Token-Matching dem richtigen Prozess zugeordnet, durch Claude Haiku klassifiziert, und der Prozess-Status entsprechend aktualisiert. Alles vollständig in `process_events` und `process_mails` geloggt.
+M1 (technischer Durchstich) ist erreicht: Die Opt-Out-Pipeline versendet echte
+Anfragen über Postmark und verarbeitet echte Broker-Antworten end-to-end
+(Versand → Inbound-Webhook → LLM-Klassifikation → Statusübergang). Erster
+echter Broker-Versand (Snov.io + DE-Selbstrunde) ist raus, erste reale Antwort
+(Regis24) ausgewertet. Der Code ist dem rechtlichen Pfad voraus; Fremdvertretung
+(Handeln im Namen Dritter) bleibt bis zur RDG-Klärung + UG-Gründung gesperrt
+(Gate G1) — bis dahin ausschließlich Self-Requests.
 
 ### Externe Services (vor Phase 2 vorbereitet)
 
-- **AWS-Account**: existiert, Region `eu-central-1` Frankfurt. SES-Production-Access-Antrag läuft (Wartezeit ~24h).
-  - **Update (Phase 3b):** SES-Production-Access **abgelehnt**. Outbound läuft jetzt über Postmark (siehe Aufgabe-5-Update). AWS-Account bleibt erhalten für später, wird in Phase 2 aber nicht mehr benötigt.
-- **Postmark**: Account existiert, Sender-/Inbound-Domain wird in Phase 2 verifiziert (nicht vor SES, da DNS-Records gemeinsam gesetzt werden).
-  - **Update (Phase 3b):** Postmark deckt jetzt **Outbound + Inbound** ab. Server-Token in `.env` als `POSTMARK_SERVER_TOKEN`.
+- **Postmark**: deckt **Outbound + Inbound** vollständig ab — eine Domain-Verifikation, ein Vendor. Server-Token in `.env` als `POSTMARK_SERVER_TOKEN`. Der ursprünglich für Outbound geplante separate Transaktions-Mail-Provider wurde verworfen (Production-Access abgelehnt); es besteht keine solche Abhängigkeit mehr.
 - **Anthropic API**: Account existiert, API-Key vorhanden (in `.env` als `ANTHROPIC_API_KEY`).
 - **Cloudflare**: Domain `jba-team.com` registriert, DNS-Management aktiv, Email Routing für Account-Mails konfiguriert (`management@jba-team.com` → Gmail).
 
@@ -321,77 +324,44 @@ Foundation komplett: Datenmodell, Migrations, Seed, Smoke-Test, Doku, Quality-Ga
 5. **Mail-Templates:** TypeScript-Funktionen in `src/lib/mail/templates/`, Signatur `(profile, broker, processToken, locale: 'de' | 'en') => { subject, textBody, htmlBody }`. Snapshot-Tests mit vitest.
 6. **LLM-Klassifikation:** `claude-haiku-4-5-20251001` via offizielles `@anthropic-ai/sdk`. Strukturierter Output via Tool-Use (garantiertes JSON). Kategorien: `success`, `no_data_held`, `blacklisted`, `in_progress`, `rejected`, `unrelated`. Bei `confidence < 0.7` → automatisch `manual_review`. PDF-Anhänge werden textextrahiert (`extract-attachment-text.ts`, pdf-parse, kein OCR) und fließen markiert in den Klassifikations-Prompt ein — die Substanz einer Antwort kann vollständig im Anhang stecken (realer Fall: Yasni, siehe `docs/real-broker-responses/`). Modell-Version + Prompt-Version werden im Event-Payload mit geloggt.
 
-### Aufgabenliste Phase 2 (in Reihenfolge abarbeiten)
+### Erledigt seit letztem Stand
 
-1. **Env + ID-Wrapper-Erweiterung**
-   - [ ] `src/lib/env.ts` erweitern: `ANTHROPIC_API_KEY`, `AWS_REGION`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `MAIL_FROM_ADDRESS`, `MAIL_FROM_DOMAIN`, `REPLY_DOMAIN`, `POSTMARK_INBOUND_WEBHOOK_SECRET`
-   - [ ] `.env.example` analog aktualisieren — **niemals echte Werte committen**
-   - [ ] `src/lib/ids.ts`: zusätzliche Funktion `createProcessToken()` mit cuid2-Länge 16
+- Outbound + Inbound vollständig auf Postmark (vorheriger Outbound-Provider verworfen)
+- Inbound-Pipeline live: Webhook + Token-Matching (Stufe 1–4) + Haiku-
+  Klassifikation (no_data_held/success/… ) + Prozess-Statusübergänge
+- trigger-real-send.ts (Dry-Run-Default, Preflight, JA-Bestätigung)
+- Locale-Fix (broker.language + toTemplateLocale, fr/es→EN mit sichtbarem
+  Fallback-Warn); From/Identität getrennt (SELF_EMAIL vs. SELF_IDENTITY_EMAILS);
+  Löschgrund Art. 17 Abs. 1 lit. c i.V.m. Art. 21 in allen Templates
+- Terminal-Status-Schutz als Übergangsmatrix (status-transitions.ts): Widerspruch
+  gegen terminalen Status → manual_review statt Überschreiben; reason-Quellen
+  classify_error / low_confidence / conflict_terminal unterscheidbar
+- Kunden-Status-Mapping als Projektion (customer-status.ts, exhaustiv, blacklisted
+  → "Werbesperre aktiv")
+- Multi-Tenant-Fundament (RDG-neutraler Teil): geteiltes Zod-Profilschema
+  (customer-profile-schema.ts) + mandantensicherer Zugriffslayer
+  (user-data-access.ts, *ForUser mit userId-Ownership, 404 statt 403). Auth/
+  Profil-CRUD/Konto-Löschung (Schritte 2/4/5) bewusst offen (Better Auth, Phase B)
+- Retention-Job raw_payload (Dry-Run-Default, 90-Tage-Default, überspringt junge
+  Mails + manual_review + process_id=NULL); Attention-CLI (failed/manual_review,
+  read-only, tenant-übergreifend = admin-only)
+- Broker-Portfolio 46 (DE-Welle via datenanfragen.de CC0 + EU-Wellen; Auskunfteien
+  bewusst ausgeschlossen: regis24/acxiom/universum-business raus)
+- Marketing-Landing-Page nach Next.js portiert (app/(marketing)-Segment,
+  _components/ + _content/ private folders, SSR, self-hosted Fonts, three.js/GSAP
+  mit sauberem Cleanup); API-Vertrag als Design-Doku (docs/specs/api-contract.md)
 
-2. **Schema-Erweiterung + Migration**
-   - [ ] `src/db/schema/process-mails.ts` neu
-   - [ ] `process_events.event_type` enum um `'email_classified'` erweitern
-   - [ ] `process_mails`-Schema in `src/db/schema/index.ts` re-exportieren
-   - [ ] `pnpm db:generate` → Migration prüfen → `pnpm db:migrate`
-   - [ ] Seed-Anpassung: bestehende Dummies neu seeden mit gekürzten Tokens
+### Nächste offene Punkte
 
-3. **Worker-Skeleton**
-   - [ ] `pnpm add pg-boss`
-   - [ ] `src/worker/queue.ts`: pg-boss-Instanz, lädt Connection aus `env.DATABASE_URL`
-   - [ ] `src/worker/index.ts`: Worker Entry-Point, startet pg-boss, registriert Job-Handler, läuft auf Dauer
-   - [ ] `pnpm worker` Script in package.json
-   - [ ] Smoke-Test: Dummy-Job (`hello-world`) enqueuen, Worker konsumiert, Logs erscheinen, Job wird in `pgboss.job` als completed markiert
-
-4. **Mail-Template (Deutsch, DSGVO Art. 17/21)**
-   - [ ] `src/lib/mail/templates/opt-out-request.ts` mit Funktion `buildOptOutRequest(profile, broker, token, locale='de')`
-   - [ ] Subject-Format: `[Ref: <TOKEN>] Datenlöschanfrage gemäß Art. 17 DSGVO`
-   - [ ] Text-Body: rechtssichere Formulierung (Verweis auf Vollmacht, Art. 17 DSGVO Löschung, Art. 21 Widerspruch, Antwortfrist von 30 Tagen)
-   - [ ] vitest-Snapshot-Test für eine Beispiel-Kombination Profile×Broker
-
-5. **Outbound-Mail (SES, Dummy-Modus first)**
-   - [ ] `pnpm add @aws-sdk/client-ses`
-   - [ ] `src/lib/mail/send.ts`: `sendMail({ from, to, replyTo, subject, textBody, htmlBody })` → Promise mit Message-ID
-   - [ ] **Dummy-Modus:** wenn `broker.is_dummy === true`, kein echter SES-Call, sondern nur Log + Fake-Message-ID. Vor SES-Production-Access: ALLE Broker dummy. Production-Switch über Broker-Flag, nicht über Code-Pfad.
-   - [ ] **Message-ID-Header bewusst selbst setzen** (deshalb `SendRawEmail` statt `SendEmail`): Format `<proc-<token>-<rand>@MAIL_FROM_DOMAIN>`, gespeichert als `process_mails.provider_message_id`. Grund: Nur so greift das Stufe-3-Reply-Matching (`In-Reply-To`/`References`, Aufgabe 7) in Production — bei `SendEmail` vergäbe SES eine eigene, nicht referenzierbare Message-ID. Die SES-API-Response-ID landet zusätzlich in `raw_payload` (Bounce-Tracking). **Nicht wegrefactoren.**
-   - [ ] Job `src/worker/jobs/send-opt-out-mail.ts`: Input `{ processId }` → lädt Process+User+Broker, baut Mail, schickt via `sendMail`, schreibt Eintrag in `process_mails`, schreibt `mail_sent` Event, updated `opt_out_processes.last_contacted_at` und `status='contacted'`
-
-   **Update (Phase 3b — SES → Postmark):** AWS-SES-Production-Access wurde abgelehnt. Outbound läuft jetzt über **Postmark** (`postmark` SDK, `new ServerClient(env.POSTMARK_SERVER_TOKEN).sendEmail({…})`). `SendRawEmail` ist damit hinfällig — der Custom-`Message-ID`-Header geht per `Headers: [{ Name: "Message-ID", Value: messageId }]` in den `sendEmail`-Call (Postmark akzeptiert/leitet ihn unverändert weiter). Die Postmark-API-`MessageID` landet zum Bounce-Tracking in `process_mails.headers` als `X-Postmark-MessageId` (nicht mehr in `raw_payload`); Schlüssel fürs Reply-Matching bleibt unser selbstgesetzter `Message-ID`-Header in `provider_message_id`.
-
-6. **Inbound-Webhook (Postmark)**
-   - [ ] `src/app/api/webhooks/postmark-inbound/route.ts`: POST-Handler
-   - [ ] Signature-Verifizierung gegen `POSTMARK_INBOUND_WEBHOOK_SECRET` (HTTP Basic Auth, Postmark-Standard)
-   - [ ] Payload validieren mit zod
-   - [ ] In `process_mails` mit `direction='inbound'`, `provider_message_id`, `raw_payload` speichern
-   - [ ] Job `process-inbound-mail` mit der `process_mails.id` enqueuen
-   - [ ] HTTP 200 zurück (Postmark hört sonst nicht auf zu retryn)
-
-7. **Inbound-Matching**
-   - [ ] `src/lib/mail/match-inbound.ts`: `matchInbound(mail) → { processId, matchStage }` mit den vier Stufen
-   - [ ] Tests mit vitest für alle vier Stufen + den Fallback
-
-8. **LLM-Klassifikation**
-   - [ ] `pnpm add @anthropic-ai/sdk`
-   - [ ] `src/lib/llm/classify-inbound.ts`: nutzt Tool-Use für strukturierten Output
-   - [ ] System-Prompt: Kategorien definieren, Beispiele aus dem deutschen Sprachraum
-   - [ ] Confidence-Threshold-Logik
-   - [ ] Tests mit vitest gegen 3–5 synthetische Beispiel-Antworten (eine pro Kategorie)
-
-9. **Inbound-Job zusammenstecken**
-   - [ ] Job `src/worker/jobs/process-inbound-mail.ts`: lädt Mail aus `process_mails`, läuft durch Matching → Klassifikation → Status-Update auf `opt_out_processes`, schreibt Events (`mail_received`, `email_classified`, ggf. `status_changed`)
-   - [ ] Bei Match-Stufe 4 oder Confidence < 0.7: `status='manual_review'`
-
-10. **End-to-End Smoke-Test**
-    - [ ] Script `src/scripts/e2e-smoke.ts` (kein API-Endpoint, nur lokal): Erstellt Test-User + Test-Profile + Test-Process gegen Dummy-Broker, triggert `send-opt-out-mail`-Job, simuliert eine Inbound-Mail via direktem POST auf den Webhook-Endpoint, prüft am Ende Status + Events
-    - [ ] In README einen "Phase 2 Smoke-Test"-Abschnitt ergänzen
-
-### Was Phase 2 NICHT enthält
-
-Auth, Anmeldung, UI-Seiten, Customer-Dashboard, ELYTRA, Browser-Automation (Playwright), Recurring Resends per Cron, Landing Page, Stripe, Production-Deploy, PII-Verschlüsselung. Browser-Automation kommt in Phase 3, ELYTRA in Phase 5. Disziplin.
-
-### Was vor Phase 2 noch von außerhalb gebraucht wird
-
-- **SES Production-Access** (User): nach Antrag warten, Status in AWS Console prüfen. Phase 2 ist bis Aufgabe 5 ohne SES baubar (Dummy-Modus).
-- **DNS-Records für SES + Postmark** (User + Claude Code gemeinsam): wenn SES freigeschaltet, müssen DKIM-Records (SES) und MX/SPF/DMARC (Postmark Inbound) in Cloudflare gesetzt werden. Dies passiert nach Aufgabe 5 oder 6, je nach Reihenfolge.
+- RECHT (kritischer Pfad): Mandats-Briefing an Kanzlei (RDG + Wort-/Bildmarke);
+  danach UG-Gründung, Vollmacht/AGB/DSE — Gate G1
+- Phase B: Better Auth einziehen (Multi-Tenant Schritt 2) → Profil-CRUD +
+  Konto-Löschung; DE-Selbstrunde-Antworten einspeisen + Klassifikation
+  kalibrieren; Landing-Page-Platzhalter einlösen (Portfoliozahl, Preismodell)
+- Recurring/Re-Checks als Runden-Konzept (3b.8, löst zugleich Unique-Constraint
+  + Terminal-Status-Wiedereröffnung)
+- G3-Vorarbeit: Volltext-Spalten in Retention einbeziehen; echtes Bounce-Handling
+  (bounced_at/bounce_type-Spalten + mail_bounced-Event + Postmark-Bounce-Webhook)
 
 ## Häufige Commands
 
@@ -437,7 +407,7 @@ pnpm format                      # biome format --write
 - **Confidence-Threshold 0.7:** Liberal genug, dass die meisten klaren Fälle automatisch durchgehen; streng genug, dass mehrdeutige Mails (wo der Sachbearbeiter wertvoller ist als der LLM) manuell landen. Kann später aus Real-World-Daten kalibriert werden.
 
 **Phase 3b:**
-- **Postmark statt AWS SES für Outbound:** AWS-SES-Production-Access wurde abgelehnt. Postmark übernimmt jetzt **beide** Richtungen (Outbound + Inbound) — vereinfacht Domain-/DNS-Setup (eine Verifikation statt zwei) und reduziert Vendor-Sprawl. Custom-`Message-ID`-Header bleibt unsere Verantwortung (`Headers`-Param in `sendEmail`), damit Stufe-3-Matching weiter funktioniert; Postmarks API-MessageID wandert nur als Bounce-Tracking-Schlüssel in `process_mails.headers`.
+- **Postmark für Outbound + Inbound:** Der ursprünglich für Outbound geplante separate Transaktions-Mail-Provider wurde verworfen (Production-Access abgelehnt). Postmark übernimmt jetzt **beide** Richtungen — vereinfacht Domain-/DNS-Setup (eine Verifikation statt zwei) und reduziert Vendor-Sprawl. Custom-`Message-ID`-Header bleibt unsere Verantwortung (`Headers`-Param in `sendEmail`), damit Stufe-3-Matching weiter funktioniert; Postmarks API-MessageID wandert nur als Bounce-Tracking-Schlüssel in `process_mails.headers`.
 
 ## Was Claude bei der Arbeit beachten soll
 
@@ -450,5 +420,5 @@ pnpm format                      # biome format --write
 - **Stopp und reviewen lassen** nach folgenden Phase-2-Aufgaben: Schema-Erweiterung (Aufgabe 2, vor `db:migrate`), Worker-Skeleton-Smoke-Test (Aufgabe 3), Mail-Template-Snapshot-Test (Aufgabe 4), End-to-End-Test (Aufgabe 10). Bei allem anderen autonom durchziehen.
 - **Domain-Referenzen und Secrets immer aus `env`.** Niemals `jba-team.com` oder `removals@jba-team.com` im Code hartcodieren — wenn die Domain wechselt, soll das eine `.env`-Änderung sein.
 - **Trennung Marketing ↔ App respektieren** (siehe Abschnitt unter „Projektstruktur"): Website lebt vollständig in `src/app/(marketing)/` (inkl. `_components/` und `_content/`), der App-Bereich bekommt ein eigenes Segment. Content-Platzhalter (Reichweitenzahl, Preise) stehen mit `TODO[content]` in `src/app/(marketing)/_content/placeholders.ts` und sind unverifiziert — nicht eigenmächtig ändern.
-- **Dummy-Modus respektieren.** `broker.is_dummy === true` heißt: kein echter SES-Call. Auch in lokaler Entwicklung, auch beim Smoke-Test. Production-Mails fließen erst nach explizitem Setzen von `is_dummy: false` auf einem Broker — der Code soll diesen Flag bedingungslos respektieren.
+- **Dummy-Modus respektieren.** `broker.is_dummy === true` heißt: kein echter Postmark-Call. Auch in lokaler Entwicklung, auch beim Smoke-Test. Production-Mails fließen erst nach explizitem Setzen von `is_dummy: false` auf einem Broker — der Code soll diesen Flag bedingungslos respektieren.
 - **Postmark-Webhook-Signature verifizieren** ist Pflicht, kein Optional. Wenn der Endpoint öffentlich ist, kann jeder ihn aufrufen.
