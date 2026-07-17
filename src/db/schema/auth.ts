@@ -2,8 +2,17 @@ import { pgTable, text, timestamp } from "drizzle-orm/pg-core";
 import { createId } from "@/lib/ids";
 import { users } from "./users";
 
-// Better-Auth-Kern-Tabellen (Multi-Tenant Schritt 2). Neu und kollisionsfrei --
-// sie referenzieren die bestehende users-Tabelle, ohne deren Relationen
+// KLARSTELLUNG zur User-Identitaet (zwei Dateien, ein Konzept):
+//   * src/db/schema/users.ts = SINGLE SOURCE OF TRUTH fuer die User-Identitaet.
+//     An users.id haengen customer_profiles und opt_out_processes; dort lebt
+//     auch die SSoT emailVerifiedAt. Better Auth ADOPTIERT diese Tabelle.
+//   * DIESE Datei (auth.ts) haelt NUR die Better-Auth-Beitabellen
+//     (session/account/verification). Sie definiert KEINE zweite User-Tabelle,
+//     sondern referenziert users.id. Wer die User-Identitaet aendert, tut das
+//     in users.ts -- nicht hier.
+//
+// Better-Auth-Kern-Beitabellen (Multi-Tenant Schritt 2). Neu und kollisionsfrei
+// -- sie referenzieren die bestehende users-Tabelle, ohne deren Relationen
 // anzufassen. JS-Property-Namen = Better-Auth-Feldnamen (camelCase), Spalten
 // snake_case. IDs kommen ueber advanced.database.generateId (=createId) aus
 // Better Auth; der $defaultFn dient nur direkten Inserts (Tests/Seeds).
