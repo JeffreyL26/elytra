@@ -179,6 +179,33 @@ zusammen mit G3 (Retention) entschieden; dieser Endpunkt löscht in v1 nur das
 Profil und lehnt mit `409` (`processes_active`) ab, solange aktive Prozesse
 existieren.
 
+### 2.5 Konto-Löschung
+
+| | |
+|---|---|
+| Methode/Pfad | `DELETE /api/account` |
+| Auth | Session (**bewusst ohne** Verifizierungs-Pflicht) + aktuelles Passwort im Body |
+| RDG | neutral (Betroffenenrecht) |
+
+Request: `{ "password": "…" }` — Re-Authentifizierung gegen versehentliche
+oder session-gestohlene Löschung. Response `204`, kein Body; Session danach
+serverseitig ungültig (Cascade löscht die Session-Zeilen).
+
+Bewusste Abweichungen von den übrigen Schreib-Endpunkten:
+
+- **Kein Verify-Gate:** Wer sich mit Tippfehler-Adresse registriert hat, kann
+  nie verifizieren — und muss sich trotzdem löschen können.
+- **Kein 409 bei aktiven Prozessen** (anders als 2.4): Konto-Löschung ist ein
+  Betroffenenrecht und darf nicht an laufenden Vorgängen scheitern. Laufende
+  Prozesse werden durch die Löschung beendet (Mandat erlischt mit dem Konto).
+
+Semantik: **harte Löschung** aller personenbezogenen Daten (User, Profil,
+Prozesse, Mails, Events, Sessions, Credentials). Vor der Löschung wird pro
+klassifizierter Broker-Antwort ein **echt anonymer** Empirie-Datensatz nach
+`broker_response_stats` extrahiert (nur brokerId/Kategorie/Confidence/Modell/
+Monat — keine IDs, Tokens, Freitexte oder Zeitpunkte feiner als Monat).
+Fehler: `401` (keine Session), `403` (`invalid_password`), `400`.
+
 ---
 
 ## 3. Dashboard-Reads — hinter G1
@@ -292,6 +319,7 @@ Checkout-Endpunkte; „Plan wählen"-CTAs bleiben Platzhalter
 | `/api/profile` | POST | Session + verifiziert | neutral |
 | `/api/profile` | PUT | Session + verifiziert | neutral |
 | `/api/profile` | DELETE | Session | neutral |
+| `/api/account` | DELETE | Session + Passwort | neutral (Betroffenenrecht) |
 | `/api/dashboard/profile` | GET | Session | hinter G1 |
 | `/api/dashboard/processes` | GET | Session | hinter G1 |
 | `/api/dashboard/processes/{id}/mails` | GET | Session | hinter G1 |
