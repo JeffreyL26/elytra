@@ -1,3 +1,4 @@
+export * from "./auth";
 export * from "./brokers";
 export * from "./customer-profiles";
 export * from "./opt-out-processes";

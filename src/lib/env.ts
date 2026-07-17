@@ -13,6 +13,21 @@ export const env = createEnv({
     REPLY_DOMAIN: z.string().min(1).optional(),
     POSTMARK_INBOUND_WEBHOOK_USERNAME: z.string().min(1).optional(),
     POSTMARK_INBOUND_WEBHOOK_PASSWORD: z.string().min(1).optional(),
+    // Better Auth (Multi-Tenant Schritt 2). Optional auf env-Ebene; der harte
+    // Bedarf sitzt am Point-of-Use (src/lib/auth.ts wirft ohne Secret).
+    // BETTER_AUTH_SECRET: Signiergeheimnis fuer Sessions/Tokens (>=32 Zeichen
+    // empfohlen). BETTER_AUTH_URL: oeffentliche Basis-URL fuer Verify-Links.
+    BETTER_AUTH_SECRET: z.string().min(1).optional(),
+    BETTER_AUTH_URL: z.string().url().optional(),
+    // Customer-Message-Stream (Reputationstrennung: NIE der Broker-Stream).
+    // Verifizierungs-/Kundenmails laufen hierueber. Fehlt der Stream, loggt der
+    // Adapter nur laut, statt auf den Broker-Stream auszuweichen (bewusste
+    // Entscheidung, siehe src/lib/mail/send-customer.ts).
+    // POSTMARK_CUSTOMER_STREAM: Message-Stream-ID des Customer-Streams.
+    // MAIL_CUSTOMER_FROM_ADDRESS: From-Adresse fuer Kundenmails (getrennt von
+    // MAIL_FROM_ADDRESS=removals@, das dem Broker-Stream gehoert).
+    POSTMARK_CUSTOMER_STREAM: z.string().min(1).optional(),
+    MAIL_CUSTOMER_FROM_ADDRESS: z.string().email().optional(),
     // Self-Request-Testprofil (Phase 3b.4.5): nur lokal in .env befuellt,
     // ausschliesslich vom Seed-Script db:seed:self gelesen. Keine echten
     // personenbezogenen Daten im Repo.
@@ -41,6 +56,10 @@ export const env = createEnv({
     REPLY_DOMAIN: process.env.REPLY_DOMAIN,
     POSTMARK_INBOUND_WEBHOOK_USERNAME: process.env.POSTMARK_INBOUND_WEBHOOK_USERNAME,
     POSTMARK_INBOUND_WEBHOOK_PASSWORD: process.env.POSTMARK_INBOUND_WEBHOOK_PASSWORD,
+    BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
+    BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
+    POSTMARK_CUSTOMER_STREAM: process.env.POSTMARK_CUSTOMER_STREAM,
+    MAIL_CUSTOMER_FROM_ADDRESS: process.env.MAIL_CUSTOMER_FROM_ADDRESS,
     SELF_NAME: process.env.SELF_NAME,
     SELF_STREET: process.env.SELF_STREET,
     SELF_POSTAL_CODE: process.env.SELF_POSTAL_CODE,

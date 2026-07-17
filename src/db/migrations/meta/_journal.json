@@ -43,6 +43,13 @@
       "when": 1783158817629,
       "tag": "0005_public_jubilee",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1784312313677,
+      "tag": "0006_adorable_proudstar",
+      "breakpoints": true
     }
   ]
 }
