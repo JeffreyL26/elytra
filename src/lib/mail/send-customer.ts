@@ -52,7 +52,8 @@ export function missingCustomerStreamEnv(): string[] {
   return missing;
 }
 
-// EINMALIGE, deutliche Warnung beim Hochfahren (analog assertWorkerEnv), damit
+// EINMALIGE, deutliche Warnung beim Hochfahren (vom Web-Startup-Preflight
+// assertRuntimeEnv("web") aufgerufen), damit
 // der Uebergangszustand "Customer-Stream noch nicht provisioniert" sichtbar ist
 // und nicht pro Mail versteckt aufschlaegt. Kein process.exit -- der Log-Modus
 // ist ein bewusst tolerierter Zwischenzustand, kein Fatal.
