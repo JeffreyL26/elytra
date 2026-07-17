@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <title>GoKognito Wordmark Render</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { background: transparent; }
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 2000px;
+      height: 560px;
+      overflow: hidden;
+    }
+    .wordmark {
+      font-family: "Newsreader", Georgia, serif;
+      font-weight: 500;
+      font-size: 300px;
+      letter-spacing: 0.005em;
+      white-space: nowrap;
+      line-height: 1;
+      color: #f2eee6;
+    }
+    body.ink .wordmark { color: #0a0a0b; }
+    /* matches css/style.css: sized to the real Newsreader "o" ink box */
+    .wordmark__o {
+      display: inline-block;
+      width: 0.54em;
+      height: 0.54em;
+      margin: 0 0.018em;
+      vertical-align: -0.01em;
+    }
+    /* icon-only mode */
+    body.icon .wordmark { font-size: 0; }
+    body.icon .wordmark__o { width: 480px; height: 480px; margin: 0; }
+    body.icon .wordmark__o path { fill: #f2eee6; }
+    body.icon.ink .wordmark__o path { fill: #0a0a0b; }
+  </style>
+</head>
+<body>
+  <span class="wordmark">G<svg class="wordmark__o" viewBox="0 0 100 100" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M50 0a50 50 0 1 0 0.01 0ZM50 20a18 18 0 0 1 9 33.5L63 84H37l4-30.5A18 18 0 0 1 50 20Z"/></svg>Kognito</span>
+  <script>
+    const q = new URLSearchParams(location.search);
+    if (q.get("c") === "ink") document.body.classList.add("ink");
+    if (q.get("m") === "icon") document.body.classList.add("icon");
+  </script>
+</body>
+</html>
