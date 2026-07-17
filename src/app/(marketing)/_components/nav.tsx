@@ -11,7 +11,7 @@ import gsap from "gsap";
 import { useEffect, useRef, useState } from "react";
 import { PLACEHOLDER_HREF, PRICE_ANCHOR } from "../_content/placeholders";
 import { getLenis } from "./runtime";
-import { Wordmark } from "./wordmark";
+import { Wordmark } from "@/app/_shared/wordmark";
 
 const NAV_ITEMS = ["Leistungen", "Funktionsweise", "Preise", "Über uns", "Kontakt"];
 

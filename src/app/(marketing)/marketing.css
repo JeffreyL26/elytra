@@ -4,51 +4,16 @@
    Product surfaces (dashboard, pricing) may carry color.
 
    1:1-Port des statischen Prototyps (ELYTRA Website/css/style.css).
-   Abweichungen vom Original sind auf zwei Punkte beschraenkt:
+   Abweichungen vom Original sind auf drei Punkte beschraenkt:
    - Font-Stacks referenzieren die next/font-Variablen (self-hosted,
      kein Google-CDN).
    - Die typografischen body-Regeln liegen auf dem .site-Wrapper des
      Marketing-Layouts, weil die Font-Variablen dort gesetzt werden.
+   - Design-Tokens + Basis-Reset + .container + Wordmark liegen in
+     der geteilten src/app/tokens.css (Root-Layout, laeuft VOR dieser
+     Datei) -- hier lebt nur noch Marketing-Spezifisches.
    ============================================================ */
 
-:root {
-  --ink: #0a0a0b;
-  --ink-2: #121214;
-  --ink-3: #1a1a1e;
-  --paper: #f2eee6;
-  --paper-2: #eae5d9;
-
-  /* product colors: dashboard & pricing only */
-  --green: #2e7d5b;
-  --green-deep: #0f2f24;
-  --green-soft: #7fc8a4;
-  --amber: #d9a441;
-
-  --text-on-dark: #f2eee6;
-  --text-on-dark-muted: rgba(242, 238, 230, 0.55);
-  --text-on-light: #131313;
-  --text-on-light-muted: rgba(19, 19, 19, 0.62);
-
-  --line-dark: rgba(242, 238, 230, 0.12);
-  --line-light: rgba(19, 19, 19, 0.14);
-
-  /* monochrome accent, flips per theme */
-  --accent: var(--paper);
-  --accent-strong: #ffffff;
-
-  --nav-h: 76px;
-  --radius: 10px;
-  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-[data-theme="dark"] {
-  --accent: var(--paper);
-  --accent-strong: #ffffff;
-}
-[data-theme="light"] {
-  --accent: #131313;
-  --accent-strong: #000000;
-}
 .tile--dark {
   --accent: var(--paper);
   --accent-strong: #ffffff;
@@ -59,17 +24,7 @@
   --accent-strong: #000000;
 }
 
-/* ---------- Reset ---------- */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-html {
-  scroll-behavior: initial;
-}
+/* ---------- Lenis (Marketing-only Smooth-Scroll) ---------- */
 html.lenis,
 html.lenis body {
   height: auto;
@@ -79,10 +34,6 @@ html.lenis body {
   scroll-behavior: auto !important;
 }
 
-body {
-  background: var(--ink);
-  overflow-x: hidden;
-}
 /* Typografie-Basis auf dem Layout-Wrapper: dort leben die Font-Variablen.
    Die Font-Stacks MUESSEN hier (nicht auf :root) definiert sein: var(--font-*)
    wird am definierenden Element substituiert, und die next/font-Variablen
@@ -99,55 +50,9 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-img,
-svg {
-  display: block;
-  max-width: 100%;
-}
-a {
-  color: inherit;
-  text-decoration: none;
-}
-button {
-  font: inherit;
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: inherit;
-}
-ul {
-  list-style: none;
-}
-::selection {
-  background: var(--paper);
-  color: var(--ink);
-}
-[data-theme="light"] ::selection {
-  background: var(--ink);
-  color: var(--paper);
-}
-
-/* ---------- Layout ---------- */
-.container {
-  width: min(1240px, 100% - 48px);
-  margin-inline: auto;
-}
-.container--narrow {
-  width: min(860px, 100% - 48px);
-}
-
 .section {
   padding: clamp(96px, 12vw, 170px) 0;
   position: relative;
-}
-
-[data-theme="light"] {
-  background: var(--paper);
-  color: var(--text-on-light);
-}
-[data-theme="dark"] {
-  background: var(--ink);
-  color: var(--text-on-dark);
 }
 
 /* ---------- Typography ---------- */
@@ -193,31 +98,6 @@ ul {
 .split-char {
   display: inline-block;
   will-change: transform;
-}
-
-/* ---------- Wordmark (text logo, keyhole disc as the "o") ---------- */
-.wordmark {
-  font-family: var(--serif);
-  font-weight: 500;
-  font-size: 24px;
-  letter-spacing: 0.005em;
-  color: currentColor;
-  white-space: nowrap;
-}
-.wordmark--xl {
-  font-size: clamp(42px, 7vw, 84px);
-}
-.wordmark--footer {
-  font-size: 34px;
-}
-/* Sized to the real Newsreader "o": 0.54em ink box, 0.01em overshoot below
-   the baseline, side bearings that add up to the glyph's 0.577em advance. */
-.wordmark__o {
-  display: inline-block;
-  width: 0.54em;
-  height: 0.54em;
-  margin: 0 0.018em;
-  vertical-align: -0.01em;
 }
 
 /* ---------- Buttons ---------- */

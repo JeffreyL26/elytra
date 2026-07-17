@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { SERVICE_NAME } from "@/lib/branding";
+import "./tokens.css";
 
 export const metadata: Metadata = {
   title: SERVICE_NAME,

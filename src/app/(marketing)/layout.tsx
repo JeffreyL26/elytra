@@ -1,30 +1,6 @@
 import type { Metadata } from "next";
-import { Instrument_Sans, Newsreader, Space_Mono } from "next/font/google";
+import { mono, sans, serif } from "@/app/fonts";
 import "./marketing.css";
-
-// Fonts self-hosted ueber next/font (Download zur Build-Zeit, Auslieferung vom
-// eigenen Server). Bewusst KEIN Google-Fonts-CDN zur Laufzeit -- DSGVO-Linie
-// des Projekts (LG Muenchen I, 3 O 17493/20).
-const serif = Newsreader({
-  subsets: ["latin"],
-  style: ["normal", "italic"],
-  axes: ["opsz"],
-  variable: "--font-serif",
-  display: "swap",
-});
-
-const sans = Instrument_Sans({
-  subsets: ["latin"],
-  variable: "--font-sans",
-  display: "swap",
-});
-
-const mono = Space_Mono({
-  subsets: ["latin"],
-  weight: ["400", "700"],
-  variable: "--font-mono",
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: "GoKognito | Werden Sie unsichtbar für Datenhändler",
