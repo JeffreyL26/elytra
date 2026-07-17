@@ -16,11 +16,11 @@ const COMMON = {
   requiresAuthorizationAttachment: false,
 } as const satisfies Partial<NewBroker>;
 
-// 49 reale Data-Broker: 3 aktiv (erster E2E-Test), 46 inaktiv vorgeseedet.
+// 46 reale Data-Broker: 3 aktiv (erster E2E-Test), 43 inaktiv vorgeseedet.
 // Inaktiv gegliedert: 8 E-Mail-Kanal, 7 Mixed (Form bevorzugt, E-Mail als
 // Fallback), 4 Tier 1 (E-Mail-Kanal oeffentlich dokumentiert, hohe Konfidenz),
 // 3 Tier 2 (Kontaktpunkt verifiziert, Verifikation potenziell an die
-// Betroffenen-Adresse gebunden -- Fall-B-Test-Kandidaten), 18 DE-Welle
+// Betroffenen-Adresse gebunden -- Fall-B-Test-Kandidaten), 15 DE-Welle
 // (Slug-Praefix "da-", Quelle datenanfragen.de, CC0), 6 EU-Welle 2 (eigene
 // Recherche 07/2026, kein Praefix).
 export const realBrokers: NewBroker[] = [
@@ -311,6 +311,11 @@ export const realBrokers: NewBroker[] = [
   // Alle mit dediziertem Betroffenen-Kontakt und E-Mail als Transportweg, alle
   // isActive: false. requiresAuthorizationAttachment kommt aus COMMON (false).
   //
+  // Auskunfteien bewusst ausgeschlossen (nicht automatisierbar: Loeschung
+  // strukturell rejected, Auskunft teils nur postalisch) -- entfernt 17.07.:
+  // regis24 (per Antwort bestaetigt), acxiom, universum-business. Nicht erneut
+  // aufnehmen.
+  //
   // TODO(needsIdDocument): In dieser Welle stammt der Wert im Quell-Feld
   // "needs-id-document" (Ausweiskopie) -- das ist NICHT dasselbe wie
   // requiresAuthorizationAttachment (Vollmacht-Anhang). Hier ueberall false,
@@ -322,16 +327,6 @@ export const realBrokers: NewBroker[] = [
     name: "ABIS GmbH",
     country: "DE",
     optOutEmail: "datenschutz@abis-online.de",
-    language: "de",
-    isActive: false,
-  },
-  {
-    ...COMMON,
-    slug: "da-acxiom",
-    name: "Acxiom Deutschland GmbH",
-    country: "DE",
-    websiteUrl: "http://www.acxiom.de/",
-    optOutEmail: "datenschutz@acxiom.com",
     language: "de",
     isActive: false,
   },
@@ -407,16 +402,6 @@ export const realBrokers: NewBroker[] = [
   },
   {
     ...COMMON,
-    slug: "da-regis24",
-    name: "Regis24 GmbH",
-    country: "DE",
-    websiteUrl: "https://www.regis24.de",
-    optOutEmail: "datenschutz@regis24.de",
-    language: "de",
-    isActive: false,
-  },
-  {
-    ...COMMON,
     slug: "da-schober",
     name: "Schober Information Group Deutschland GmbH",
     country: "DE",
@@ -424,18 +409,6 @@ export const realBrokers: NewBroker[] = [
     optOutEmail: "datenschutz@schober.de",
     language: "de",
     isActive: false,
-  },
-  {
-    ...COMMON,
-    slug: "da-universum-business",
-    name: "UNIVERSUM Business GmbH",
-    country: "DE",
-    websiteUrl: "https://www.universum-group.de",
-    optOutEmail: "datenschutz@universum-group.de",
-    language: "de",
-    isActive: false,
-    // Quell-Hinweis (comments): Erbitten frühere Anschriften nur, wenn Änderung
-    // in den letzten 36 Monaten stattgefunden hat.
   },
   {
     ...COMMON,

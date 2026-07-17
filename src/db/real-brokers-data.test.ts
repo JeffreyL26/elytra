@@ -49,8 +49,8 @@ describe("EU-Welle 2 Broker-Stammdaten", () => {
 });
 
 describe("DE-Welle (da-*) Broker-Stammdaten", () => {
-  it("umfasst genau 18 Eintraege", () => {
-    expect(waveBrokers).toHaveLength(18);
+  it("umfasst genau 15 Eintraege", () => {
+    expect(waveBrokers).toHaveLength(15);
   });
 
   // Guard gegen versehentliche Aktivierung ueber den Seed.
