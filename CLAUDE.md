@@ -49,11 +49,12 @@ Kunden registrieren sich auf der Website, geben eine Vertretungs-Vollmacht ab, h
 ## Projektstruktur
 
 > **⚠️ Dieser Baum ist veraltet.** Er kennt den Next-Port der Marketing-Website
-> noch nicht: Es fehlen `src/app/(marketing)/` (Landing-Page-Segment inkl.
-> `_content/placeholders.ts`), `src/components/marketing/` und `tools/branding/`.
-> Aktueller Stand: siehe `README.md` → „Projektstruktur". Ein vollständiger
-> Rewrite dieser Sektion ist ein eigener Task — bis dahin gilt die README als
-> Wahrheit, und die Trennungsregeln stehen im Abschnitt direkt unter dem Baum.
+> noch nicht: Es fehlt `src/app/(marketing)/` (Landing-Page-Segment inkl.
+> `_components/` und `_content/placeholders.ts`, beides private folders
+> innerhalb des Segments) und `tools/branding/`. Aktueller Stand: siehe
+> `README.md` → „Projektstruktur". Ein vollständiger Rewrite dieser Sektion ist
+> ein eigener Task — bis dahin gilt die README als Wahrheit, und die
+> Trennungsregeln stehen im Abschnitt direkt unter dem Baum.
 
 ```
 gokognito/
@@ -115,21 +116,28 @@ getrennt. Diese Trennung nicht aufheben — auch nicht „nebenbei" beim Bauen
 eines App-Views:
 
 - **`src/app/(marketing)/` = öffentliche Website**, eigenes Route-Segment mit
-  eigenem `layout.tsx` (Fonts, `.site`-Wrapper). Der App-/Dashboard-Bereich
-  bekommt ein **eigenes** Segment (z. B. `src/app/(app)/`) mit eigenem Layout.
-  Nicht in `(marketing)` einhängen, dessen Layout nicht wiederverwenden.
-- **`src/components/marketing/` = Client Components nur der Website**
-  (three.js, GSAP, Lenis). Nichts davon in App-Views verwenden; umgekehrt keine
-  App-/Domänenlogik dort ablegen. Geteilter Code gehört nach `src/lib/`.
-- **`src/app/(marketing)/_content/placeholders.ts`** hält alle Content-
-  Platzhalter der Website (`TODO[content]`): die Reichweitenzahl („über 180
-  Datenhändler", § 5 UWG) und sämtliche Preise sind **unverifiziert** und
-  weichen von der Roadmap ab (dort 49 € / 8 €). Nicht raten, nicht
-  „korrigieren", nicht an den Verwendungsstellen hartcodieren — nur dort ändern.
+  eigenem `layout.tsx` (Fonts, `.site`-Wrapper). Alles Website-Spezifische
+  liegt **innerhalb** dieses Segments — auch die Client Components und die
+  Platzhalter (siehe nächste Punkte). Der App-/Dashboard-Bereich bekommt ein
+  **eigenes** Segment (z. B. `src/app/(app)/`) mit eigenem Layout und eigenen
+  `_components`/`_content`. Nicht in `(marketing)` einhängen, dessen Layout
+  nicht wiederverwenden.
+- **`(marketing)/_components/` = Client Components nur der Website**
+  (three.js, GSAP, Lenis). Der Unterstrich macht den Ordner zu einem
+  Next.js *private folder* — nicht geroutet, egal wie er heißt. Nichts davon
+  in App-Views verwenden; umgekehrt keine App-/Domänenlogik dort ablegen.
+  Geteilter Code gehört nach `src/lib/`. Kein Import von außerhalb von
+  `(marketing)` in `_components/` oder `_content/` hinein — die Richtung zeigt
+  nur nach innen.
+- **`(marketing)/_content/placeholders.ts`** hält alle Content-Platzhalter der
+  Website (`TODO[content]`): die Reichweitenzahl („über 180 Datenhändler",
+  § 5 UWG) und sämtliche Preise sind **unverifiziert** und weichen von der
+  Roadmap ab (dort 49 € / 8 €). Nicht raten, nicht „korrigieren", nicht an den
+  Verwendungsstellen hartcodieren — nur dort ändern.
 - **Tote Links sind Absicht:** Nav-/Footer-/Plan-CTAs zeigen bis zum Launch auf
   `href="#"` und tragen `data-placeholder-link`; der Anchor-Handler in
-  `scroll-choreography.tsx` macht sie bewusst inert. Echte Anker (`#preise`,
-  `#funktionsweise`) haben das Attribut nicht.
+  `_components/scroll-choreography.tsx` macht sie bewusst inert. Echte Anker
+  (`#preise`, `#funktionsweise`) haben das Attribut nicht.
 - **`marketing.css` ist global, nicht gescopt.** Next lädt es nur für
   `(marketing)`-Routen, aber bei Client-Navigation bleibt es im Dokument und
   seine ungescopten Selektoren (`*`, `body`, `a`, `ul`, `button`, `:root`)
@@ -403,6 +411,6 @@ pnpm format                      # biome format --write
 - **Drizzle-Schema-Änderungen immer mit `db:generate` + `db:migrate` festschreiben.** Niemals direkt am SQL pfuschen.
 - **Stopp und reviewen lassen** nach folgenden Phase-2-Aufgaben: Schema-Erweiterung (Aufgabe 2, vor `db:migrate`), Worker-Skeleton-Smoke-Test (Aufgabe 3), Mail-Template-Snapshot-Test (Aufgabe 4), End-to-End-Test (Aufgabe 10). Bei allem anderen autonom durchziehen.
 - **Domain-Referenzen und Secrets immer aus `env`.** Niemals `jba-team.com` oder `removals@jba-team.com` im Code hartcodieren — wenn die Domain wechselt, soll das eine `.env`-Änderung sein.
-- **Trennung Marketing ↔ App respektieren** (siehe Abschnitt unter „Projektstruktur"): Website lebt in `src/app/(marketing)/` + `src/components/marketing/`, der App-Bereich bekommt ein eigenes Segment. Content-Platzhalter (Reichweitenzahl, Preise) stehen mit `TODO[content]` in `src/app/(marketing)/_content/placeholders.ts` und sind unverifiziert — nicht eigenmächtig ändern.
+- **Trennung Marketing ↔ App respektieren** (siehe Abschnitt unter „Projektstruktur"): Website lebt vollständig in `src/app/(marketing)/` (inkl. `_components/` und `_content/`), der App-Bereich bekommt ein eigenes Segment. Content-Platzhalter (Reichweitenzahl, Preise) stehen mit `TODO[content]` in `src/app/(marketing)/_content/placeholders.ts` und sind unverifiziert — nicht eigenmächtig ändern.
 - **Dummy-Modus respektieren.** `broker.is_dummy === true` heißt: kein echter SES-Call. Auch in lokaler Entwicklung, auch beim Smoke-Test. Production-Mails fließen erst nach explizitem Setzen von `is_dummy: false` auf einem Broker — der Code soll diesen Flag bedingungslos respektieren.
 - **Postmark-Webhook-Signature verifizieren** ist Pflicht, kein Optional. Wenn der Endpoint öffentlich ist, kann jeder ihn aufrufen.

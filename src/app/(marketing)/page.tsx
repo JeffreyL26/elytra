@@ -4,13 +4,13 @@
 // eingebundenen Client-Components (Nav, HeroScene, ScrollChoreography,
 // AkteReveal, Faq, BillingToggle).
 
-import { AkteReveal } from "@/components/marketing/akte-reveal";
-import { BillingToggle } from "@/components/marketing/billing-toggle";
-import { Faq } from "@/components/marketing/faq";
-import { HeroScene } from "@/components/marketing/hero-scene";
-import { Nav } from "@/components/marketing/nav";
-import { ScrollChoreography } from "@/components/marketing/scroll-choreography";
-import { Wordmark } from "@/components/marketing/wordmark";
+import { AkteReveal } from "./_components/akte-reveal";
+import { BillingToggle } from "./_components/billing-toggle";
+import { Faq } from "./_components/faq";
+import { HeroScene } from "./_components/hero-scene";
+import { Nav } from "./_components/nav";
+import { ScrollChoreography } from "./_components/scroll-choreography";
+import { Wordmark } from "./_components/wordmark";
 import { BROKER_COUNT_CLAIM, PLACEHOLDER_HREF, PLANS, PRICE_ANCHOR } from "./_content/placeholders";
 
 const ARROW = (

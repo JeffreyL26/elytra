@@ -16,8 +16,8 @@ Farbvarianten steuert `document.body.className` (`ink`, `icon`, `icon ink`) --
 per Query-Parameter (`?c=ink`, `?m=icon`) oder DevTools setzen.
 
 WICHTIG: Die Wordmark-Geometrie (Schluesselloch-"o", 0.54em Ink-Box, 0.01em
-Grundlinien-Ueberhang) muss mit `src/components/marketing/wordmark.tsx` und
-`marketing.css` synchron bleiben. Aenderst du eines, zieh die anderen nach und
-exportiere neu.
+Grundlinien-Ueberhang) muss mit `src/app/(marketing)/_components/wordmark.tsx`
+und `marketing.css` synchron bleiben. Aenderst du eines, zieh die anderen nach
+und exportiere neu.
 
 `GoKognito_Icon_*.svg` sind die fertigen Icon-Exporte (verlustfrei skalierbar).
