@@ -6,6 +6,14 @@
 // Landing-Page-Prototyp und sind NICHT verifiziert. Nicht stillschweigend
 // uebernehmen, nicht an Ort und Stelle "korrigieren" -- nur hier aendern,
 // damit alle Verwendungen konsistent bleiben.
+//
+// Bewusst NICHT hier: der Markenname. Die Marketing-Copy schreibt "GoKognito"
+// als Literal im Fliesstext, nicht via SERVICE_NAME aus lib/branding.ts --
+// eine Konstante wuerde Saetze zerhacken ("{SERVICE_NAME} ist der
+// Widerspruch."), und die Copy ist ohnehin deutschsprachiger Prosatext, der
+// bei einem Rebrand redaktionell durchgesehen werden muss. Die
+// Nie-hartcodieren-Regel aus CLAUDE.md zielt auf Mail-Templates und
+// Domain-/Absenderlogik, nicht auf Landing-Page-Prosa. Kein Refactor noetig.
 
 // Reichweitenangabe (Zahl in "ueber N Datenhaendler"). Paragraph-5-UWG-
 // relevant: darf erst live gehen, wenn das Broker-Register die Zahl

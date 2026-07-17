@@ -5,11 +5,12 @@
 //
 // Platzhalter-Links: alle Menuepunkte zeigen auf kuenftige Unterseiten und
 // tragen href="#" + data-placeholder-link (Konvention siehe
-// content/placeholders.ts). Funktionale Anker (#preise) sind echte CTAs.
+// app/(marketing)/_content/placeholders.ts). Funktionale Anker (#preise) sind
+// echte CTAs.
 
 import gsap from "gsap";
 import { useEffect, useRef, useState } from "react";
-import { PLACEHOLDER_HREF, PRICE_ANCHOR } from "@/content/placeholders";
+import { PLACEHOLDER_HREF, PRICE_ANCHOR } from "@/app/(marketing)/_content/placeholders";
 import { getLenis } from "./runtime";
 import { Wordmark } from "./wordmark";
 

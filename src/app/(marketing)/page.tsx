@@ -11,7 +11,7 @@ import { HeroScene } from "@/components/marketing/hero-scene";
 import { Nav } from "@/components/marketing/nav";
 import { ScrollChoreography } from "@/components/marketing/scroll-choreography";
 import { Wordmark } from "@/components/marketing/wordmark";
-import { BROKER_COUNT_CLAIM, PLACEHOLDER_HREF, PLANS, PRICE_ANCHOR } from "@/content/placeholders";
+import { BROKER_COUNT_CLAIM, PLACEHOLDER_HREF, PLANS, PRICE_ANCHOR } from "./_content/placeholders";
 
 const ARROW = (
   <svg viewBox="0 0 16 16" width="14" height="14" fill="none" aria-hidden="true">
