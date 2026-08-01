@@ -3,9 +3,13 @@ import { env } from "@/lib/env";
 import { createId } from "@/lib/ids";
 
 export interface SendMailInput {
+  // Vollstaendiger From-Header, im tokenized-Modus inkl. Display-Name
+  // ("GoKognito Datenschutzanfragen <proc-...@...>"), siehe broker-from.ts.
   from: string;
   to: string;
-  replyTo: string;
+  // null = kein Reply-To setzen. Im tokenized-Modus traegt bereits die
+  // From-Adresse den Token; ein identisches Reply-To waere Redundanz.
+  replyTo: string | null;
   subject: string;
   textBody: string;
   htmlBody: string;
@@ -59,7 +63,9 @@ async function sendViaPostmark(input: SendMailInput, messageId: string): Promise
   const response = await client.sendEmail({
     From: input.from,
     To: input.to,
-    ReplyTo: input.replyTo,
+    // Nur setzen, wenn vorhanden -- Postmark wuerde ein leeres ReplyTo als
+    // Header ausliefern.
+    ...(input.replyTo ? { ReplyTo: input.replyTo } : {}),
     Subject: input.subject,
     TextBody: input.textBody,
     HtmlBody: input.htmlBody,

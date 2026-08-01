@@ -11,6 +11,8 @@ const { mockEnv } = vi.hoisted(() => ({
     POSTMARK_SERVER_TOKEN: undefined as string | undefined,
     POSTMARK_CUSTOMER_STREAM: undefined as string | undefined,
     MAIL_CUSTOMER_FROM_ADDRESS: undefined as string | undefined,
+    REPLY_DOMAIN: undefined as string | undefined,
+    MAIL_BROKER_FROM_MODE: "self" as "self" | "tokenized",
   },
 }));
 vi.mock("@/lib/env", () => ({ env: mockEnv }));
@@ -26,6 +28,8 @@ beforeEach(() => {
   mockEnv.POSTMARK_SERVER_TOKEN = "pm-token";
   mockEnv.POSTMARK_CUSTOMER_STREAM = "customer-stream";
   mockEnv.MAIL_CUSTOMER_FROM_ADDRESS = "no-reply@example.org";
+  mockEnv.REPLY_DOMAIN = "reply.jba-team.com";
+  mockEnv.MAIL_BROKER_FROM_MODE = "self";
   vi.spyOn(console, "log").mockImplementation(() => {});
 });
 
@@ -83,6 +87,31 @@ describe("assertRuntimeEnv('worker')", () => {
 
   it("POSTMARK_SERVER_TOKEN ist fuer den Worker NICHT hart-required (Dummy-Modus)", () => {
     mockEnv.POSTMARK_SERVER_TOKEN = undefined;
+    expect(() => assertRuntimeEnv("worker")).not.toThrow();
+  });
+
+  // Im tokenized-Modus baut die From-Adresse auf REPLY_DOMAIN auf -- fehlt sie,
+  // muss das beim Start auffallen, nicht beim ersten Versand.
+  it("tokenized-Modus ohne REPLY_DOMAIN -> Preflight-Fehler", () => {
+    mockEnv.MAIL_BROKER_FROM_MODE = "tokenized";
+    mockEnv.REPLY_DOMAIN = undefined;
+    try {
+      assertRuntimeEnv("worker");
+      throw new Error("sollte geworfen haben");
+    } catch (error) {
+      expect(error).toBeInstanceOf(RuntimeEnvError);
+      expect((error as RuntimeEnvError).missing).toContain("REPLY_DOMAIN");
+    }
+  });
+
+  it("tokenized-Modus MIT REPLY_DOMAIN -> gruen", () => {
+    mockEnv.MAIL_BROKER_FROM_MODE = "tokenized";
+    expect(() => assertRuntimeEnv("worker")).not.toThrow();
+  });
+
+  it("self-Modus ohne REPLY_DOMAIN -> gruen (dort nur Reply-To, kein Fail-Fast)", () => {
+    mockEnv.MAIL_BROKER_FROM_MODE = "self";
+    mockEnv.REPLY_DOMAIN = undefined;
     expect(() => assertRuntimeEnv("worker")).not.toThrow();
   });
 

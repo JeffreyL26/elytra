@@ -8,6 +8,7 @@ import {
   processMails,
 } from "@/db/schema";
 import { env } from "@/lib/env";
+import { buildBrokerEnvelope } from "@/lib/mail/broker-from";
 import { sendMail } from "@/lib/mail/send";
 import { buildOptOutRequest, toTemplateLocale } from "@/lib/mail/templates/opt-out-request";
 
@@ -47,13 +48,22 @@ export async function sendOptOutMail(processId: string): Promise<void> {
   // Self-Requests kommen von der Privatadresse (SELF_EMAIL), Vertretungs-
   // Anfragen vom Service (MAIL_FROM_ADDRESS). Fail-fast dafuer liegt im
   // Worker-Preflight; dieser Check ist das Point-of-Use-Sicherheitsnetz.
-  const from = proc.isSelfRequest ? env.SELF_EMAIL : env.MAIL_FROM_ADDRESS;
+  const selfModeFrom = proc.isSelfRequest ? env.SELF_EMAIL : env.MAIL_FROM_ADDRESS;
   const replyDomain = env.REPLY_DOMAIN;
-  if (!from || !replyDomain) {
+  if (!selfModeFrom || !replyDomain) {
     const fromVar = proc.isSelfRequest ? "SELF_EMAIL" : "MAIL_FROM_ADDRESS";
     throw new Error(`${fromVar}/REPLY_DOMAIN missing — set them in .env`);
   }
-  const replyTo = `proc-${proc.processToken}@${replyDomain}`;
+
+  // Welche Adresse als From geht, entscheidet der Modus (broker-from.ts).
+  // Dieselbe Funktion nutzt der Dry-Run in trigger-real-send.ts -- was dort
+  // angezeigt wird, ist damit exakt das, was hier versendet wird.
+  const envelope = buildBrokerEnvelope({
+    mode: env.MAIL_BROKER_FROM_MODE,
+    processToken: proc.processToken,
+    replyDomain,
+    selfModeFrom,
+  });
 
   const mail = buildOptOutRequest(
     profile,
@@ -64,9 +74,9 @@ export async function sendOptOutMail(processId: string): Promise<void> {
   );
 
   const { messageId, providerResponseId } = await sendMail({
-    from,
+    from: envelope.fromHeader,
     to: toAddress,
-    replyTo,
+    replyTo: envelope.replyTo,
     subject: mail.subject,
     textBody: mail.textBody,
     htmlBody: mail.htmlBody,
@@ -79,7 +89,9 @@ export async function sendOptOutMail(processId: string): Promise<void> {
       processId,
       direction: "outbound",
       providerMessageId: messageId,
-      fromAddress: from,
+      // Reine Adresse ohne Display-Name -- die Spalte haelt Adressen, nicht
+      // Header-Werte.
+      fromAddress: envelope.fromAddress,
       toAddress,
       subject: mail.subject,
       bodyText: mail.textBody,
@@ -98,6 +110,11 @@ export async function sendOptOutMail(processId: string): Promise<void> {
         to: toAddress,
         dummy: broker.isDummy,
         subject: mail.subject,
+        // Audit: aus welcher Adresse ging die Anfrage raus? Macht bei einer
+        // spaeteren Rueckkanal-Analyse nachvollziehbar, ob ein Vorgang noch im
+        // self-Modus (Antworten laufen ins private Postfach) versendet wurde.
+        fromMode: envelope.mode,
+        from: envelope.fromAddress,
       },
     });
     await tx

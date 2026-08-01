@@ -16,6 +16,7 @@ import { db, sql } from "@/db/client";
 import { brokers, customerProfiles, optOutProcesses, users } from "@/db/schema";
 import { env } from "@/lib/env";
 import { createProcessToken } from "@/lib/ids";
+import { buildBrokerEnvelope, TOKENIZED_DISPLAY_NAME } from "@/lib/mail/broker-from";
 import {
   buildOptOutRequest,
   TEMPLATE_LOCALES,
@@ -152,10 +153,24 @@ async function main(): Promise<void> {
       true,
     );
 
+    // Envelope ueber dieselbe Funktion wie der Versand-Job -- was hier steht,
+    // geht auch genau so raus.
+    const envelope = buildBrokerEnvelope({
+      mode: env.MAIL_BROKER_FROM_MODE,
+      processToken: token,
+      replyDomain: env.REPLY_DOMAIN ?? "(REPLY_DOMAIN fehlt!)",
+      selfModeFrom: selfEmail,
+    });
+
     console.log("\n===== DRY-RUN (kein Versand, keine DB-Schreibvorgaenge) =====");
-    console.log(`From:     ${selfEmail}`);
+    console.log(
+      `From-Modus: ${envelope.mode}${envelope.mode === "self" ? "  (Antworten gehen an SELF_EMAIL — NICHT in die Pipeline!)" : "  (Token in der From-Adresse — Antworten landen in der Pipeline)"}`,
+    );
+    console.log(`From:     ${envelope.fromHeader}`);
     console.log(`To:       ${broker.optOutEmail}`);
-    console.log(`Reply-To: proc-${token}@${env.REPLY_DOMAIN}  ${tokenNote}`);
+    console.log(
+      `Reply-To: ${envelope.replyTo ?? "(nicht gesetzt — Token steckt in der From-Adresse)"}  ${tokenNote}`,
+    );
     console.log(`Subject:  ${mail.subject}`);
     console.log("----- Body (Text) -----");
     console.log(mail.textBody);
@@ -164,9 +179,30 @@ async function main(): Promise<void> {
     return;
   }
 
-  // --send: interaktive Bestaetigung mit woertlichem "JA".
+  // --send: interaktive Bestaetigung mit woertlichem "JA". Der effektive
+  // Absender MUSS hier stehen -- er entscheidet, ob Antworten die Pipeline
+  // erreichen, und im tokenized-Modus ist er nicht SELF_EMAIL.
   console.log(`\nECHTER VERSAND an: ${broker.optOutEmail}`);
-  console.log(`Absender (From):   ${selfEmail}`);
+  console.log(`From-Modus:        ${env.MAIL_BROKER_FROM_MODE}`);
+  if (env.MAIL_BROKER_FROM_MODE === "tokenized") {
+    // Bei einem neuen Prozess entsteht das Token erst im Versand -- dann die
+    // Form zeigen, nicht die konkrete Adresse erfinden.
+    const shown = existing
+      ? buildBrokerEnvelope({
+          mode: "tokenized",
+          processToken: existing.processToken,
+          replyDomain: env.REPLY_DOMAIN,
+          selfModeFrom: selfEmail,
+        }).fromHeader
+      : `${TOKENIZED_DISPLAY_NAME} <proc-<neues Token>@${env.REPLY_DOMAIN}>`;
+    console.log(`Absender (From):   ${shown}`);
+    console.log("                   -> Antworten laufen in die Pipeline.");
+  } else {
+    console.log(`Absender (From):   ${selfEmail}`);
+    console.log(
+      "                   -> ACHTUNG: Broker antworten an diese Adresse; Antworten erreichen die Pipeline NICHT.",
+    );
+  }
   const rl = createInterface({ input: process.stdin, output: process.stdout });
   const answer = await rl.question('Tippe woertlich "JA" um zu senden: ');
   rl.close();

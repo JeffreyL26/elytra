@@ -34,6 +34,14 @@ function requiredEnv(context: RuntimeContext): Array<readonly [string, string | 
     return [
       ["ANTHROPIC_API_KEY", env.ANTHROPIC_API_KEY],
       ["SELF_EMAIL", env.SELF_EMAIL],
+      // Im tokenized-Modus BAUT die From-Adresse auf REPLY_DOMAIN auf
+      // (proc-<token>@<REPLY_DOMAIN>). Fehlt sie, koennte der Worker keine
+      // gueltige Absenderadresse bilden -- der Fehler soll beim Start
+      // auffallen, nicht beim ersten Versand. Im self-Modus bleibt
+      // REPLY_DOMAIN weich (nur Reply-To).
+      ...(env.MAIL_BROKER_FROM_MODE === "tokenized"
+        ? ([["REPLY_DOMAIN", env.REPLY_DOMAIN]] as const)
+        : []),
     ];
   }
   // web: ohne Signiergeheimnis + Basis-URL kann Better Auth nicht sicher laufen.

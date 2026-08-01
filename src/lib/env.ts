@@ -13,6 +13,12 @@ export const env = createEnv({
     REPLY_DOMAIN: z.string().min(1).optional(),
     POSTMARK_INBOUND_WEBHOOK_USERNAME: z.string().min(1).optional(),
     POSTMARK_INBOUND_WEBHOOK_PASSWORD: z.string().min(1).optional(),
+    // Absender-Strategie fuer Broker-Anfragen (siehe lib/mail/broker-from.ts):
+    //   "self"      = From ist SELF_EMAIL/MAIL_FROM_ADDRESS, Token im Reply-To
+    //   "tokenized" = From traegt den Token (proc-<token>@REPLY_DOMAIN)
+    // Default bewusst "self": tokenized setzt eine in Postmark VERIFIZIERTE
+    // Sending-Domain voraus, sonst bounct jeder Versand.
+    MAIL_BROKER_FROM_MODE: z.enum(["self", "tokenized"]).default("self"),
     // Better Auth (Multi-Tenant Schritt 2). Optional auf env-Ebene; der harte
     // Bedarf sitzt am Point-of-Use (src/lib/auth.ts wirft ohne Secret).
     // BETTER_AUTH_SECRET: Signiergeheimnis fuer Sessions/Tokens (>=32 Zeichen
@@ -56,6 +62,7 @@ export const env = createEnv({
     REPLY_DOMAIN: process.env.REPLY_DOMAIN,
     POSTMARK_INBOUND_WEBHOOK_USERNAME: process.env.POSTMARK_INBOUND_WEBHOOK_USERNAME,
     POSTMARK_INBOUND_WEBHOOK_PASSWORD: process.env.POSTMARK_INBOUND_WEBHOOK_PASSWORD,
+    MAIL_BROKER_FROM_MODE: process.env.MAIL_BROKER_FROM_MODE,
     BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
     BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
     POSTMARK_CUSTOMER_STREAM: process.env.POSTMARK_CUSTOMER_STREAM,
