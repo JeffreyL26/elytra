@@ -126,6 +126,57 @@ describe("matchInbound", () => {
     expect(result.processId).toBe(processId);
   });
 
+  // REALER FALL statt Loopback (Befund 01.08.2026): Broker antworten an die
+  // FROM-Adresse, nicht an Reply-To. Im tokenized-Modus ist die From-Adresse
+  // proc-<token>@<REPLY_DOMAIN> -- die Antwort geht also genau dorthin.
+  // Zusaetzlich weicht die Realitaet in zwei weiteren Punkten vom Loopback ab:
+  // ein Ticketsystem stellt seine EIGENE Vorgangsnummer VOR unseren Ref-Block
+  // (ABIS: "ABISPRIVACY-110"), und der Absender ist eine andere Adresse als
+  // die, an die wir gesendet haben (Regis24 antwortete aus datenschutz@,
+  // adressiert war eine andere Mailbox). Alle drei gleichzeitig:
+  it("Realfall tokenized: Antwort an die From-Adresse, fremde Ticketnummer im Betreff, anderer Absender", async () => {
+    const result = await matchInbound(
+      makeInbound({
+        // 1. Antwort geht an unsere tokenisierte From-Adresse.
+        toAddress: `proc-${token}@${REPLY_DOMAIN}`,
+        // 2. Ticketsystem-Nummer VOR unserem Ref-Block.
+        subject: `AW: (ABISPRIVACY-110) [Ref: ${token}] Auskunfts- und Löschersuchen gemäß Art. 15, 17, 21 DSGVO`,
+        // 3. Absender weicht von der Zieladresse des Versands ab.
+        fromAddress: "ticket-system@abis-online.de",
+      }),
+    );
+    // Stufe 1 greift: der Token steckt in der To-Adresse.
+    expect(result).toEqual({ processId, matchStage: 1, confidence: "high" });
+  });
+
+  it("Realfall: fremde Ticketnummer vor dem Ref-Block bricht auch Stufe 2 nicht", async () => {
+    const result = await matchInbound(
+      makeInbound({
+        // Kein Token in To -- z. B. ein Altvorgang aus dem self-Modus, bei dem
+        // der Broker an SELF_EMAIL geantwortet und jemand die Mail
+        // weitergeleitet hat.
+        toAddress: "jeffrey@jba-team.com",
+        subject: `AW: (ABISPRIVACY-110) [Ref: ${token}] Auskunfts- und Löschersuchen`,
+        fromAddress: "ticket-system@abis-online.de",
+      }),
+    );
+    expect(result).toEqual({ processId, matchStage: 2, confidence: "high" });
+  });
+
+  it("Realfall: Ticketsystem-Betreff OHNE unseren Ref-Block bleibt unzugeordnet", async () => {
+    // Gegenprobe: nimmt ein Ticketsystem den Betreff komplett neu auf und die
+    // Antwort geht an eine nicht-tokenisierte Adresse, ist Stufe 4 korrekt --
+    // die Mail landet in der ELYTRA-Queue statt falsch zugeordnet zu werden.
+    const result = await matchInbound(
+      makeInbound({
+        toAddress: "jeffrey@jba-team.com",
+        subject: "[ABISPRIVACY-110] Ihre Datenschutzanfrage",
+        fromAddress: "ticket-system@abis-online.de",
+      }),
+    );
+    expect(result).toEqual({ processId: null, matchStage: 4, confidence: "low" });
+  });
+
   it("Stufe 3: In-Reply-To zeigt auf bekannte Outbound-Message-ID", async () => {
     const result = await matchInbound(
       makeInbound({
