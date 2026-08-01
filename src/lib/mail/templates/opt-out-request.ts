@@ -55,9 +55,21 @@ type IdentificationLabels = {
   formatDate: (isoDate: string) => string;
 };
 
-function formatName(profile: OptOutRecipient): string {
+// Klarname der betroffenen Person aus dem Profil. EXPORTIERT, weil derselbe
+// Name auch als Display-Name der Absenderadresse dient (broker-from.ts):
+// INVARIANTE -- Absender-Name und Name im Mailtext stammen aus DERSELBEN
+// Quelle (customer_profiles). Zwei Quellen wuerden auseinanderfallen, sobald
+// das Profil geaendert wird, und der Empfaenger saehe im Absender einen
+// anderen Namen als im Schreiben.
+// Liefert null, wenn kein Name hinterlegt ist -- der Aufrufer entscheidet
+// ueber den Ersatz (Text: "—", Absender: gar kein Display-Name).
+export function formatProfileName(profile: OptOutRecipient): string | null {
   const name = [profile.firstName, profile.lastName].filter(Boolean).join(" ");
-  return name || "—";
+  return name || null;
+}
+
+function formatName(profile: OptOutRecipient): string {
+  return formatProfileName(profile) ?? "—";
 }
 
 function formatEmails(emails: string[] | null): string {

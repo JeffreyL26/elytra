@@ -59,8 +59,16 @@ export interface BrokerEnvelopeInput {
   // Derselbe Wert, der auch das Template steuert (Ich-Form vs. Vertretung) --
   // Envelope und Text duerfen nicht auseinanderfallen.
   isSelfRequest: boolean;
-  // Klarname der betroffenen Person (SELF_NAME) fuer den Display-Name im
-  // Self-Request. Fehlt er, geht die Mail OHNE Display-Name raus (siehe
+  // Klarname der betroffenen Person fuer den Display-Name im Self-Request.
+  //
+  // INVARIANTE: Dieser Name MUSS aus demselben customer_profile stammen, das
+  // auch das Template rendert (formatProfileName aus templates/
+  // opt-out-request.ts) -- NICHT aus env.SELF_NAME. Zwei Quellen fuer denselben
+  // Namen fallen auseinander, sobald das Profil geaendert wird, ohne die Env
+  // nachzuziehen; der Empfaenger saehe dann im Absender einen anderen Namen als
+  // im Schreiben. env.SELF_NAME ist ausschliesslich Quelle fuer den Seed.
+  //
+  // Fehlt der Name, geht die Mail OHNE Display-Name raus (siehe
   // resolveDisplayName) -- niemals ersatzweise unter der Marke.
   selfDisplayName?: string | null;
 }

@@ -10,7 +10,11 @@ import {
 import { env } from "@/lib/env";
 import { buildBrokerEnvelope } from "@/lib/mail/broker-from";
 import { sendMail } from "@/lib/mail/send";
-import { buildOptOutRequest, toTemplateLocale } from "@/lib/mail/templates/opt-out-request";
+import {
+  buildOptOutRequest,
+  formatProfileName,
+  toTemplateLocale,
+} from "@/lib/mail/templates/opt-out-request";
 
 export const SEND_OPT_OUT_MAIL_QUEUE = "send-opt-out-mail";
 
@@ -66,7 +70,10 @@ export async function sendOptOutMail(processId: string): Promise<void> {
     replyDomain,
     selfModeFrom,
     isSelfRequest: proc.isSelfRequest,
-    selfDisplayName: env.SELF_NAME,
+    // Der Name kommt aus DEMSELBEN Profil, das auch das Template rendert --
+    // NICHT aus env.SELF_NAME. Zwei Quellen fielen auseinander, sobald das
+    // Profil ueber /profil geaendert wird, ohne die Env nachzuziehen.
+    selfDisplayName: formatProfileName(profile),
   });
 
   const mail = buildOptOutRequest(

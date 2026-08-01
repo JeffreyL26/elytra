@@ -11,7 +11,9 @@ const { mockEnv, sendMailMock } = vi.hoisted(() => ({
     MAIL_FROM_ADDRESS: "removals@jba-team.com" as string | undefined,
     REPLY_DOMAIN: "reply.jba-team.com" as string | undefined,
     MAIL_BROKER_FROM_MODE: "self" as "self" | "tokenized",
-    SELF_NAME: "Jeffrey Lehmann" as string | undefined,
+    // Bewusst ABWEICHEND vom Profilnamen ("Test Person"): belegt, dass der
+    // Display-Name aus dem Profil kommt und NICHT aus dieser Env.
+    SELF_NAME: "Veralteter Envname" as string | undefined,
   },
   sendMailMock: vi.fn(),
 }));
@@ -103,10 +105,26 @@ describe("sendOptOutMail — From-Modus wirkt bis in den Versand", () => {
 
     const input = sendMailMock.mock.calls[0][0];
     // Self-Request -> Klarname der Person, passend zur Ich-Form des Textes.
-    expect(input.from).toBe(`Jeffrey Lehmann <proc-${proc.token}@reply.jba-team.com>`);
+    expect(input.from).toBe(`Test Person <proc-${proc.token}@reply.jba-team.com>`);
     expect(input.replyTo).toBeNull();
     // Die Adresse, an die Broker antworten, ist jetzt die getokente.
     expect(input.from).not.toContain("jeffrey@jba-team.com");
+  });
+
+  // EINE Wahrheit fuer den Namen: das Profil. Faellt die Env davon ab (Profil
+  // ueber /profil geaendert, SELF_NAME nicht nachgezogen), muss der Absender
+  // dem Profil folgen -- sonst zeigt der Absender einen anderen Namen als das
+  // Schreiben.
+  it("tokenized: Display-Name kommt aus dem PROFIL, nicht aus env.SELF_NAME", async () => {
+    mockEnv.MAIL_BROKER_FROM_MODE = "tokenized";
+    const proc = await newProcess();
+    await sendOptOutMail(proc.id);
+
+    const input = sendMailMock.mock.calls[0][0];
+    expect(input.from).toContain("Test Person");
+    expect(input.from).not.toContain("Veralteter Envname");
+    // Gegenprobe: derselbe Name steht auch im Mailtext.
+    expect(input.textBody).toContain("ich, Test Person, mache hiermit");
   });
 
   // Absender und Mailtext muessen dieselbe Geschichte erzaehlen: Ich-Form ->

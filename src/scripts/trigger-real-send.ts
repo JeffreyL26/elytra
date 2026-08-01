@@ -19,6 +19,7 @@ import { createProcessToken } from "@/lib/ids";
 import { buildBrokerEnvelope } from "@/lib/mail/broker-from";
 import {
   buildOptOutRequest,
+  formatProfileName,
   TEMPLATE_LOCALES,
   toTemplateLocale,
 } from "@/lib/mail/templates/opt-out-request";
@@ -162,7 +163,8 @@ async function main(): Promise<void> {
       selfModeFrom: selfEmail,
       // Dieses Script versendet ausschliesslich Self-Requests (siehe Guard oben).
       isSelfRequest: true,
-      selfDisplayName: env.SELF_NAME,
+      // Aus dem Profil, exakt wie im Versand-Job -- nicht aus env.SELF_NAME.
+      selfDisplayName: formatProfileName(profile),
     });
 
     console.log("\n===== DRY-RUN (kein Versand, keine DB-Schreibvorgaenge) =====");
@@ -198,7 +200,8 @@ async function main(): Promise<void> {
       replyDomain: env.REPLY_DOMAIN,
       selfModeFrom: selfEmail,
       isSelfRequest: true,
-      selfDisplayName: env.SELF_NAME,
+      // Aus dem Profil, exakt wie im Versand-Job -- nicht aus env.SELF_NAME.
+      selfDisplayName: formatProfileName(profile),
     }).fromHeader;
     console.log(`Absender (From):   ${shown}`);
     console.log("                   -> Antworten laufen in die Pipeline.");
