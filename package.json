@@ -12,6 +12,7 @@
     "test": "vitest run",
     "worker": "tsx --env-file=.env src/worker/index.ts",
     "e2e": "tsx --env-file=.env src/scripts/e2e-smoke.ts",
+    "grant-admin": "tsx --env-file=.env src/scripts/grant-admin.ts",
     "db:up": "docker compose up -d postgres",
     "db:down": "docker compose down",
     "db:generate": "drizzle-kit generate",

@@ -36,3 +36,26 @@ export async function getVerifiedSessionUserId(headers: Headers): Promise<string
     .limit(1);
   return row?.emailVerifiedAt ? userId : null;
 }
+
+// ADMIN-GATE fuer ELYTRA (interne Sachbearbeiter-Sicht). Baut auf dem
+// Verify-Gate auf: Admin sein setzt ein verifiziertes Konto voraus.
+//
+// Rueckgabe null bedeutet fuer den Aufrufer 404, NICHT 403 -- die Existenz des
+// Admin-Bereichs wird nicht verraten (konsistent zur 404-Konvention des
+// *ForUser-Layers, Regel 3). Deshalb unterscheidet diese Funktion bewusst NICHT
+// zwischen "keine Session", "nicht verifiziert" und "kein Admin".
+//
+// Das is_admin-Flag hat KEINEN Self-Service-Schreibweg: kein API-Endpunkt und
+// kein Zod-Schema schreibt es; gesetzt wird es nur per pnpm grant-admin.
+export async function requireAdminSession(headers: Headers): Promise<string | null> {
+  const userId = await getVerifiedSessionUserId(headers);
+  if (!userId) {
+    return null;
+  }
+  const [row] = await db
+    .select({ isAdmin: users.isAdmin })
+    .from(users)
+    .where(eq(users.id, userId))
+    .limit(1);
+  return row?.isAdmin ? userId : null;
+}

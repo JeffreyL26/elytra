@@ -16,6 +16,13 @@ export default defineConfig({
   },
   test: {
     environment: "node",
+    // Parallelitaet gedeckelt: Jede Testdatei importiert db/client.ts und
+    // oeffnet damit einen eigenen postgres-Pool. Bei voller Parallelitaet
+    // (24+ Dateien) kippten Suiten sporadisch schon beim Laden -- mal mit
+    // Windows-Dateisystemfehlern, mal mit DB-Contention, jedes Mal an einer
+    // anderen Datei. Das maskierte echte Fehlschlaege. Vier gleichzeitige
+    // Worker halten die Laufzeit praktisch gleich und den Lauf reproduzierbar.
+    maxWorkers: 4,
     env: {
       ANTHROPIC_API_KEY: "test-anthropic-key",
       POSTMARK_SERVER_TOKEN: "test-postmark-server-token",

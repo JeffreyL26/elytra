@@ -28,6 +28,12 @@ export const users = pgTable("users", {
   name: text("name"),
   // Better-Auth-Kernfeld (Avatar-URL). Ungenutzt, aber Teil des user-Modells.
   image: text("image"),
+  // ELYTRA-Zugang (interne Sachbearbeiter-Sicht, tenant-uebergreifend).
+  // BEWUSST OHNE Self-Service-Weg: kein API-Endpunkt und kein Zod-Schema
+  // schreibt dieses Flag -- gesetzt wird es ausschliesslich per CLI
+  // (src/scripts/grant-admin.ts). Betroffene Route-Guards: requireAdminSession()
+  // in src/lib/auth-session.ts.
+  isAdmin: boolean("is_admin").notNull().default(false),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
