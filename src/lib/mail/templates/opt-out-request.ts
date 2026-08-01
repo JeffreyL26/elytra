@@ -104,14 +104,119 @@ function formatIdentification(profile: OptOutRecipient, labels: IdentificationLa
   return lines.join("\n");
 }
 
-// Wandelt den Text-Body in ein simples HTML-Fragment (HTML-escaped, Absaetze
-// als <p>, Zeilenumbrueche als <br>). Bewusst ohne Styling.
-function textToHtml(text: string): string {
-  const escaped = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-  return escaped
+// ---------------------------------------------------------------------------
+// HTML-Fassung der Anfrage.
+//
+// INVARIANTE: Der HTML-Body wird AUSSCHLIESSLICH aus dem Text-Body abgeleitet
+// (textToHtml). Es gibt keinen zweiten Redaktionsweg -- ein Satz, der im HTML
+// steht, aber nicht im Text (oder umgekehrt), ist per Konstruktion unmoeglich.
+// Ein Test in opt-out-request.test.ts erzwingt das zusaetzlich maschinell
+// (Tag-Strip-Vergleich). Beides zusammen ist die Absicherung dafuer, dass ein
+// Empfaenger, der die Plaintext-Fassung liest, DENSELBEN Anspruch sieht wie
+// einer, der HTML liest -- bei einem rechtsverbindlichen Dokument darf im
+// Streitfall nicht offenbleiben, was zugestellt wurde.
+//
+// GESTALTUNG: Geschaeftsbrief, kein Newsletter. Kein Logo, keine Farben ausser
+// Schwarz auf Weiss, keine Bilder, keine Webfonts, kein externes CSS, kein
+// Tracking. Ein Newsletter-Look wuerde bei einem Rechtsdokument Misstrauen
+// erzeugen und die Spam-Bewertung verschlechtern.
+//
+// OUTLOOK-ROBUSTHEIT (Ursache der ursprünglichen "Textwand"): Outlook rendert
+// mit der Word-Engine und setzt <p> per Default auf margin:0 -- ohne explizite
+// Margins stehen alle Absaetze aneinander. Deshalb:
+//   * vollstaendiges Dokument mit DOCTYPE (sonst Quirks-Modus),
+//   * Inline-Styles auf JEDEM Element -- <style>-Bloecke im <head> werden von
+//     Outlook und einigen Webclients gestrippt,
+//   * explizite margin/padding auch auf <ol>/<li> (eigene Defaults),
+//   * Identifikationsdaten als rahmenlose <table> statt <dl>: Outlook rendert
+//     Tabellen zuverlaessig, dt/dd-Inline-Layout dagegen unvorhersehbar.
+const STYLE = {
+  body: "margin:0;padding:24px;background:#ffffff;color:#111111;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;",
+  wrap: "max-width:40em;margin:0 auto;",
+  p: "margin:0 0 14px 0;padding:0;",
+  h2: "margin:24px 0 10px 0;padding:0;font-size:15px;font-weight:bold;",
+  ol: "margin:0 0 14px 0;padding:0 0 0 20px;list-style:none;",
+  li: "margin:0 0 6px 0;padding:0;",
+  table: "margin:0 0 14px 0;padding:0;border-collapse:collapse;border:0;",
+  tdKey: "padding:0 12px 4px 0;margin:0;vertical-align:top;white-space:nowrap;",
+  tdVal: "padding:0 0 4px 0;margin:0;vertical-align:top;",
+} as const;
+
+function escapeHtml(value: string): string {
+  return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+// Nummerierte Anspruchsgrundlage ("1. Auskunft (Art. 15 Abs. 1 DSGVO)").
+const HEADING_RE = /^\d+\.\s/;
+// Aufzaehlungspunkt ("a) die Verarbeitungszwecke ..."), im Text eingerueckt.
+const LIST_ITEM_RE = /^\s*[a-z]\)\s/;
+// Datenzeile eines Identifikationsblocks ("Name: Max Mustermann").
+const LABEL_RE = /^[^:]{1,40}:\s/;
+
+function renderBlock(block: string): string {
+  const lines = block.split("\n");
+
+  // (1) Ueberschrift: eigenstaendiger Block, beginnt mit "N. ".
+  if (lines.length === 1 && HEADING_RE.test(lines[0])) {
+    return `<h2 style="${STYLE.h2}">${escapeHtml(lines[0])}</h2>`;
+  }
+
+  // (2) Einleitung + Aufzaehlung a)-e).
+  const firstItem = lines.findIndex((line) => LIST_ITEM_RE.test(line));
+  if (firstItem > 0 && lines.slice(firstItem).every((line) => LIST_ITEM_RE.test(line))) {
+    const intro = lines.slice(0, firstItem).map(escapeHtml).join("<br>\n");
+    // Die Marker "a)" bleiben WOERTLICH im <li> stehen und die Liste laeuft
+    // ohne list-style: Ein automatischer Marker wuerde sie verdoppeln -- und
+    // ihn stattdessen aus dem Text zu entfernen, wuerde HTML- und
+    // Text-Fassung inhaltlich auseinanderlaufen lassen (siehe Invariante).
+    const items = lines
+      .slice(firstItem)
+      .map((line) => `<li style="${STYLE.li}">${escapeHtml(line.trimStart())}</li>`)
+      .join("\n");
+    return `<p style="${STYLE.p}">${intro}</p>\n<ol style="${STYLE.ol}">\n${items}\n</ol>`;
+  }
+
+  // (3) Einleitung + Identifikationsdaten als rahmenlose Tabelle.
+  if (
+    lines.length >= 2 &&
+    lines[0].trimEnd().endsWith(":") &&
+    lines.slice(1).every((line) => LABEL_RE.test(line))
+  ) {
+    const rows = lines
+      .slice(1)
+      .map((line) => {
+        const separator = line.indexOf(":");
+        const key = line.slice(0, separator + 1);
+        const value = line.slice(separator + 1).trim();
+        return `<tr><td style="${STYLE.tdKey}">${escapeHtml(key)}</td><td style="${STYLE.tdVal}">${escapeHtml(value)}</td></tr>`;
+      })
+      .join("\n");
+    return `<p style="${STYLE.p}">${escapeHtml(lines[0])}</p>\n<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="${STYLE.table}">\n${rows}\n</table>`;
+  }
+
+  // (4) Gewoehnlicher Absatz; einzelne Umbrueche bleiben Umbrueche.
+  return `<p style="${STYLE.p}">${lines.map(escapeHtml).join("<br>\n")}</p>`;
+}
+
+function textToHtml(text: string, lang: Locale): string {
+  const body = text
     .split(/\n{2,}/)
-    .map((paragraph) => `<p>${paragraph.replace(/\n/g, "<br>\n")}</p>`)
+    .map(renderBlock)
     .join("\n");
+  // Bewusst OHNE <title>: der Titel waere Inhalt, der nur in der HTML-Fassung
+  // existiert -- das bricht die Text/HTML-Identitaet.
+  return `<!DOCTYPE html>
+<html lang="${lang}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+</head>
+<body style="${STYLE.body}">
+<div style="${STYLE.wrap}">
+${body}
+</div>
+</body>
+</html>`;
 }
 
 const DE_LABELS: IdentificationLabels = {
@@ -179,7 +284,7 @@ ${SERVICE_NAME}
 
 Aktenzeichen: ${token}`;
 
-  return { subject, textBody, htmlBody: textToHtml(textBody) };
+  return { subject, textBody, htmlBody: textToHtml(textBody, "de") };
 }
 
 function buildEnglish(profile: OptOutRecipient, broker: OptOutBroker, token: string): OptOutMail {
@@ -212,7 +317,7 @@ ${SERVICE_NAME}
 
 Reference: ${token}`;
 
-  return { subject, textBody, htmlBody: textToHtml(textBody) };
+  return { subject, textBody, htmlBody: textToHtml(textBody, "en") };
 }
 
 // Self-Variante (Ich-Form): Betroffener ist selbst Absender, keine Vollmacht,
@@ -234,11 +339,11 @@ ${formatIdentification(profile, DE_LABELS)}
 1. Auskunft (Art. 15 Abs. 1 DSGVO)
 
 Ich ersuche Sie um Auskunft darüber, ob personenbezogene Daten zu meiner Person von Ihnen verarbeitet werden, sowie — soweit dies der Fall ist — um Auskunft über:
-a) die Verarbeitungszwecke (Art. 15 Abs. 1 lit. a DSGVO),
-b) die Kategorien personenbezogener Daten, die verarbeitet werden (Art. 15 Abs. 1 lit. b DSGVO),
-c) die Empfänger oder Kategorien von Empfängern, gegenüber denen die personenbezogenen Daten offengelegt worden sind oder noch offengelegt werden (Art. 15 Abs. 1 lit. c DSGVO),
-d) die geplante Dauer der Speicherung bzw. die Kriterien für die Festlegung dieser Dauer (Art. 15 Abs. 1 lit. d DSGVO),
-e) alle verfügbaren Informationen über die Herkunft der Daten, soweit diese nicht bei mir selbst erhoben wurden (Art. 15 Abs. 1 lit. g DSGVO).
+  a) die Verarbeitungszwecke (Art. 15 Abs. 1 lit. a DSGVO),
+  b) die Kategorien personenbezogener Daten, die verarbeitet werden (Art. 15 Abs. 1 lit. b DSGVO),
+  c) die Empfänger oder Kategorien von Empfängern, gegenüber denen die personenbezogenen Daten offengelegt worden sind oder noch offengelegt werden (Art. 15 Abs. 1 lit. c DSGVO),
+  d) die geplante Dauer der Speicherung bzw. die Kriterien für die Festlegung dieser Dauer (Art. 15 Abs. 1 lit. d DSGVO),
+  e) alle verfügbaren Informationen über die Herkunft der Daten, soweit diese nicht bei mir selbst erhoben wurden (Art. 15 Abs. 1 lit. g DSGVO).
 
 2. Löschung (Art. 17 Abs. 1 DSGVO)
 
@@ -259,7 +364,7 @@ ${name}
 
 Aktenzeichen: ${token}`;
 
-  return { subject, textBody, htmlBody: textToHtml(textBody) };
+  return { subject, textBody, htmlBody: textToHtml(textBody, "de") };
 }
 
 function buildEnglishSelf(profile: OptOutRecipient, token: string): OptOutMail {
@@ -276,11 +381,11 @@ ${formatIdentification(profile, EN_LABELS)}
 1. Access request (Art. 15(1) GDPR)
 
 I request information as to whether personal data concerning me are processed by you and, where that is the case, access to the following information:
-a) the purposes of the processing (Art. 15(1)(a) GDPR),
-b) the categories of personal data concerned (Art. 15(1)(b) GDPR),
-c) the recipients or categories of recipients to whom the personal data have been or will be disclosed (Art. 15(1)(c) GDPR),
-d) the envisaged period for which the personal data will be stored, or the criteria used to determine that period (Art. 15(1)(d) GDPR),
-e) any available information as to the source of the data, where the personal data are not collected from me (Art. 15(1)(g) GDPR).
+  a) the purposes of the processing (Art. 15(1)(a) GDPR),
+  b) the categories of personal data concerned (Art. 15(1)(b) GDPR),
+  c) the recipients or categories of recipients to whom the personal data have been or will be disclosed (Art. 15(1)(c) GDPR),
+  d) the envisaged period for which the personal data will be stored, or the criteria used to determine that period (Art. 15(1)(d) GDPR),
+  e) any available information as to the source of the data, where the personal data are not collected from me (Art. 15(1)(g) GDPR).
 
 2. Erasure (Art. 17(1) GDPR)
 
@@ -301,7 +406,7 @@ ${name}
 
 Reference: ${token}`;
 
-  return { subject, textBody, htmlBody: textToHtml(textBody) };
+  return { subject, textBody, htmlBody: textToHtml(textBody, "en") };
 }
 
 export function buildOptOutRequest(

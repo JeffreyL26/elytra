@@ -2,25 +2,38 @@
 
 exports[`buildOptOutRequest > erzeugt die deutsche Loeschanfrage mit Geburtsdatum und Telefon 1`] = `
 {
-  "htmlBody": "<p>Sehr geehrte Damen und Herren,</p>
-<p>wir wenden uns im Auftrag und in Vollmacht der nachfolgend genannten betroffenen Person an Sie. Eine schriftliche Vollmacht zur Wahrnehmung ihrer Betroffenenrechte liegt uns vor und wird Ihnen auf Wunsch vorgelegt.</p>
-<p>Betroffene Person:<br>
-Name: Erika Mustermann<br>
-Geburtsdatum: 14.03.1985<br>
-Anschrift: Musterstraße 12, 10115 Berlin, DE<br>
-E-Mail-Adressen: erika.mustermann@example.com, e.mustermann@example.org<br>
-Telefonnummern: +49 30 1234567, +49 170 9876543</p>
-<p>Namens und im Auftrag der betroffenen Person fordern wir Sie auf, sämtliche zu dieser Person bei Dummy Broker (E-Mail) gespeicherten personenbezogenen Daten gemäß Art. 17 DSGVO (Recht auf Löschung) unverzüglich und vollständig zu löschen. Soweit die Verarbeitung auf Art. 6 Abs. 1 lit. f DSGVO gestützt wird, ergibt sich die Löschpflicht spätestens aus Art. 17 Abs. 1 lit. c DSGVO in Verbindung mit dem nachstehend erklärten Widerspruch.</p>
-<p>Soweit Sie personenbezogene Daten der betroffenen Person zu Zwecken der Direktwerbung verarbeiten, legen wir hiermit zugleich gemäß Art. 21 Abs. 2 DSGVO Widerspruch gegen diese Verarbeitung ein.</p>
-<p>Wir weisen darauf hin, dass diese E-Mail gemäß Art. 12 Abs. 2 DSGVO einen zulässigen Kommunikationsweg für die Geltendmachung der Betroffenenrechte unserer Auftraggeberin / unseres Auftraggebers darstellt. Ein Verweis auf ein Online-Formular oder einen anderen Kanal stellt keine Erfüllung der vorliegenden Anfrage dar.</p>
-<p>Wir bitten Sie ferner um Auskunft nach Art. 15 DSGVO darüber, welche personenbezogenen Daten der betroffenen Person bei Ihnen verarbeitet wurden und an welche Empfänger oder Kategorien von Empfängern diese Daten offengelegt wurden.</p>
-<p>Darüber hinaus bitten wir Sie, die betroffene Person in eine interne Sperrliste aufzunehmen, um eine erneute Erhebung und Speicherung ihrer Daten über Dritt- oder Fremdquellen künftig zu verhindern.</p>
-<p>Bitte bestätigen Sie uns die vollständige Löschung der Daten sowie die Aufnahme in die Sperrliste schriftlich. Nach Art. 12 Abs. 3 DSGVO haben Sie uns hierüber unverzüglich, in jedem Fall aber innerhalb eines Monats nach Eingang dieses Antrags, zu unterrichten.</p>
-<p>Für Rückfragen antworten Sie bitte direkt auf diese E-Mail; unsere Antwortadresse enthält ein Aktenzeichen zur Zuordnung.</p>
-<p>Mit freundlichen Grüßen<br>
+  "htmlBody": "<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+</head>
+<body style="margin:0;padding:24px;background:#ffffff;color:#111111;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;">
+<div style="max-width:40em;margin:0 auto;">
+<p style="margin:0 0 14px 0;padding:0;">Sehr geehrte Damen und Herren,</p>
+<p style="margin:0 0 14px 0;padding:0;">wir wenden uns im Auftrag und in Vollmacht der nachfolgend genannten betroffenen Person an Sie. Eine schriftliche Vollmacht zur Wahrnehmung ihrer Betroffenenrechte liegt uns vor und wird Ihnen auf Wunsch vorgelegt.</p>
+<p style="margin:0 0 14px 0;padding:0;">Betroffene Person:</p>
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 14px 0;padding:0;border-collapse:collapse;border:0;">
+<tr><td style="padding:0 12px 4px 0;margin:0;vertical-align:top;white-space:nowrap;">Name:</td><td style="padding:0 0 4px 0;margin:0;vertical-align:top;">Erika Mustermann</td></tr>
+<tr><td style="padding:0 12px 4px 0;margin:0;vertical-align:top;white-space:nowrap;">Geburtsdatum:</td><td style="padding:0 0 4px 0;margin:0;vertical-align:top;">14.03.1985</td></tr>
+<tr><td style="padding:0 12px 4px 0;margin:0;vertical-align:top;white-space:nowrap;">Anschrift:</td><td style="padding:0 0 4px 0;margin:0;vertical-align:top;">Musterstraße 12, 10115 Berlin, DE</td></tr>
+<tr><td style="padding:0 12px 4px 0;margin:0;vertical-align:top;white-space:nowrap;">E-Mail-Adressen:</td><td style="padding:0 0 4px 0;margin:0;vertical-align:top;">erika.mustermann@example.com, e.mustermann@example.org</td></tr>
+<tr><td style="padding:0 12px 4px 0;margin:0;vertical-align:top;white-space:nowrap;">Telefonnummern:</td><td style="padding:0 0 4px 0;margin:0;vertical-align:top;">+49 30 1234567, +49 170 9876543</td></tr>
+</table>
+<p style="margin:0 0 14px 0;padding:0;">Namens und im Auftrag der betroffenen Person fordern wir Sie auf, sämtliche zu dieser Person bei Dummy Broker (E-Mail) gespeicherten personenbezogenen Daten gemäß Art. 17 DSGVO (Recht auf Löschung) unverzüglich und vollständig zu löschen. Soweit die Verarbeitung auf Art. 6 Abs. 1 lit. f DSGVO gestützt wird, ergibt sich die Löschpflicht spätestens aus Art. 17 Abs. 1 lit. c DSGVO in Verbindung mit dem nachstehend erklärten Widerspruch.</p>
+<p style="margin:0 0 14px 0;padding:0;">Soweit Sie personenbezogene Daten der betroffenen Person zu Zwecken der Direktwerbung verarbeiten, legen wir hiermit zugleich gemäß Art. 21 Abs. 2 DSGVO Widerspruch gegen diese Verarbeitung ein.</p>
+<p style="margin:0 0 14px 0;padding:0;">Wir weisen darauf hin, dass diese E-Mail gemäß Art. 12 Abs. 2 DSGVO einen zulässigen Kommunikationsweg für die Geltendmachung der Betroffenenrechte unserer Auftraggeberin / unseres Auftraggebers darstellt. Ein Verweis auf ein Online-Formular oder einen anderen Kanal stellt keine Erfüllung der vorliegenden Anfrage dar.</p>
+<p style="margin:0 0 14px 0;padding:0;">Wir bitten Sie ferner um Auskunft nach Art. 15 DSGVO darüber, welche personenbezogenen Daten der betroffenen Person bei Ihnen verarbeitet wurden und an welche Empfänger oder Kategorien von Empfängern diese Daten offengelegt wurden.</p>
+<p style="margin:0 0 14px 0;padding:0;">Darüber hinaus bitten wir Sie, die betroffene Person in eine interne Sperrliste aufzunehmen, um eine erneute Erhebung und Speicherung ihrer Daten über Dritt- oder Fremdquellen künftig zu verhindern.</p>
+<p style="margin:0 0 14px 0;padding:0;">Bitte bestätigen Sie uns die vollständige Löschung der Daten sowie die Aufnahme in die Sperrliste schriftlich. Nach Art. 12 Abs. 3 DSGVO haben Sie uns hierüber unverzüglich, in jedem Fall aber innerhalb eines Monats nach Eingang dieses Antrags, zu unterrichten.</p>
+<p style="margin:0 0 14px 0;padding:0;">Für Rückfragen antworten Sie bitte direkt auf diese E-Mail; unsere Antwortadresse enthält ein Aktenzeichen zur Zuordnung.</p>
+<p style="margin:0 0 14px 0;padding:0;">Mit freundlichen Grüßen<br>
 GoKognito<br>
 – im Auftrag der betroffenen Person –</p>
-<p>Aktenzeichen: test1234abcd5678</p>",
+<p style="margin:0 0 14px 0;padding:0;">Aktenzeichen: test1234abcd5678</p>
+</div>
+</body>
+</html>",
   "subject": "[Ref: test1234abcd5678] Datenlöschanfrage gemäß Art. 17 DSGVO",
   "textBody": "Sehr geehrte Damen und Herren,
 
@@ -57,23 +70,36 @@ Aktenzeichen: test1234abcd5678",
 
 exports[`buildOptOutRequest > erzeugt die deutsche Loeschanfrage ohne optionale Felder 1`] = `
 {
-  "htmlBody": "<p>Sehr geehrte Damen und Herren,</p>
-<p>wir wenden uns im Auftrag und in Vollmacht der nachfolgend genannten betroffenen Person an Sie. Eine schriftliche Vollmacht zur Wahrnehmung ihrer Betroffenenrechte liegt uns vor und wird Ihnen auf Wunsch vorgelegt.</p>
-<p>Betroffene Person:<br>
-Name: Erika Mustermann<br>
-Anschrift: Musterstraße 12, 10115 Berlin, DE<br>
-E-Mail-Adressen: erika.mustermann@example.com, e.mustermann@example.org</p>
-<p>Namens und im Auftrag der betroffenen Person fordern wir Sie auf, sämtliche zu dieser Person bei Dummy Broker (E-Mail) gespeicherten personenbezogenen Daten gemäß Art. 17 DSGVO (Recht auf Löschung) unverzüglich und vollständig zu löschen. Soweit die Verarbeitung auf Art. 6 Abs. 1 lit. f DSGVO gestützt wird, ergibt sich die Löschpflicht spätestens aus Art. 17 Abs. 1 lit. c DSGVO in Verbindung mit dem nachstehend erklärten Widerspruch.</p>
-<p>Soweit Sie personenbezogene Daten der betroffenen Person zu Zwecken der Direktwerbung verarbeiten, legen wir hiermit zugleich gemäß Art. 21 Abs. 2 DSGVO Widerspruch gegen diese Verarbeitung ein.</p>
-<p>Wir weisen darauf hin, dass diese E-Mail gemäß Art. 12 Abs. 2 DSGVO einen zulässigen Kommunikationsweg für die Geltendmachung der Betroffenenrechte unserer Auftraggeberin / unseres Auftraggebers darstellt. Ein Verweis auf ein Online-Formular oder einen anderen Kanal stellt keine Erfüllung der vorliegenden Anfrage dar.</p>
-<p>Wir bitten Sie ferner um Auskunft nach Art. 15 DSGVO darüber, welche personenbezogenen Daten der betroffenen Person bei Ihnen verarbeitet wurden und an welche Empfänger oder Kategorien von Empfängern diese Daten offengelegt wurden.</p>
-<p>Darüber hinaus bitten wir Sie, die betroffene Person in eine interne Sperrliste aufzunehmen, um eine erneute Erhebung und Speicherung ihrer Daten über Dritt- oder Fremdquellen künftig zu verhindern.</p>
-<p>Bitte bestätigen Sie uns die vollständige Löschung der Daten sowie die Aufnahme in die Sperrliste schriftlich. Nach Art. 12 Abs. 3 DSGVO haben Sie uns hierüber unverzüglich, in jedem Fall aber innerhalb eines Monats nach Eingang dieses Antrags, zu unterrichten.</p>
-<p>Für Rückfragen antworten Sie bitte direkt auf diese E-Mail; unsere Antwortadresse enthält ein Aktenzeichen zur Zuordnung.</p>
-<p>Mit freundlichen Grüßen<br>
+  "htmlBody": "<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+</head>
+<body style="margin:0;padding:24px;background:#ffffff;color:#111111;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;">
+<div style="max-width:40em;margin:0 auto;">
+<p style="margin:0 0 14px 0;padding:0;">Sehr geehrte Damen und Herren,</p>
+<p style="margin:0 0 14px 0;padding:0;">wir wenden uns im Auftrag und in Vollmacht der nachfolgend genannten betroffenen Person an Sie. Eine schriftliche Vollmacht zur Wahrnehmung ihrer Betroffenenrechte liegt uns vor und wird Ihnen auf Wunsch vorgelegt.</p>
+<p style="margin:0 0 14px 0;padding:0;">Betroffene Person:</p>
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 14px 0;padding:0;border-collapse:collapse;border:0;">
+<tr><td style="padding:0 12px 4px 0;margin:0;vertical-align:top;white-space:nowrap;">Name:</td><td style="padding:0 0 4px 0;margin:0;vertical-align:top;">Erika Mustermann</td></tr>
+<tr><td style="padding:0 12px 4px 0;margin:0;vertical-align:top;white-space:nowrap;">Anschrift:</td><td style="padding:0 0 4px 0;margin:0;vertical-align:top;">Musterstraße 12, 10115 Berlin, DE</td></tr>
+<tr><td style="padding:0 12px 4px 0;margin:0;vertical-align:top;white-space:nowrap;">E-Mail-Adressen:</td><td style="padding:0 0 4px 0;margin:0;vertical-align:top;">erika.mustermann@example.com, e.mustermann@example.org</td></tr>
+</table>
+<p style="margin:0 0 14px 0;padding:0;">Namens und im Auftrag der betroffenen Person fordern wir Sie auf, sämtliche zu dieser Person bei Dummy Broker (E-Mail) gespeicherten personenbezogenen Daten gemäß Art. 17 DSGVO (Recht auf Löschung) unverzüglich und vollständig zu löschen. Soweit die Verarbeitung auf Art. 6 Abs. 1 lit. f DSGVO gestützt wird, ergibt sich die Löschpflicht spätestens aus Art. 17 Abs. 1 lit. c DSGVO in Verbindung mit dem nachstehend erklärten Widerspruch.</p>
+<p style="margin:0 0 14px 0;padding:0;">Soweit Sie personenbezogene Daten der betroffenen Person zu Zwecken der Direktwerbung verarbeiten, legen wir hiermit zugleich gemäß Art. 21 Abs. 2 DSGVO Widerspruch gegen diese Verarbeitung ein.</p>
+<p style="margin:0 0 14px 0;padding:0;">Wir weisen darauf hin, dass diese E-Mail gemäß Art. 12 Abs. 2 DSGVO einen zulässigen Kommunikationsweg für die Geltendmachung der Betroffenenrechte unserer Auftraggeberin / unseres Auftraggebers darstellt. Ein Verweis auf ein Online-Formular oder einen anderen Kanal stellt keine Erfüllung der vorliegenden Anfrage dar.</p>
+<p style="margin:0 0 14px 0;padding:0;">Wir bitten Sie ferner um Auskunft nach Art. 15 DSGVO darüber, welche personenbezogenen Daten der betroffenen Person bei Ihnen verarbeitet wurden und an welche Empfänger oder Kategorien von Empfängern diese Daten offengelegt wurden.</p>
+<p style="margin:0 0 14px 0;padding:0;">Darüber hinaus bitten wir Sie, die betroffene Person in eine interne Sperrliste aufzunehmen, um eine erneute Erhebung und Speicherung ihrer Daten über Dritt- oder Fremdquellen künftig zu verhindern.</p>
+<p style="margin:0 0 14px 0;padding:0;">Bitte bestätigen Sie uns die vollständige Löschung der Daten sowie die Aufnahme in die Sperrliste schriftlich. Nach Art. 12 Abs. 3 DSGVO haben Sie uns hierüber unverzüglich, in jedem Fall aber innerhalb eines Monats nach Eingang dieses Antrags, zu unterrichten.</p>
+<p style="margin:0 0 14px 0;padding:0;">Für Rückfragen antworten Sie bitte direkt auf diese E-Mail; unsere Antwortadresse enthält ein Aktenzeichen zur Zuordnung.</p>
+<p style="margin:0 0 14px 0;padding:0;">Mit freundlichen Grüßen<br>
 GoKognito<br>
 – im Auftrag der betroffenen Person –</p>
-<p>Aktenzeichen: test1234abcd5678</p>",
+<p style="margin:0 0 14px 0;padding:0;">Aktenzeichen: test1234abcd5678</p>
+</div>
+</body>
+</html>",
   "subject": "[Ref: test1234abcd5678] Datenlöschanfrage gemäß Art. 17 DSGVO",
   "textBody": "Sehr geehrte Damen und Herren,
 
@@ -108,31 +134,46 @@ Aktenzeichen: test1234abcd5678",
 
 exports[`buildOptOutRequest > erzeugt die deutsche Selbst-Anfrage mit Geburtsdatum und Telefon 1`] = `
 {
-  "htmlBody": "<p>Sehr geehrte Damen und Herren,</p>
-<p>ich, Erika Mustermann, mache hiermit als betroffene Person meine Rechte nach der Datenschutz-Grundverordnung (DSGVO) Ihnen gegenüber geltend.</p>
-<p>Zu meiner Identifikation:<br>
-Name: Erika Mustermann<br>
-Geburtsdatum: 14.03.1985<br>
-Anschrift: Musterstraße 12, 10115 Berlin, DE<br>
-E-Mail-Adressen: erika.mustermann@example.com, e.mustermann@example.org<br>
-Telefonnummern: +49 30 1234567, +49 170 9876543</p>
-<p>1. Auskunft (Art. 15 Abs. 1 DSGVO)</p>
-<p>Ich ersuche Sie um Auskunft darüber, ob personenbezogene Daten zu meiner Person von Ihnen verarbeitet werden, sowie — soweit dies der Fall ist — um Auskunft über:<br>
-a) die Verarbeitungszwecke (Art. 15 Abs. 1 lit. a DSGVO),<br>
-b) die Kategorien personenbezogener Daten, die verarbeitet werden (Art. 15 Abs. 1 lit. b DSGVO),<br>
-c) die Empfänger oder Kategorien von Empfängern, gegenüber denen die personenbezogenen Daten offengelegt worden sind oder noch offengelegt werden (Art. 15 Abs. 1 lit. c DSGVO),<br>
-d) die geplante Dauer der Speicherung bzw. die Kriterien für die Festlegung dieser Dauer (Art. 15 Abs. 1 lit. d DSGVO),<br>
-e) alle verfügbaren Informationen über die Herkunft der Daten, soweit diese nicht bei mir selbst erhoben wurden (Art. 15 Abs. 1 lit. g DSGVO).</p>
-<p>2. Löschung (Art. 17 Abs. 1 DSGVO)</p>
-<p>Soweit Sie personenbezogene Daten zu meiner Person verarbeiten, fordere ich Sie auf, diese gemäß Art. 17 Abs. 1 DSGVO unverzüglich und vollständig zu löschen. Soweit die Verarbeitung auf Art. 6 Abs. 1 lit. f DSGVO gestützt wird, ergibt sich die Löschpflicht spätestens aus Art. 17 Abs. 1 lit. c DSGVO in Verbindung mit dem unter Ziffer 3 erklärten Widerspruch.</p>
-<p>3. Widerspruch gegen Direktwerbung (Art. 21 Abs. 2 DSGVO)</p>
-<p>Soweit personenbezogene Daten zu meiner Person zu Zwecken der Direktwerbung verarbeitet werden, lege ich hiermit gemäß Art. 21 Abs. 2 DSGVO Widerspruch gegen diese Verarbeitung ein. Nach Art. 21 Abs. 3 DSGVO dürfen meine personenbezogenen Daten danach nicht mehr für Zwecke der Direktwerbung verarbeitet werden.</p>
-<p>Ich weise darauf hin, dass diese E-Mail gemäß Art. 12 Abs. 2 DSGVO einen zulässigen Kommunikationsweg für die Geltendmachung meiner Betroffenenrechte darstellt. Ein Verweis auf ein Online-Formular oder einen anderen Kanal stellt keine Erfüllung der vorliegenden Anfrage dar.</p>
-<p>Nach Art. 12 Abs. 3 DSGVO haben Sie mich über die aufgrund dieses Antrags getroffenen Maßnahmen unverzüglich, in jedem Fall aber innerhalb eines Monats nach Eingang dieses Antrags, zu unterrichten.</p>
-<p>Für Rückfragen antworten Sie bitte direkt auf diese E-Mail; die Antwortadresse enthält ein Aktenzeichen zur Zuordnung.</p>
-<p>Mit freundlichen Grüßen<br>
+  "htmlBody": "<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+</head>
+<body style="margin:0;padding:24px;background:#ffffff;color:#111111;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;">
+<div style="max-width:40em;margin:0 auto;">
+<p style="margin:0 0 14px 0;padding:0;">Sehr geehrte Damen und Herren,</p>
+<p style="margin:0 0 14px 0;padding:0;">ich, Erika Mustermann, mache hiermit als betroffene Person meine Rechte nach der Datenschutz-Grundverordnung (DSGVO) Ihnen gegenüber geltend.</p>
+<p style="margin:0 0 14px 0;padding:0;">Zu meiner Identifikation:</p>
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 14px 0;padding:0;border-collapse:collapse;border:0;">
+<tr><td style="padding:0 12px 4px 0;margin:0;vertical-align:top;white-space:nowrap;">Name:</td><td style="padding:0 0 4px 0;margin:0;vertical-align:top;">Erika Mustermann</td></tr>
+<tr><td style="padding:0 12px 4px 0;margin:0;vertical-align:top;white-space:nowrap;">Geburtsdatum:</td><td style="padding:0 0 4px 0;margin:0;vertical-align:top;">14.03.1985</td></tr>
+<tr><td style="padding:0 12px 4px 0;margin:0;vertical-align:top;white-space:nowrap;">Anschrift:</td><td style="padding:0 0 4px 0;margin:0;vertical-align:top;">Musterstraße 12, 10115 Berlin, DE</td></tr>
+<tr><td style="padding:0 12px 4px 0;margin:0;vertical-align:top;white-space:nowrap;">E-Mail-Adressen:</td><td style="padding:0 0 4px 0;margin:0;vertical-align:top;">erika.mustermann@example.com, e.mustermann@example.org</td></tr>
+<tr><td style="padding:0 12px 4px 0;margin:0;vertical-align:top;white-space:nowrap;">Telefonnummern:</td><td style="padding:0 0 4px 0;margin:0;vertical-align:top;">+49 30 1234567, +49 170 9876543</td></tr>
+</table>
+<h2 style="margin:24px 0 10px 0;padding:0;font-size:15px;font-weight:bold;">1. Auskunft (Art. 15 Abs. 1 DSGVO)</h2>
+<p style="margin:0 0 14px 0;padding:0;">Ich ersuche Sie um Auskunft darüber, ob personenbezogene Daten zu meiner Person von Ihnen verarbeitet werden, sowie — soweit dies der Fall ist — um Auskunft über:</p>
+<ol style="margin:0 0 14px 0;padding:0 0 0 20px;list-style:none;">
+<li style="margin:0 0 6px 0;padding:0;">a) die Verarbeitungszwecke (Art. 15 Abs. 1 lit. a DSGVO),</li>
+<li style="margin:0 0 6px 0;padding:0;">b) die Kategorien personenbezogener Daten, die verarbeitet werden (Art. 15 Abs. 1 lit. b DSGVO),</li>
+<li style="margin:0 0 6px 0;padding:0;">c) die Empfänger oder Kategorien von Empfängern, gegenüber denen die personenbezogenen Daten offengelegt worden sind oder noch offengelegt werden (Art. 15 Abs. 1 lit. c DSGVO),</li>
+<li style="margin:0 0 6px 0;padding:0;">d) die geplante Dauer der Speicherung bzw. die Kriterien für die Festlegung dieser Dauer (Art. 15 Abs. 1 lit. d DSGVO),</li>
+<li style="margin:0 0 6px 0;padding:0;">e) alle verfügbaren Informationen über die Herkunft der Daten, soweit diese nicht bei mir selbst erhoben wurden (Art. 15 Abs. 1 lit. g DSGVO).</li>
+</ol>
+<h2 style="margin:24px 0 10px 0;padding:0;font-size:15px;font-weight:bold;">2. Löschung (Art. 17 Abs. 1 DSGVO)</h2>
+<p style="margin:0 0 14px 0;padding:0;">Soweit Sie personenbezogene Daten zu meiner Person verarbeiten, fordere ich Sie auf, diese gemäß Art. 17 Abs. 1 DSGVO unverzüglich und vollständig zu löschen. Soweit die Verarbeitung auf Art. 6 Abs. 1 lit. f DSGVO gestützt wird, ergibt sich die Löschpflicht spätestens aus Art. 17 Abs. 1 lit. c DSGVO in Verbindung mit dem unter Ziffer 3 erklärten Widerspruch.</p>
+<h2 style="margin:24px 0 10px 0;padding:0;font-size:15px;font-weight:bold;">3. Widerspruch gegen Direktwerbung (Art. 21 Abs. 2 DSGVO)</h2>
+<p style="margin:0 0 14px 0;padding:0;">Soweit personenbezogene Daten zu meiner Person zu Zwecken der Direktwerbung verarbeitet werden, lege ich hiermit gemäß Art. 21 Abs. 2 DSGVO Widerspruch gegen diese Verarbeitung ein. Nach Art. 21 Abs. 3 DSGVO dürfen meine personenbezogenen Daten danach nicht mehr für Zwecke der Direktwerbung verarbeitet werden.</p>
+<p style="margin:0 0 14px 0;padding:0;">Ich weise darauf hin, dass diese E-Mail gemäß Art. 12 Abs. 2 DSGVO einen zulässigen Kommunikationsweg für die Geltendmachung meiner Betroffenenrechte darstellt. Ein Verweis auf ein Online-Formular oder einen anderen Kanal stellt keine Erfüllung der vorliegenden Anfrage dar.</p>
+<p style="margin:0 0 14px 0;padding:0;">Nach Art. 12 Abs. 3 DSGVO haben Sie mich über die aufgrund dieses Antrags getroffenen Maßnahmen unverzüglich, in jedem Fall aber innerhalb eines Monats nach Eingang dieses Antrags, zu unterrichten.</p>
+<p style="margin:0 0 14px 0;padding:0;">Für Rückfragen antworten Sie bitte direkt auf diese E-Mail; die Antwortadresse enthält ein Aktenzeichen zur Zuordnung.</p>
+<p style="margin:0 0 14px 0;padding:0;">Mit freundlichen Grüßen<br>
 Erika Mustermann</p>
-<p>Aktenzeichen: test1234abcd5678</p>",
+<p style="margin:0 0 14px 0;padding:0;">Aktenzeichen: test1234abcd5678</p>
+</div>
+</body>
+</html>",
   "subject": "[Ref: test1234abcd5678] Auskunfts- und Löschersuchen gemäß Art. 15, 17, 21 DSGVO",
   "textBody": "Sehr geehrte Damen und Herren,
 
@@ -148,11 +189,11 @@ Telefonnummern: +49 30 1234567, +49 170 9876543
 1. Auskunft (Art. 15 Abs. 1 DSGVO)
 
 Ich ersuche Sie um Auskunft darüber, ob personenbezogene Daten zu meiner Person von Ihnen verarbeitet werden, sowie — soweit dies der Fall ist — um Auskunft über:
-a) die Verarbeitungszwecke (Art. 15 Abs. 1 lit. a DSGVO),
-b) die Kategorien personenbezogener Daten, die verarbeitet werden (Art. 15 Abs. 1 lit. b DSGVO),
-c) die Empfänger oder Kategorien von Empfängern, gegenüber denen die personenbezogenen Daten offengelegt worden sind oder noch offengelegt werden (Art. 15 Abs. 1 lit. c DSGVO),
-d) die geplante Dauer der Speicherung bzw. die Kriterien für die Festlegung dieser Dauer (Art. 15 Abs. 1 lit. d DSGVO),
-e) alle verfügbaren Informationen über die Herkunft der Daten, soweit diese nicht bei mir selbst erhoben wurden (Art. 15 Abs. 1 lit. g DSGVO).
+  a) die Verarbeitungszwecke (Art. 15 Abs. 1 lit. a DSGVO),
+  b) die Kategorien personenbezogener Daten, die verarbeitet werden (Art. 15 Abs. 1 lit. b DSGVO),
+  c) die Empfänger oder Kategorien von Empfängern, gegenüber denen die personenbezogenen Daten offengelegt worden sind oder noch offengelegt werden (Art. 15 Abs. 1 lit. c DSGVO),
+  d) die geplante Dauer der Speicherung bzw. die Kriterien für die Festlegung dieser Dauer (Art. 15 Abs. 1 lit. d DSGVO),
+  e) alle verfügbaren Informationen über die Herkunft der Daten, soweit diese nicht bei mir selbst erhoben wurden (Art. 15 Abs. 1 lit. g DSGVO).
 
 2. Löschung (Art. 17 Abs. 1 DSGVO)
 
@@ -177,29 +218,44 @@ Aktenzeichen: test1234abcd5678",
 
 exports[`buildOptOutRequest > erzeugt die deutsche Selbst-Anfrage ohne optionale Felder 1`] = `
 {
-  "htmlBody": "<p>Sehr geehrte Damen und Herren,</p>
-<p>ich, Erika Mustermann, mache hiermit als betroffene Person meine Rechte nach der Datenschutz-Grundverordnung (DSGVO) Ihnen gegenüber geltend.</p>
-<p>Zu meiner Identifikation:<br>
-Name: Erika Mustermann<br>
-Anschrift: Musterstraße 12, 10115 Berlin, DE<br>
-E-Mail-Adressen: erika.mustermann@example.com, e.mustermann@example.org</p>
-<p>1. Auskunft (Art. 15 Abs. 1 DSGVO)</p>
-<p>Ich ersuche Sie um Auskunft darüber, ob personenbezogene Daten zu meiner Person von Ihnen verarbeitet werden, sowie — soweit dies der Fall ist — um Auskunft über:<br>
-a) die Verarbeitungszwecke (Art. 15 Abs. 1 lit. a DSGVO),<br>
-b) die Kategorien personenbezogener Daten, die verarbeitet werden (Art. 15 Abs. 1 lit. b DSGVO),<br>
-c) die Empfänger oder Kategorien von Empfängern, gegenüber denen die personenbezogenen Daten offengelegt worden sind oder noch offengelegt werden (Art. 15 Abs. 1 lit. c DSGVO),<br>
-d) die geplante Dauer der Speicherung bzw. die Kriterien für die Festlegung dieser Dauer (Art. 15 Abs. 1 lit. d DSGVO),<br>
-e) alle verfügbaren Informationen über die Herkunft der Daten, soweit diese nicht bei mir selbst erhoben wurden (Art. 15 Abs. 1 lit. g DSGVO).</p>
-<p>2. Löschung (Art. 17 Abs. 1 DSGVO)</p>
-<p>Soweit Sie personenbezogene Daten zu meiner Person verarbeiten, fordere ich Sie auf, diese gemäß Art. 17 Abs. 1 DSGVO unverzüglich und vollständig zu löschen. Soweit die Verarbeitung auf Art. 6 Abs. 1 lit. f DSGVO gestützt wird, ergibt sich die Löschpflicht spätestens aus Art. 17 Abs. 1 lit. c DSGVO in Verbindung mit dem unter Ziffer 3 erklärten Widerspruch.</p>
-<p>3. Widerspruch gegen Direktwerbung (Art. 21 Abs. 2 DSGVO)</p>
-<p>Soweit personenbezogene Daten zu meiner Person zu Zwecken der Direktwerbung verarbeitet werden, lege ich hiermit gemäß Art. 21 Abs. 2 DSGVO Widerspruch gegen diese Verarbeitung ein. Nach Art. 21 Abs. 3 DSGVO dürfen meine personenbezogenen Daten danach nicht mehr für Zwecke der Direktwerbung verarbeitet werden.</p>
-<p>Ich weise darauf hin, dass diese E-Mail gemäß Art. 12 Abs. 2 DSGVO einen zulässigen Kommunikationsweg für die Geltendmachung meiner Betroffenenrechte darstellt. Ein Verweis auf ein Online-Formular oder einen anderen Kanal stellt keine Erfüllung der vorliegenden Anfrage dar.</p>
-<p>Nach Art. 12 Abs. 3 DSGVO haben Sie mich über die aufgrund dieses Antrags getroffenen Maßnahmen unverzüglich, in jedem Fall aber innerhalb eines Monats nach Eingang dieses Antrags, zu unterrichten.</p>
-<p>Für Rückfragen antworten Sie bitte direkt auf diese E-Mail; die Antwortadresse enthält ein Aktenzeichen zur Zuordnung.</p>
-<p>Mit freundlichen Grüßen<br>
+  "htmlBody": "<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+</head>
+<body style="margin:0;padding:24px;background:#ffffff;color:#111111;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;">
+<div style="max-width:40em;margin:0 auto;">
+<p style="margin:0 0 14px 0;padding:0;">Sehr geehrte Damen und Herren,</p>
+<p style="margin:0 0 14px 0;padding:0;">ich, Erika Mustermann, mache hiermit als betroffene Person meine Rechte nach der Datenschutz-Grundverordnung (DSGVO) Ihnen gegenüber geltend.</p>
+<p style="margin:0 0 14px 0;padding:0;">Zu meiner Identifikation:</p>
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 14px 0;padding:0;border-collapse:collapse;border:0;">
+<tr><td style="padding:0 12px 4px 0;margin:0;vertical-align:top;white-space:nowrap;">Name:</td><td style="padding:0 0 4px 0;margin:0;vertical-align:top;">Erika Mustermann</td></tr>
+<tr><td style="padding:0 12px 4px 0;margin:0;vertical-align:top;white-space:nowrap;">Anschrift:</td><td style="padding:0 0 4px 0;margin:0;vertical-align:top;">Musterstraße 12, 10115 Berlin, DE</td></tr>
+<tr><td style="padding:0 12px 4px 0;margin:0;vertical-align:top;white-space:nowrap;">E-Mail-Adressen:</td><td style="padding:0 0 4px 0;margin:0;vertical-align:top;">erika.mustermann@example.com, e.mustermann@example.org</td></tr>
+</table>
+<h2 style="margin:24px 0 10px 0;padding:0;font-size:15px;font-weight:bold;">1. Auskunft (Art. 15 Abs. 1 DSGVO)</h2>
+<p style="margin:0 0 14px 0;padding:0;">Ich ersuche Sie um Auskunft darüber, ob personenbezogene Daten zu meiner Person von Ihnen verarbeitet werden, sowie — soweit dies der Fall ist — um Auskunft über:</p>
+<ol style="margin:0 0 14px 0;padding:0 0 0 20px;list-style:none;">
+<li style="margin:0 0 6px 0;padding:0;">a) die Verarbeitungszwecke (Art. 15 Abs. 1 lit. a DSGVO),</li>
+<li style="margin:0 0 6px 0;padding:0;">b) die Kategorien personenbezogener Daten, die verarbeitet werden (Art. 15 Abs. 1 lit. b DSGVO),</li>
+<li style="margin:0 0 6px 0;padding:0;">c) die Empfänger oder Kategorien von Empfängern, gegenüber denen die personenbezogenen Daten offengelegt worden sind oder noch offengelegt werden (Art. 15 Abs. 1 lit. c DSGVO),</li>
+<li style="margin:0 0 6px 0;padding:0;">d) die geplante Dauer der Speicherung bzw. die Kriterien für die Festlegung dieser Dauer (Art. 15 Abs. 1 lit. d DSGVO),</li>
+<li style="margin:0 0 6px 0;padding:0;">e) alle verfügbaren Informationen über die Herkunft der Daten, soweit diese nicht bei mir selbst erhoben wurden (Art. 15 Abs. 1 lit. g DSGVO).</li>
+</ol>
+<h2 style="margin:24px 0 10px 0;padding:0;font-size:15px;font-weight:bold;">2. Löschung (Art. 17 Abs. 1 DSGVO)</h2>
+<p style="margin:0 0 14px 0;padding:0;">Soweit Sie personenbezogene Daten zu meiner Person verarbeiten, fordere ich Sie auf, diese gemäß Art. 17 Abs. 1 DSGVO unverzüglich und vollständig zu löschen. Soweit die Verarbeitung auf Art. 6 Abs. 1 lit. f DSGVO gestützt wird, ergibt sich die Löschpflicht spätestens aus Art. 17 Abs. 1 lit. c DSGVO in Verbindung mit dem unter Ziffer 3 erklärten Widerspruch.</p>
+<h2 style="margin:24px 0 10px 0;padding:0;font-size:15px;font-weight:bold;">3. Widerspruch gegen Direktwerbung (Art. 21 Abs. 2 DSGVO)</h2>
+<p style="margin:0 0 14px 0;padding:0;">Soweit personenbezogene Daten zu meiner Person zu Zwecken der Direktwerbung verarbeitet werden, lege ich hiermit gemäß Art. 21 Abs. 2 DSGVO Widerspruch gegen diese Verarbeitung ein. Nach Art. 21 Abs. 3 DSGVO dürfen meine personenbezogenen Daten danach nicht mehr für Zwecke der Direktwerbung verarbeitet werden.</p>
+<p style="margin:0 0 14px 0;padding:0;">Ich weise darauf hin, dass diese E-Mail gemäß Art. 12 Abs. 2 DSGVO einen zulässigen Kommunikationsweg für die Geltendmachung meiner Betroffenenrechte darstellt. Ein Verweis auf ein Online-Formular oder einen anderen Kanal stellt keine Erfüllung der vorliegenden Anfrage dar.</p>
+<p style="margin:0 0 14px 0;padding:0;">Nach Art. 12 Abs. 3 DSGVO haben Sie mich über die aufgrund dieses Antrags getroffenen Maßnahmen unverzüglich, in jedem Fall aber innerhalb eines Monats nach Eingang dieses Antrags, zu unterrichten.</p>
+<p style="margin:0 0 14px 0;padding:0;">Für Rückfragen antworten Sie bitte direkt auf diese E-Mail; die Antwortadresse enthält ein Aktenzeichen zur Zuordnung.</p>
+<p style="margin:0 0 14px 0;padding:0;">Mit freundlichen Grüßen<br>
 Erika Mustermann</p>
-<p>Aktenzeichen: test1234abcd5678</p>",
+<p style="margin:0 0 14px 0;padding:0;">Aktenzeichen: test1234abcd5678</p>
+</div>
+</body>
+</html>",
   "subject": "[Ref: test1234abcd5678] Auskunfts- und Löschersuchen gemäß Art. 15, 17, 21 DSGVO",
   "textBody": "Sehr geehrte Damen und Herren,
 
@@ -213,11 +269,11 @@ E-Mail-Adressen: erika.mustermann@example.com, e.mustermann@example.org
 1. Auskunft (Art. 15 Abs. 1 DSGVO)
 
 Ich ersuche Sie um Auskunft darüber, ob personenbezogene Daten zu meiner Person von Ihnen verarbeitet werden, sowie — soweit dies der Fall ist — um Auskunft über:
-a) die Verarbeitungszwecke (Art. 15 Abs. 1 lit. a DSGVO),
-b) die Kategorien personenbezogener Daten, die verarbeitet werden (Art. 15 Abs. 1 lit. b DSGVO),
-c) die Empfänger oder Kategorien von Empfängern, gegenüber denen die personenbezogenen Daten offengelegt worden sind oder noch offengelegt werden (Art. 15 Abs. 1 lit. c DSGVO),
-d) die geplante Dauer der Speicherung bzw. die Kriterien für die Festlegung dieser Dauer (Art. 15 Abs. 1 lit. d DSGVO),
-e) alle verfügbaren Informationen über die Herkunft der Daten, soweit diese nicht bei mir selbst erhoben wurden (Art. 15 Abs. 1 lit. g DSGVO).
+  a) die Verarbeitungszwecke (Art. 15 Abs. 1 lit. a DSGVO),
+  b) die Kategorien personenbezogener Daten, die verarbeitet werden (Art. 15 Abs. 1 lit. b DSGVO),
+  c) die Empfänger oder Kategorien von Empfängern, gegenüber denen die personenbezogenen Daten offengelegt worden sind oder noch offengelegt werden (Art. 15 Abs. 1 lit. c DSGVO),
+  d) die geplante Dauer der Speicherung bzw. die Kriterien für die Festlegung dieser Dauer (Art. 15 Abs. 1 lit. d DSGVO),
+  e) alle verfügbaren Informationen über die Herkunft der Daten, soweit diese nicht bei mir selbst erhoben wurden (Art. 15 Abs. 1 lit. g DSGVO).
 
 2. Löschung (Art. 17 Abs. 1 DSGVO)
 
@@ -242,25 +298,38 @@ Aktenzeichen: test1234abcd5678",
 
 exports[`buildOptOutRequest > erzeugt die englische Loeschanfrage mit Geburtsdatum und Telefon 1`] = `
 {
-  "htmlBody": "<p>Dear Sir or Madam,</p>
-<p>we are contacting you on behalf of and under power of attorney for the data subject named below. A written authorisation to exercise their data subject rights is on file and can be provided upon request.</p>
-<p>Data subject:<br>
-Name: Erika Mustermann<br>
-Date of birth: 1985-03-14<br>
-Address: Musterstraße 12, 10115 Berlin, DE<br>
-Email addresses: erika.mustermann@example.com, e.mustermann@example.org<br>
-Phone numbers: +49 30 1234567, +49 170 9876543</p>
-<p>On behalf of the data subject, we hereby request that you erase all personal data stored about this person at Dummy Broker (E-Mail) without undue delay and in full, pursuant to Art. 17 GDPR (right to erasure). Insofar as the processing is based on Art. 6(1)(f) GDPR, the obligation to erase follows at the latest from Art. 17(1)(c) GDPR in conjunction with the objection declared below.</p>
-<p>Insofar as you process the data subject's personal data for direct marketing purposes, we hereby also object to such processing pursuant to Art. 21(2) GDPR.</p>
-<p>We hereby note that, pursuant to Article 12(2) GDPR, this email constitutes a valid communication channel for the exercise of our client's data subject rights. A referral to an online form or another channel does not constitute fulfilment of this request.</p>
-<p>We further request information pursuant to Art. 15 GDPR regarding which personal data of the data subject have been processed by you and to which recipients or categories of recipients such data have been disclosed.</p>
-<p>In addition, we ask you to add the data subject to an internal suppression list in order to prevent their data from being collected and stored again via third-party or external sources in the future.</p>
-<p>Please confirm in writing the complete erasure of the data as well as the addition to the suppression list. Pursuant to Art. 12(3) GDPR, you are required to inform us about the action taken without undue delay and in any event within one month of receipt of this request.</p>
-<p>For any questions, please reply directly to this email; our reply address contains a reference code for case assignment.</p>
-<p>Kind regards<br>
+  "htmlBody": "<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+</head>
+<body style="margin:0;padding:24px;background:#ffffff;color:#111111;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;">
+<div style="max-width:40em;margin:0 auto;">
+<p style="margin:0 0 14px 0;padding:0;">Dear Sir or Madam,</p>
+<p style="margin:0 0 14px 0;padding:0;">we are contacting you on behalf of and under power of attorney for the data subject named below. A written authorisation to exercise their data subject rights is on file and can be provided upon request.</p>
+<p style="margin:0 0 14px 0;padding:0;">Data subject:</p>
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 14px 0;padding:0;border-collapse:collapse;border:0;">
+<tr><td style="padding:0 12px 4px 0;margin:0;vertical-align:top;white-space:nowrap;">Name:</td><td style="padding:0 0 4px 0;margin:0;vertical-align:top;">Erika Mustermann</td></tr>
+<tr><td style="padding:0 12px 4px 0;margin:0;vertical-align:top;white-space:nowrap;">Date of birth:</td><td style="padding:0 0 4px 0;margin:0;vertical-align:top;">1985-03-14</td></tr>
+<tr><td style="padding:0 12px 4px 0;margin:0;vertical-align:top;white-space:nowrap;">Address:</td><td style="padding:0 0 4px 0;margin:0;vertical-align:top;">Musterstraße 12, 10115 Berlin, DE</td></tr>
+<tr><td style="padding:0 12px 4px 0;margin:0;vertical-align:top;white-space:nowrap;">Email addresses:</td><td style="padding:0 0 4px 0;margin:0;vertical-align:top;">erika.mustermann@example.com, e.mustermann@example.org</td></tr>
+<tr><td style="padding:0 12px 4px 0;margin:0;vertical-align:top;white-space:nowrap;">Phone numbers:</td><td style="padding:0 0 4px 0;margin:0;vertical-align:top;">+49 30 1234567, +49 170 9876543</td></tr>
+</table>
+<p style="margin:0 0 14px 0;padding:0;">On behalf of the data subject, we hereby request that you erase all personal data stored about this person at Dummy Broker (E-Mail) without undue delay and in full, pursuant to Art. 17 GDPR (right to erasure). Insofar as the processing is based on Art. 6(1)(f) GDPR, the obligation to erase follows at the latest from Art. 17(1)(c) GDPR in conjunction with the objection declared below.</p>
+<p style="margin:0 0 14px 0;padding:0;">Insofar as you process the data subject's personal data for direct marketing purposes, we hereby also object to such processing pursuant to Art. 21(2) GDPR.</p>
+<p style="margin:0 0 14px 0;padding:0;">We hereby note that, pursuant to Article 12(2) GDPR, this email constitutes a valid communication channel for the exercise of our client's data subject rights. A referral to an online form or another channel does not constitute fulfilment of this request.</p>
+<p style="margin:0 0 14px 0;padding:0;">We further request information pursuant to Art. 15 GDPR regarding which personal data of the data subject have been processed by you and to which recipients or categories of recipients such data have been disclosed.</p>
+<p style="margin:0 0 14px 0;padding:0;">In addition, we ask you to add the data subject to an internal suppression list in order to prevent their data from being collected and stored again via third-party or external sources in the future.</p>
+<p style="margin:0 0 14px 0;padding:0;">Please confirm in writing the complete erasure of the data as well as the addition to the suppression list. Pursuant to Art. 12(3) GDPR, you are required to inform us about the action taken without undue delay and in any event within one month of receipt of this request.</p>
+<p style="margin:0 0 14px 0;padding:0;">For any questions, please reply directly to this email; our reply address contains a reference code for case assignment.</p>
+<p style="margin:0 0 14px 0;padding:0;">Kind regards<br>
 GoKognito<br>
 – on behalf of the data subject –</p>
-<p>Reference: test1234abcd5678</p>",
+<p style="margin:0 0 14px 0;padding:0;">Reference: test1234abcd5678</p>
+</div>
+</body>
+</html>",
   "subject": "[Ref: test1234abcd5678] Data erasure request pursuant to Art. 17 GDPR",
   "textBody": "Dear Sir or Madam,
 
@@ -297,23 +366,36 @@ Reference: test1234abcd5678",
 
 exports[`buildOptOutRequest > erzeugt die englische Loeschanfrage ohne optionale Felder 1`] = `
 {
-  "htmlBody": "<p>Dear Sir or Madam,</p>
-<p>we are contacting you on behalf of and under power of attorney for the data subject named below. A written authorisation to exercise their data subject rights is on file and can be provided upon request.</p>
-<p>Data subject:<br>
-Name: Erika Mustermann<br>
-Address: Musterstraße 12, 10115 Berlin, DE<br>
-Email addresses: erika.mustermann@example.com, e.mustermann@example.org</p>
-<p>On behalf of the data subject, we hereby request that you erase all personal data stored about this person at Dummy Broker (E-Mail) without undue delay and in full, pursuant to Art. 17 GDPR (right to erasure). Insofar as the processing is based on Art. 6(1)(f) GDPR, the obligation to erase follows at the latest from Art. 17(1)(c) GDPR in conjunction with the objection declared below.</p>
-<p>Insofar as you process the data subject's personal data for direct marketing purposes, we hereby also object to such processing pursuant to Art. 21(2) GDPR.</p>
-<p>We hereby note that, pursuant to Article 12(2) GDPR, this email constitutes a valid communication channel for the exercise of our client's data subject rights. A referral to an online form or another channel does not constitute fulfilment of this request.</p>
-<p>We further request information pursuant to Art. 15 GDPR regarding which personal data of the data subject have been processed by you and to which recipients or categories of recipients such data have been disclosed.</p>
-<p>In addition, we ask you to add the data subject to an internal suppression list in order to prevent their data from being collected and stored again via third-party or external sources in the future.</p>
-<p>Please confirm in writing the complete erasure of the data as well as the addition to the suppression list. Pursuant to Art. 12(3) GDPR, you are required to inform us about the action taken without undue delay and in any event within one month of receipt of this request.</p>
-<p>For any questions, please reply directly to this email; our reply address contains a reference code for case assignment.</p>
-<p>Kind regards<br>
+  "htmlBody": "<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+</head>
+<body style="margin:0;padding:24px;background:#ffffff;color:#111111;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;">
+<div style="max-width:40em;margin:0 auto;">
+<p style="margin:0 0 14px 0;padding:0;">Dear Sir or Madam,</p>
+<p style="margin:0 0 14px 0;padding:0;">we are contacting you on behalf of and under power of attorney for the data subject named below. A written authorisation to exercise their data subject rights is on file and can be provided upon request.</p>
+<p style="margin:0 0 14px 0;padding:0;">Data subject:</p>
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 14px 0;padding:0;border-collapse:collapse;border:0;">
+<tr><td style="padding:0 12px 4px 0;margin:0;vertical-align:top;white-space:nowrap;">Name:</td><td style="padding:0 0 4px 0;margin:0;vertical-align:top;">Erika Mustermann</td></tr>
+<tr><td style="padding:0 12px 4px 0;margin:0;vertical-align:top;white-space:nowrap;">Address:</td><td style="padding:0 0 4px 0;margin:0;vertical-align:top;">Musterstraße 12, 10115 Berlin, DE</td></tr>
+<tr><td style="padding:0 12px 4px 0;margin:0;vertical-align:top;white-space:nowrap;">Email addresses:</td><td style="padding:0 0 4px 0;margin:0;vertical-align:top;">erika.mustermann@example.com, e.mustermann@example.org</td></tr>
+</table>
+<p style="margin:0 0 14px 0;padding:0;">On behalf of the data subject, we hereby request that you erase all personal data stored about this person at Dummy Broker (E-Mail) without undue delay and in full, pursuant to Art. 17 GDPR (right to erasure). Insofar as the processing is based on Art. 6(1)(f) GDPR, the obligation to erase follows at the latest from Art. 17(1)(c) GDPR in conjunction with the objection declared below.</p>
+<p style="margin:0 0 14px 0;padding:0;">Insofar as you process the data subject's personal data for direct marketing purposes, we hereby also object to such processing pursuant to Art. 21(2) GDPR.</p>
+<p style="margin:0 0 14px 0;padding:0;">We hereby note that, pursuant to Article 12(2) GDPR, this email constitutes a valid communication channel for the exercise of our client's data subject rights. A referral to an online form or another channel does not constitute fulfilment of this request.</p>
+<p style="margin:0 0 14px 0;padding:0;">We further request information pursuant to Art. 15 GDPR regarding which personal data of the data subject have been processed by you and to which recipients or categories of recipients such data have been disclosed.</p>
+<p style="margin:0 0 14px 0;padding:0;">In addition, we ask you to add the data subject to an internal suppression list in order to prevent their data from being collected and stored again via third-party or external sources in the future.</p>
+<p style="margin:0 0 14px 0;padding:0;">Please confirm in writing the complete erasure of the data as well as the addition to the suppression list. Pursuant to Art. 12(3) GDPR, you are required to inform us about the action taken without undue delay and in any event within one month of receipt of this request.</p>
+<p style="margin:0 0 14px 0;padding:0;">For any questions, please reply directly to this email; our reply address contains a reference code for case assignment.</p>
+<p style="margin:0 0 14px 0;padding:0;">Kind regards<br>
 GoKognito<br>
 – on behalf of the data subject –</p>
-<p>Reference: test1234abcd5678</p>",
+<p style="margin:0 0 14px 0;padding:0;">Reference: test1234abcd5678</p>
+</div>
+</body>
+</html>",
   "subject": "[Ref: test1234abcd5678] Data erasure request pursuant to Art. 17 GDPR",
   "textBody": "Dear Sir or Madam,
 
@@ -348,31 +430,46 @@ Reference: test1234abcd5678",
 
 exports[`buildOptOutRequest > erzeugt die englische Selbst-Anfrage mit Geburtsdatum und Telefon 1`] = `
 {
-  "htmlBody": "<p>Dear Sir or Madam,</p>
-<p>I, Erika Mustermann, hereby exercise my rights as a data subject under the General Data Protection Regulation (GDPR) vis-à-vis your organisation.</p>
-<p>For identification purposes:<br>
-Name: Erika Mustermann<br>
-Date of birth: 1985-03-14<br>
-Address: Musterstraße 12, 10115 Berlin, DE<br>
-Email addresses: erika.mustermann@example.com, e.mustermann@example.org<br>
-Phone numbers: +49 30 1234567, +49 170 9876543</p>
-<p>1. Access request (Art. 15(1) GDPR)</p>
-<p>I request information as to whether personal data concerning me are processed by you and, where that is the case, access to the following information:<br>
-a) the purposes of the processing (Art. 15(1)(a) GDPR),<br>
-b) the categories of personal data concerned (Art. 15(1)(b) GDPR),<br>
-c) the recipients or categories of recipients to whom the personal data have been or will be disclosed (Art. 15(1)(c) GDPR),<br>
-d) the envisaged period for which the personal data will be stored, or the criteria used to determine that period (Art. 15(1)(d) GDPR),<br>
-e) any available information as to the source of the data, where the personal data are not collected from me (Art. 15(1)(g) GDPR).</p>
-<p>2. Erasure (Art. 17(1) GDPR)</p>
-<p>Insofar as you process personal data concerning me, I request that you erase such data without undue delay and in full pursuant to Art. 17(1) GDPR. Insofar as the processing is based on Art. 6(1)(f) GDPR, the obligation to erase follows at the latest from Art. 17(1)(c) GDPR in conjunction with the objection declared under section 3.</p>
-<p>3. Objection to direct marketing (Art. 21(2) GDPR)</p>
-<p>Insofar as personal data concerning me are processed for direct marketing purposes, I hereby object to such processing pursuant to Art. 21(2) GDPR. Pursuant to Art. 21(3) GDPR, my personal data may no longer be processed for direct marketing purposes thereafter.</p>
-<p>I hereby note that, pursuant to Article 12(2) GDPR, this email constitutes a valid communication channel for the exercise of my data subject rights. A referral to an online form or another channel does not constitute fulfilment of this request.</p>
-<p>Pursuant to Art. 12(3) GDPR, you are required to inform me about the action taken on this request without undue delay and in any event within one month of its receipt.</p>
-<p>For any questions, please reply directly to this email; the reply address contains a reference code for case assignment.</p>
-<p>Kind regards<br>
+  "htmlBody": "<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+</head>
+<body style="margin:0;padding:24px;background:#ffffff;color:#111111;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;">
+<div style="max-width:40em;margin:0 auto;">
+<p style="margin:0 0 14px 0;padding:0;">Dear Sir or Madam,</p>
+<p style="margin:0 0 14px 0;padding:0;">I, Erika Mustermann, hereby exercise my rights as a data subject under the General Data Protection Regulation (GDPR) vis-à-vis your organisation.</p>
+<p style="margin:0 0 14px 0;padding:0;">For identification purposes:</p>
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 14px 0;padding:0;border-collapse:collapse;border:0;">
+<tr><td style="padding:0 12px 4px 0;margin:0;vertical-align:top;white-space:nowrap;">Name:</td><td style="padding:0 0 4px 0;margin:0;vertical-align:top;">Erika Mustermann</td></tr>
+<tr><td style="padding:0 12px 4px 0;margin:0;vertical-align:top;white-space:nowrap;">Date of birth:</td><td style="padding:0 0 4px 0;margin:0;vertical-align:top;">1985-03-14</td></tr>
+<tr><td style="padding:0 12px 4px 0;margin:0;vertical-align:top;white-space:nowrap;">Address:</td><td style="padding:0 0 4px 0;margin:0;vertical-align:top;">Musterstraße 12, 10115 Berlin, DE</td></tr>
+<tr><td style="padding:0 12px 4px 0;margin:0;vertical-align:top;white-space:nowrap;">Email addresses:</td><td style="padding:0 0 4px 0;margin:0;vertical-align:top;">erika.mustermann@example.com, e.mustermann@example.org</td></tr>
+<tr><td style="padding:0 12px 4px 0;margin:0;vertical-align:top;white-space:nowrap;">Phone numbers:</td><td style="padding:0 0 4px 0;margin:0;vertical-align:top;">+49 30 1234567, +49 170 9876543</td></tr>
+</table>
+<h2 style="margin:24px 0 10px 0;padding:0;font-size:15px;font-weight:bold;">1. Access request (Art. 15(1) GDPR)</h2>
+<p style="margin:0 0 14px 0;padding:0;">I request information as to whether personal data concerning me are processed by you and, where that is the case, access to the following information:</p>
+<ol style="margin:0 0 14px 0;padding:0 0 0 20px;list-style:none;">
+<li style="margin:0 0 6px 0;padding:0;">a) the purposes of the processing (Art. 15(1)(a) GDPR),</li>
+<li style="margin:0 0 6px 0;padding:0;">b) the categories of personal data concerned (Art. 15(1)(b) GDPR),</li>
+<li style="margin:0 0 6px 0;padding:0;">c) the recipients or categories of recipients to whom the personal data have been or will be disclosed (Art. 15(1)(c) GDPR),</li>
+<li style="margin:0 0 6px 0;padding:0;">d) the envisaged period for which the personal data will be stored, or the criteria used to determine that period (Art. 15(1)(d) GDPR),</li>
+<li style="margin:0 0 6px 0;padding:0;">e) any available information as to the source of the data, where the personal data are not collected from me (Art. 15(1)(g) GDPR).</li>
+</ol>
+<h2 style="margin:24px 0 10px 0;padding:0;font-size:15px;font-weight:bold;">2. Erasure (Art. 17(1) GDPR)</h2>
+<p style="margin:0 0 14px 0;padding:0;">Insofar as you process personal data concerning me, I request that you erase such data without undue delay and in full pursuant to Art. 17(1) GDPR. Insofar as the processing is based on Art. 6(1)(f) GDPR, the obligation to erase follows at the latest from Art. 17(1)(c) GDPR in conjunction with the objection declared under section 3.</p>
+<h2 style="margin:24px 0 10px 0;padding:0;font-size:15px;font-weight:bold;">3. Objection to direct marketing (Art. 21(2) GDPR)</h2>
+<p style="margin:0 0 14px 0;padding:0;">Insofar as personal data concerning me are processed for direct marketing purposes, I hereby object to such processing pursuant to Art. 21(2) GDPR. Pursuant to Art. 21(3) GDPR, my personal data may no longer be processed for direct marketing purposes thereafter.</p>
+<p style="margin:0 0 14px 0;padding:0;">I hereby note that, pursuant to Article 12(2) GDPR, this email constitutes a valid communication channel for the exercise of my data subject rights. A referral to an online form or another channel does not constitute fulfilment of this request.</p>
+<p style="margin:0 0 14px 0;padding:0;">Pursuant to Art. 12(3) GDPR, you are required to inform me about the action taken on this request without undue delay and in any event within one month of its receipt.</p>
+<p style="margin:0 0 14px 0;padding:0;">For any questions, please reply directly to this email; the reply address contains a reference code for case assignment.</p>
+<p style="margin:0 0 14px 0;padding:0;">Kind regards<br>
 Erika Mustermann</p>
-<p>Reference: test1234abcd5678</p>",
+<p style="margin:0 0 14px 0;padding:0;">Reference: test1234abcd5678</p>
+</div>
+</body>
+</html>",
   "subject": "[Ref: test1234abcd5678] Access and erasure request pursuant to Art. 15, 17, 21 GDPR",
   "textBody": "Dear Sir or Madam,
 
@@ -388,11 +485,11 @@ Phone numbers: +49 30 1234567, +49 170 9876543
 1. Access request (Art. 15(1) GDPR)
 
 I request information as to whether personal data concerning me are processed by you and, where that is the case, access to the following information:
-a) the purposes of the processing (Art. 15(1)(a) GDPR),
-b) the categories of personal data concerned (Art. 15(1)(b) GDPR),
-c) the recipients or categories of recipients to whom the personal data have been or will be disclosed (Art. 15(1)(c) GDPR),
-d) the envisaged period for which the personal data will be stored, or the criteria used to determine that period (Art. 15(1)(d) GDPR),
-e) any available information as to the source of the data, where the personal data are not collected from me (Art. 15(1)(g) GDPR).
+  a) the purposes of the processing (Art. 15(1)(a) GDPR),
+  b) the categories of personal data concerned (Art. 15(1)(b) GDPR),
+  c) the recipients or categories of recipients to whom the personal data have been or will be disclosed (Art. 15(1)(c) GDPR),
+  d) the envisaged period for which the personal data will be stored, or the criteria used to determine that period (Art. 15(1)(d) GDPR),
+  e) any available information as to the source of the data, where the personal data are not collected from me (Art. 15(1)(g) GDPR).
 
 2. Erasure (Art. 17(1) GDPR)
 
@@ -417,29 +514,44 @@ Reference: test1234abcd5678",
 
 exports[`buildOptOutRequest > erzeugt die englische Selbst-Anfrage ohne optionale Felder 1`] = `
 {
-  "htmlBody": "<p>Dear Sir or Madam,</p>
-<p>I, Erika Mustermann, hereby exercise my rights as a data subject under the General Data Protection Regulation (GDPR) vis-à-vis your organisation.</p>
-<p>For identification purposes:<br>
-Name: Erika Mustermann<br>
-Address: Musterstraße 12, 10115 Berlin, DE<br>
-Email addresses: erika.mustermann@example.com, e.mustermann@example.org</p>
-<p>1. Access request (Art. 15(1) GDPR)</p>
-<p>I request information as to whether personal data concerning me are processed by you and, where that is the case, access to the following information:<br>
-a) the purposes of the processing (Art. 15(1)(a) GDPR),<br>
-b) the categories of personal data concerned (Art. 15(1)(b) GDPR),<br>
-c) the recipients or categories of recipients to whom the personal data have been or will be disclosed (Art. 15(1)(c) GDPR),<br>
-d) the envisaged period for which the personal data will be stored, or the criteria used to determine that period (Art. 15(1)(d) GDPR),<br>
-e) any available information as to the source of the data, where the personal data are not collected from me (Art. 15(1)(g) GDPR).</p>
-<p>2. Erasure (Art. 17(1) GDPR)</p>
-<p>Insofar as you process personal data concerning me, I request that you erase such data without undue delay and in full pursuant to Art. 17(1) GDPR. Insofar as the processing is based on Art. 6(1)(f) GDPR, the obligation to erase follows at the latest from Art. 17(1)(c) GDPR in conjunction with the objection declared under section 3.</p>
-<p>3. Objection to direct marketing (Art. 21(2) GDPR)</p>
-<p>Insofar as personal data concerning me are processed for direct marketing purposes, I hereby object to such processing pursuant to Art. 21(2) GDPR. Pursuant to Art. 21(3) GDPR, my personal data may no longer be processed for direct marketing purposes thereafter.</p>
-<p>I hereby note that, pursuant to Article 12(2) GDPR, this email constitutes a valid communication channel for the exercise of my data subject rights. A referral to an online form or another channel does not constitute fulfilment of this request.</p>
-<p>Pursuant to Art. 12(3) GDPR, you are required to inform me about the action taken on this request without undue delay and in any event within one month of its receipt.</p>
-<p>For any questions, please reply directly to this email; the reply address contains a reference code for case assignment.</p>
-<p>Kind regards<br>
+  "htmlBody": "<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+</head>
+<body style="margin:0;padding:24px;background:#ffffff;color:#111111;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;">
+<div style="max-width:40em;margin:0 auto;">
+<p style="margin:0 0 14px 0;padding:0;">Dear Sir or Madam,</p>
+<p style="margin:0 0 14px 0;padding:0;">I, Erika Mustermann, hereby exercise my rights as a data subject under the General Data Protection Regulation (GDPR) vis-à-vis your organisation.</p>
+<p style="margin:0 0 14px 0;padding:0;">For identification purposes:</p>
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 14px 0;padding:0;border-collapse:collapse;border:0;">
+<tr><td style="padding:0 12px 4px 0;margin:0;vertical-align:top;white-space:nowrap;">Name:</td><td style="padding:0 0 4px 0;margin:0;vertical-align:top;">Erika Mustermann</td></tr>
+<tr><td style="padding:0 12px 4px 0;margin:0;vertical-align:top;white-space:nowrap;">Address:</td><td style="padding:0 0 4px 0;margin:0;vertical-align:top;">Musterstraße 12, 10115 Berlin, DE</td></tr>
+<tr><td style="padding:0 12px 4px 0;margin:0;vertical-align:top;white-space:nowrap;">Email addresses:</td><td style="padding:0 0 4px 0;margin:0;vertical-align:top;">erika.mustermann@example.com, e.mustermann@example.org</td></tr>
+</table>
+<h2 style="margin:24px 0 10px 0;padding:0;font-size:15px;font-weight:bold;">1. Access request (Art. 15(1) GDPR)</h2>
+<p style="margin:0 0 14px 0;padding:0;">I request information as to whether personal data concerning me are processed by you and, where that is the case, access to the following information:</p>
+<ol style="margin:0 0 14px 0;padding:0 0 0 20px;list-style:none;">
+<li style="margin:0 0 6px 0;padding:0;">a) the purposes of the processing (Art. 15(1)(a) GDPR),</li>
+<li style="margin:0 0 6px 0;padding:0;">b) the categories of personal data concerned (Art. 15(1)(b) GDPR),</li>
+<li style="margin:0 0 6px 0;padding:0;">c) the recipients or categories of recipients to whom the personal data have been or will be disclosed (Art. 15(1)(c) GDPR),</li>
+<li style="margin:0 0 6px 0;padding:0;">d) the envisaged period for which the personal data will be stored, or the criteria used to determine that period (Art. 15(1)(d) GDPR),</li>
+<li style="margin:0 0 6px 0;padding:0;">e) any available information as to the source of the data, where the personal data are not collected from me (Art. 15(1)(g) GDPR).</li>
+</ol>
+<h2 style="margin:24px 0 10px 0;padding:0;font-size:15px;font-weight:bold;">2. Erasure (Art. 17(1) GDPR)</h2>
+<p style="margin:0 0 14px 0;padding:0;">Insofar as you process personal data concerning me, I request that you erase such data without undue delay and in full pursuant to Art. 17(1) GDPR. Insofar as the processing is based on Art. 6(1)(f) GDPR, the obligation to erase follows at the latest from Art. 17(1)(c) GDPR in conjunction with the objection declared under section 3.</p>
+<h2 style="margin:24px 0 10px 0;padding:0;font-size:15px;font-weight:bold;">3. Objection to direct marketing (Art. 21(2) GDPR)</h2>
+<p style="margin:0 0 14px 0;padding:0;">Insofar as personal data concerning me are processed for direct marketing purposes, I hereby object to such processing pursuant to Art. 21(2) GDPR. Pursuant to Art. 21(3) GDPR, my personal data may no longer be processed for direct marketing purposes thereafter.</p>
+<p style="margin:0 0 14px 0;padding:0;">I hereby note that, pursuant to Article 12(2) GDPR, this email constitutes a valid communication channel for the exercise of my data subject rights. A referral to an online form or another channel does not constitute fulfilment of this request.</p>
+<p style="margin:0 0 14px 0;padding:0;">Pursuant to Art. 12(3) GDPR, you are required to inform me about the action taken on this request without undue delay and in any event within one month of its receipt.</p>
+<p style="margin:0 0 14px 0;padding:0;">For any questions, please reply directly to this email; the reply address contains a reference code for case assignment.</p>
+<p style="margin:0 0 14px 0;padding:0;">Kind regards<br>
 Erika Mustermann</p>
-<p>Reference: test1234abcd5678</p>",
+<p style="margin:0 0 14px 0;padding:0;">Reference: test1234abcd5678</p>
+</div>
+</body>
+</html>",
   "subject": "[Ref: test1234abcd5678] Access and erasure request pursuant to Art. 15, 17, 21 GDPR",
   "textBody": "Dear Sir or Madam,
 
@@ -453,11 +565,11 @@ Email addresses: erika.mustermann@example.com, e.mustermann@example.org
 1. Access request (Art. 15(1) GDPR)
 
 I request information as to whether personal data concerning me are processed by you and, where that is the case, access to the following information:
-a) the purposes of the processing (Art. 15(1)(a) GDPR),
-b) the categories of personal data concerned (Art. 15(1)(b) GDPR),
-c) the recipients or categories of recipients to whom the personal data have been or will be disclosed (Art. 15(1)(c) GDPR),
-d) the envisaged period for which the personal data will be stored, or the criteria used to determine that period (Art. 15(1)(d) GDPR),
-e) any available information as to the source of the data, where the personal data are not collected from me (Art. 15(1)(g) GDPR).
+  a) the purposes of the processing (Art. 15(1)(a) GDPR),
+  b) the categories of personal data concerned (Art. 15(1)(b) GDPR),
+  c) the recipients or categories of recipients to whom the personal data have been or will be disclosed (Art. 15(1)(c) GDPR),
+  d) the envisaged period for which the personal data will be stored, or the criteria used to determine that period (Art. 15(1)(d) GDPR),
+  e) any available information as to the source of the data, where the personal data are not collected from me (Art. 15(1)(g) GDPR).
 
 2. Erasure (Art. 17(1) GDPR)
 
