@@ -311,6 +311,16 @@ export const realBrokers: NewBroker[] = [
   // Alle mit dediziertem Betroffenen-Kontakt und E-Mail als Transportweg, alle
   // isActive: false. requiresAuthorizationAttachment kommt aus COMMON (false).
   //
+  // QUELLENVORBEHALT (Befund 01.08.2026): Die datenanfragen.de-Daten sind CC0
+  // und community-gepflegt -- sie koennen VERALTET sein. Konkreter Fall:
+  // sovendus (EU-Welle 2, gleiche Quelle) trug dort eine Postanschrift, die
+  // laut Sovendus' eigenem Impressum nicht mehr stimmt, und eine Kontaktadresse,
+  // die auf der eigenen Seite nirgends auftaucht. Konsequenz fuer die
+  // Auswertung: Bleibt eine Antwort aus, ist "veraltete Kontaktdaten" eine
+  // gleichrangige Hypothese neben "Broker ignoriert die Anfrage" -- vor einer
+  // Eskalation also erst die Adresse gegen die AKTUELLE Policy/das Impressum
+  // des Brokers pruefen, nicht gegen die Quelle.
+  //
   // Auskunfteien bewusst ausgeschlossen (nicht automatisierbar: Loeschung
   // strukturell rejected, Auskunft teils nur postalisch) -- entfernt 17.07.:
   // regis24 (per Antwort bestaetigt), acxiom, universum-business. Nicht erneut
@@ -522,10 +532,10 @@ export const realBrokers: NewBroker[] = [
     name: "Sovendus GmbH",
     country: "DE",
     websiteUrl: "https://www.sovendus.com",
-    optOutEmail: "data-protection@sovendus.com",
+    optOutEmail: "service@sovendus.com",
     language: "de",
     isActive: false,
     notes:
-      "Verifiziert via datenanfragen.de (Hermann-Veit-Str. 6, 76135 Karlsruhe). Eigenstaendiger Verantwortlicher im Post-Checkout-/Gutschein-Netzwerk (u.a. Check24, Otto, SportScheck, laut Eigenangabe 3.000+ Partner-Shops); erhaelt bei Angebot-Klick Klarname/Adresse/Mail. Werbewiderspruch nach Art. 21 Abs. 3 rechtlich verankert: Sovendus fuehrt dauerhafte interne Blacklist zum Abgleich mit kuenftigen Werbedateien -> realistischer Loesch-/Widerspruchsprozess, keine Ausweispflicht dokumentiert. VOR AKTIVIERUNG PRUEFEN: aktuelle Policy-Fassung verifizieren — Alt-Fassungen nennen abweichende Postadresse (Bahnhofplatz 12) und UK-Mail (data-protection@sovendus.co.uk); erst nach Bestaetigung der hier hinterlegten Adresse auf isActive: true setzen",
+      "Eigenstaendiger Verantwortlicher im Post-Checkout-/Gutschein-Netzwerk (u.a. Check24, Otto, SportScheck, laut Eigenangabe 3.000+ Partner-Shops); erhaelt bei Angebot-Klick Klarname/Adresse/Mail. Werbewiderspruch nach Art. 21 Abs. 3 rechtlich verankert: Sovendus fuehrt dauerhafte interne Blacklist zum Abgleich mit kuenftigen Werbedateien -> realistischer Loesch-/Widerspruchsprozess. PRUEFUNG 01.08.2026 (Policy + Impressum auf web.sovendus.com direkt gelesen): Ausweispflicht bestaetigt NICHT vorhanden (Identitaetsnachweis nur 'bei begruendeten Zweifeln'). ABER zwei Abweichungen zur bisherigen Annahme, DESHALB WEITER INAKTIV: (1) Anschrift ist laut eigener Seite 'c/o Design Offices Karlsruhe Bahnhofplatz, Bahnhofplatz 12, 76137 Karlsruhe' — die frueher als 'Alt-Fassung' eingestufte Adresse ist die AKTUELLE; Hermann-Veit-Str. 6, 76135 (Quelle datenanfragen.de) ist offenbar veraltet. (2) Als Kontakt nennen Policy UND Impressum durchgehend service@sovendus.com, auch fuer den Datenschutzbeauftragten — data-protection@sovendus.com steht nur bei datenanfragen.de, nicht auf der eigenen Seite. ENTSCHEIDUNG 01.08.2026: Versand an service@sovendus.com — die Adresse, die Sovendus SELBST in Policy und Impressum als DSB-Kontakt nennt. data-protection@sovendus.com existiert als Drittquellen-Alternative (datenanfragen.de), also derselben Quelle, deren Anschrift sich hier gerade als veraltet erwiesen hat. Bewusst NUR EIN Kanal: zwei Empfaenger machen das Ergebnis uneindeutig (welcher hat geantwortet, welcher ignoriert?). Bleibt die Antwort aus, ist data-protection@ der naechste Versuch.",
   },
 ];
