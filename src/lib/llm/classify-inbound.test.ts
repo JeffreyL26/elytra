@@ -11,6 +11,11 @@ vi.mock("@anthropic-ai/sdk", () => ({
 }));
 
 import {
+  abisTicketAckBody,
+  abisTicketAckFrom,
+  abisTicketAckSubject,
+} from "@/lib/llm/__fixtures__/abis-ticket-ack";
+import {
   yasniNoDataHeldBody,
   yasniNoDataHeldFrom,
   yasniNoDataHeldPdfText,
@@ -105,6 +110,29 @@ describe("classifyInbound", () => {
     expect(content).toContain(yasniNoDataHeldBody);
     expect(content).toContain("[Anhang 1: auskunft.pdf]");
     expect(content).toContain("keine Suchergebnisse und kein Exposé");
+  });
+
+  // Kalibrierungsfall: Ticketsystem-Autoresponder. Vergibt eine Vorgangsnummer
+  // (also Bezug zur Anfrage), sagt aber inhaltlich nichts zur Sache -- der
+  // Grenzfall zwischen in_progress und unrelated. Der Test haelt die
+  // Erwartung in_progress fest; kippt eine spaetere Prompt-Version diesen Fall
+  // nach unrelated, faellt das hier auf und ist eine bewusste Entscheidung.
+  it("ABIS-Fixture: Ticketsystem-Ack ohne Sachaussage landet vollstaendig im Prompt", async () => {
+    mockToolUse("in_progress", 0.82, "Eingangsbestaetigung mit Ticketnummer, keine Sachaussage");
+    const result = await classifyInbound({
+      subject: abisTicketAckSubject,
+      textBody: abisTicketAckBody,
+      fromAddress: abisTicketAckFrom,
+    });
+    expect(result.category).toBe("in_progress");
+    expect(result.needsManualReview).toBe(false);
+
+    const args = messagesCreate.mock.calls[0]?.[0];
+    const content = args.messages[0].content as string;
+    expect(content).toContain("[E-Mail-Body]");
+    // Die Vorgangsnummer ist der Kern des Falls -- sie muss dem Modell vorliegen.
+    expect(content).toContain("ABISPRIVACY-110");
+    expect(content).toContain(abisTicketAckFrom);
   });
 
   it("fuehrt nicht extrahierbare Anhaenge mit Name und Note auf", () => {

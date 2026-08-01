@@ -49,8 +49,24 @@ describe("EU-Welle 2 Broker-Stammdaten", () => {
 });
 
 describe("DE-Welle (da-*) Broker-Stammdaten", () => {
-  it("umfasst genau 15 Eintraege", () => {
-    expect(waveBrokers).toHaveLength(15);
+  it("umfasst genau 12 Eintraege", () => {
+    expect(waveBrokers).toHaveLength(12);
+  });
+
+  // Dauerhaft ausgeschlossene Slugs: Auskunfteien (17.07.) und postalisch
+  // antwortende Broker (01.08.). Der Guard verhindert, dass sie ueber eine
+  // spaetere Recherche-Welle versehentlich zurueckkehren.
+  it("enthaelt keinen dauerhaft ausgeschlossenen Broker", () => {
+    const excluded = [
+      "da-regis24",
+      "da-acxiom",
+      "da-universum-business",
+      "da-abis",
+      "da-deutsche-post-adress",
+      "da-deutsche-post-direkt",
+    ];
+    const present = realBrokers.filter((b) => excluded.includes(b.slug)).map((b) => b.slug);
+    expect(present).toEqual([]);
   });
 
   // Guard gegen versehentliche Aktivierung ueber den Seed.

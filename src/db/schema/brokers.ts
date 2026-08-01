@@ -10,6 +10,13 @@ export const responsivenessTierEnum = pgEnum("responsiveness_tier", [
   "unknown",
 ]);
 
+// INVARIANTE ZUR PORTFOLIO-PFLEGE: Broker mit Vorgangshistorie zahlender Kunden
+// werden NIE hart geloescht -- Kuration laeuft dann ueber Entfernung aus den
+// Stammdaten (real-brokers-data.ts) + is_active=false, damit Portfolio-Pflege
+// niemals rueckwirkend Kundenhistorie zerstoert. Der Seed loescht ohnehin nie
+// (slug-basiertes Upsert), entfernte Stammdaten lassen DB-Zeilen unangetastet.
+// Die harte Loeschung vom 01.08.2026 (abis, deutsche-post-adress,
+// deutsche-post-direkt) betraf ausschliesslich Self-Test-Vorgaenge.
 export const brokers = pgTable("brokers", {
   id: text("id")
     .primaryKey()

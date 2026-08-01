@@ -16,11 +16,11 @@ const COMMON = {
   requiresAuthorizationAttachment: false,
 } as const satisfies Partial<NewBroker>;
 
-// 46 reale Data-Broker: 3 aktiv (erster E2E-Test), 43 inaktiv vorgeseedet.
+// 43 reale Data-Broker: 3 aktiv (erster E2E-Test), 40 inaktiv vorgeseedet.
 // Inaktiv gegliedert: 8 E-Mail-Kanal, 7 Mixed (Form bevorzugt, E-Mail als
 // Fallback), 4 Tier 1 (E-Mail-Kanal oeffentlich dokumentiert, hohe Konfidenz),
 // 3 Tier 2 (Kontaktpunkt verifiziert, Verifikation potenziell an die
-// Betroffenen-Adresse gebunden -- Fall-B-Test-Kandidaten), 15 DE-Welle
+// Betroffenen-Adresse gebunden -- Fall-B-Test-Kandidaten), 12 DE-Welle
 // (Slug-Praefix "da-", Quelle datenanfragen.de, CC0), 6 EU-Welle 2 (eigene
 // Recherche 07/2026, kein Praefix).
 export const realBrokers: NewBroker[] = [
@@ -316,20 +316,17 @@ export const realBrokers: NewBroker[] = [
   // regis24 (per Antwort bestaetigt), acxiom, universum-business. Nicht erneut
   // aufnehmen.
   //
+  // Postalisch antwortende Broker ausgeschlossen (nicht automatisierbar, nicht
+  // verifizierbar -- Antwort geht an die Kundenanschrift): entfernt 01.08. --
+  // abis + deutsche-post-adress (empirisch belegt, Runde 16.07.),
+  // deutsche-post-direkt (gleiche Gruppe, begruendete Annahme). Nicht erneut
+  // aufnehmen.
+  //
   // TODO(needsIdDocument): In dieser Welle stammt der Wert im Quell-Feld
   // "needs-id-document" (Ausweiskopie) -- das ist NICHT dasselbe wie
   // requiresAuthorizationAttachment (Vollmacht-Anhang). Hier ueberall false,
   // daher heute unkritisch. Perspektivisch braucht das Schema ein eigenes
   // Feld needsIdDocument; JETZT bewusst nicht angelegt. ---
-  {
-    ...COMMON,
-    slug: "da-abis",
-    name: "ABIS GmbH",
-    country: "DE",
-    optOutEmail: "datenschutz@abis-online.de",
-    language: "de",
-    isActive: false,
-  },
   {
     ...COMMON,
     slug: "da-adpublisher",
@@ -347,26 +344,6 @@ export const realBrokers: NewBroker[] = [
     country: "DE",
     websiteUrl: "https://www.az-direct.com",
     optOutEmail: "datenschutz@az-direct.com",
-    language: "de",
-    isActive: false,
-  },
-  {
-    ...COMMON,
-    slug: "da-deutsche-post-adress",
-    name: "Deutsche Post Adress GmbH & Co. KG",
-    country: "DE",
-    websiteUrl: "https://www.deutschepost.de/de/p/postadress.html",
-    optOutEmail: "datenschutz@postadress.de",
-    language: "de",
-    isActive: false,
-  },
-  {
-    ...COMMON,
-    slug: "da-deutsche-post-direkt",
-    name: "Deutsche Post Direkt GmbH",
-    country: "DE",
-    websiteUrl: "https://service.postdirekt.de/portal/",
-    optOutEmail: "datenschutz@postdirekt.de",
     language: "de",
     isActive: false,
   },
