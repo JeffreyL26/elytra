@@ -3,18 +3,21 @@ import { SERVICE_NAME } from "@/lib/branding";
 import {
   buildBrokerEnvelope,
   resolveBrokerFromMode,
-  TOKENIZED_DISPLAY_NAME,
+  SERVICE_DISPLAY_NAME,
 } from "@/lib/mail/broker-from";
 
 const TOKEN = "test1234abcd5678";
 const REPLY_DOMAIN = "reply.jba-team.com";
 const SELF_FROM = "jeffrey@jba-team.com";
+const SELF_NAME = "Jeffrey Lehmann";
 const TOKEN_ADDRESS = `proc-${TOKEN}@${REPLY_DOMAIN}`;
 
 const base = {
   processToken: TOKEN,
   replyDomain: REPLY_DOMAIN,
   selfModeFrom: SELF_FROM,
+  isSelfRequest: true,
+  selfDisplayName: SELF_NAME,
 };
 
 describe("resolveBrokerFromMode", () => {
@@ -53,8 +56,7 @@ describe("buildBrokerEnvelope — tokenized-Modus", () => {
   const envelope = buildBrokerEnvelope({ ...base, mode: "tokenized" });
 
   it("From traegt den Token samt sprechendem Display-Name", () => {
-    expect(envelope.fromHeader).toBe(`${TOKENIZED_DISPLAY_NAME} <${TOKEN_ADDRESS}>`);
-    expect(envelope.fromHeader).toContain(SERVICE_NAME);
+    expect(envelope.fromHeader).toBe(`${SELF_NAME} <${TOKEN_ADDRESS}>`);
   });
 
   it("liefert die reine Adresse getrennt vom Header-Wert", () => {
@@ -74,5 +76,49 @@ describe("buildBrokerEnvelope — tokenized-Modus", () => {
 
   it("verwendet NICHT die Self-Adresse als From", () => {
     expect(envelope.fromHeader).not.toContain(SELF_FROM);
+  });
+});
+
+// Der Absender folgt derselben Logik wie der Mailtext: Ich-Form -> Mensch,
+// Vertretung -> Dienst. Faellt das auseinander, sieht ein Ich-Form-Schreiben
+// nach aussen aus wie ein Dritter, der fuer eine Person handelt -- und nimmt
+// damit die noch offene RDG-Frage (Gate G1) vorweg.
+describe("buildBrokerEnvelope — Display-Name folgt isSelfRequest", () => {
+  it("Self-Request: Klarname der betroffenen Person, NICHT die Marke", () => {
+    const envelope = buildBrokerEnvelope({ ...base, mode: "tokenized", isSelfRequest: true });
+    expect(envelope.fromHeader).toBe(`${SELF_NAME} <${TOKEN_ADDRESS}>`);
+    expect(envelope.fromHeader).not.toContain(SERVICE_NAME);
+  });
+
+  it("Vertretung (hinter G1): Dienst-Name als Absender", () => {
+    const envelope = buildBrokerEnvelope({ ...base, mode: "tokenized", isSelfRequest: false });
+    expect(envelope.fromHeader).toBe(`${SERVICE_DISPLAY_NAME} <${TOKEN_ADDRESS}>`);
+    expect(envelope.fromHeader).toContain(SERVICE_NAME);
+    expect(envelope.fromHeader).not.toContain(SELF_NAME);
+  });
+
+  // Lieber gar kein Name als der falsche: der Markenname wuerde die Ich-Form
+  // des Textes konterkarieren.
+  it.each([
+    [undefined],
+    [null],
+    [""],
+    ["   "],
+  ])("Self-Request ohne SELF_NAME (%s): nackte Adresse, kein Marken-Fallback", (name) => {
+    const envelope = buildBrokerEnvelope({
+      ...base,
+      mode: "tokenized",
+      isSelfRequest: true,
+      selfDisplayName: name as string | null | undefined,
+    });
+    expect(envelope.fromHeader).toBe(TOKEN_ADDRESS);
+    expect(envelope.fromHeader).not.toContain(SERVICE_NAME);
+  });
+
+  it("im self-Modus ist der Display-Name irrelevant (From bleibt die Self-Adresse)", () => {
+    for (const isSelfRequest of [true, false]) {
+      const envelope = buildBrokerEnvelope({ ...base, mode: "self", isSelfRequest });
+      expect(envelope.fromHeader).toBe(SELF_FROM);
+    }
   });
 });

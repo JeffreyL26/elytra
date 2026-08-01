@@ -16,7 +16,7 @@ import { db, sql } from "@/db/client";
 import { brokers, customerProfiles, optOutProcesses, users } from "@/db/schema";
 import { env } from "@/lib/env";
 import { createProcessToken } from "@/lib/ids";
-import { buildBrokerEnvelope, TOKENIZED_DISPLAY_NAME } from "@/lib/mail/broker-from";
+import { buildBrokerEnvelope } from "@/lib/mail/broker-from";
 import {
   buildOptOutRequest,
   TEMPLATE_LOCALES,
@@ -160,6 +160,9 @@ async function main(): Promise<void> {
       processToken: token,
       replyDomain: env.REPLY_DOMAIN ?? "(REPLY_DOMAIN fehlt!)",
       selfModeFrom: selfEmail,
+      // Dieses Script versendet ausschliesslich Self-Requests (siehe Guard oben).
+      isSelfRequest: true,
+      selfDisplayName: env.SELF_NAME,
     });
 
     console.log("\n===== DRY-RUN (kein Versand, keine DB-Schreibvorgaenge) =====");
@@ -187,14 +190,16 @@ async function main(): Promise<void> {
   if (env.MAIL_BROKER_FROM_MODE === "tokenized") {
     // Bei einem neuen Prozess entsteht das Token erst im Versand -- dann die
     // Form zeigen, nicht die konkrete Adresse erfinden.
-    const shown = existing
-      ? buildBrokerEnvelope({
-          mode: "tokenized",
-          processToken: existing.processToken,
-          replyDomain: env.REPLY_DOMAIN,
-          selfModeFrom: selfEmail,
-        }).fromHeader
-      : `${TOKENIZED_DISPLAY_NAME} <proc-<neues Token>@${env.REPLY_DOMAIN}>`;
+    const shown = buildBrokerEnvelope({
+      mode: "tokenized",
+      // Bei einem neuen Prozess entsteht das Token erst im Versand -- dann die
+      // Form zeigen, nicht die konkrete Adresse erfinden.
+      processToken: existing?.processToken ?? "<neues Token>",
+      replyDomain: env.REPLY_DOMAIN,
+      selfModeFrom: selfEmail,
+      isSelfRequest: true,
+      selfDisplayName: env.SELF_NAME,
+    }).fromHeader;
     console.log(`Absender (From):   ${shown}`);
     console.log("                   -> Antworten laufen in die Pipeline.");
   } else {

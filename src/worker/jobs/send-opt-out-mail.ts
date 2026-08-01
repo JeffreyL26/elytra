@@ -58,11 +58,15 @@ export async function sendOptOutMail(processId: string): Promise<void> {
   // Welche Adresse als From geht, entscheidet der Modus (broker-from.ts).
   // Dieselbe Funktion nutzt der Dry-Run in trigger-real-send.ts -- was dort
   // angezeigt wird, ist damit exakt das, was hier versendet wird.
+  // isSelfRequest steuert Template UND Absender aus derselben Quelle -- ein
+  // Ich-Form-Text darf nicht sichtbar unter der Marke abgesendet werden.
   const envelope = buildBrokerEnvelope({
     mode: env.MAIL_BROKER_FROM_MODE,
     processToken: proc.processToken,
     replyDomain,
     selfModeFrom,
+    isSelfRequest: proc.isSelfRequest,
+    selfDisplayName: env.SELF_NAME,
   });
 
   const mail = buildOptOutRequest(

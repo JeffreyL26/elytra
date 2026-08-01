@@ -25,9 +25,19 @@ export const BROKER_FROM_MODES = ["self", "tokenized"] as const;
 export type BrokerFromMode = (typeof BROKER_FROM_MODES)[number];
 
 // Display-Name im tokenized-Modus. Ohne ihn sieht "proc-a1b2...@reply..." fuer
-// einen Datenschutzbeauftragten wie Maschinen-Spam aus. Der Name kommt aus
-// branding.ts -- bei einem Rebrand aendert sich nur dort etwas.
-export const TOKENIZED_DISPLAY_NAME = `${SERVICE_NAME} Datenschutzanfragen`;
+// einen Datenschutzbeauftragten wie Maschinen-Spam aus.
+//
+// WER als Absender erscheint, folgt derselben Logik wie der MAILTEXT:
+//   * Self-Request (isSelfRequest=true): Der Text steht in der Ich-Form
+//     ("ich, <Name>, mache meine Rechte geltend") -- also erscheint auch der
+//     Mensch als Absender, nicht die Marke.
+//   * Vertretung (isSelfRequest=false, hinter Gate G1): Der Text handelt im
+//     Namen der betroffenen Person -- dort ist der Dienst der Absender.
+// Ein Auseinanderfallen waere eine irrefuehrende Aussendarstellung: Ein
+// Ich-Form-Schreiben, das sichtbar von einer Marke abgesendet wird, sieht nach
+// aussen aus wie ein Dritter, der fuer eine Person handelt -- und wuerde damit
+// genau die RDG-Frage vorwegnehmen, die hinter G1 noch offen ist.
+export const SERVICE_DISPLAY_NAME = `${SERVICE_NAME} Datenschutzanfragen`;
 
 export interface BrokerEnvelope {
   // Wert des From-Headers, im tokenized-Modus inkl. Display-Name.
@@ -46,6 +56,13 @@ export interface BrokerEnvelopeInput {
   // From-Adresse im self-Modus: SELF_EMAIL (Self-Request) bzw.
   // MAIL_FROM_ADDRESS (Vertretung). Im tokenized-Modus ungenutzt.
   selfModeFrom: string;
+  // Derselbe Wert, der auch das Template steuert (Ich-Form vs. Vertretung) --
+  // Envelope und Text duerfen nicht auseinanderfallen.
+  isSelfRequest: boolean;
+  // Klarname der betroffenen Person (SELF_NAME) fuer den Display-Name im
+  // Self-Request. Fehlt er, geht die Mail OHNE Display-Name raus (siehe
+  // resolveDisplayName) -- niemals ersatzweise unter der Marke.
+  selfDisplayName?: string | null;
 }
 
 // Unbekannte/fehlende Werte fallen auf "self" zurueck -- ein Tippfehler in der
@@ -60,12 +77,27 @@ function formatDisplayName(name: string): string {
   return /^[A-Za-z0-9 äöüÄÖÜß.-]+$/.test(name) ? name : `"${name.replace(/["\\]/g, "\\$&")}"`;
 }
 
+// Wer erscheint als Absender? Siehe Begruendung an SERVICE_DISPLAY_NAME.
+// null = kein Display-Name, nur die nackte Adresse. Das ist der bewusste
+// Fallback fuer einen Self-Request ohne SELF_NAME: lieber gar kein Name als
+// der Markenname -- der wuerde die Ich-Form des Textes konterkarieren.
+function resolveDisplayName(input: BrokerEnvelopeInput): string | null {
+  if (!input.isSelfRequest) {
+    return SERVICE_DISPLAY_NAME;
+  }
+  const name = input.selfDisplayName?.trim();
+  return name ? name : null;
+}
+
 export function buildBrokerEnvelope(input: BrokerEnvelopeInput): BrokerEnvelope {
   const tokenAddress = `proc-${input.processToken}@${input.replyDomain}`;
 
   if (input.mode === "tokenized") {
+    const displayName = resolveDisplayName(input);
     return {
-      fromHeader: `${formatDisplayName(TOKENIZED_DISPLAY_NAME)} <${tokenAddress}>`,
+      fromHeader: displayName
+        ? `${formatDisplayName(displayName)} <${tokenAddress}>`
+        : tokenAddress,
       fromAddress: tokenAddress,
       // BEWUSST KEIN Reply-To: Es waere identisch zur From-Adresse und damit
       // reine Redundanz. Ein davon abweichendes Reply-To (etwa SELF_EMAIL)

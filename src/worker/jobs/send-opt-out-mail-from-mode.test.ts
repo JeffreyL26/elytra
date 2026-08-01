@@ -11,6 +11,7 @@ const { mockEnv, sendMailMock } = vi.hoisted(() => ({
     MAIL_FROM_ADDRESS: "removals@jba-team.com" as string | undefined,
     REPLY_DOMAIN: "reply.jba-team.com" as string | undefined,
     MAIL_BROKER_FROM_MODE: "self" as "self" | "tokenized",
+    SELF_NAME: "Jeffrey Lehmann" as string | undefined,
   },
   sendMailMock: vi.fn(),
 }));
@@ -29,7 +30,7 @@ let brokerId: string;
 
 // opt_out_processes ist unique auf (user_id, broker_id) -- fuer jeden Prozess
 // gegen denselben Broker braucht es deshalb einen eigenen User samt Profil.
-async function newProcess(): Promise<{ id: string; token: string }> {
+async function newProcess(isSelfRequest = true): Promise<{ id: string; token: string }> {
   const [user] = await db
     .insert(users)
     .values({ email: `frommode-${createId()}@example.org` })
@@ -44,7 +45,7 @@ async function newProcess(): Promise<{ id: string; token: string }> {
   });
   const [proc] = await db
     .insert(optOutProcesses)
-    .values({ userId: user.id, brokerId, isSelfRequest: true })
+    .values({ userId: user.id, brokerId, isSelfRequest })
     .returning({ id: optOutProcesses.id, token: optOutProcesses.processToken });
   return proc;
 }
@@ -101,12 +102,27 @@ describe("sendOptOutMail — From-Modus wirkt bis in den Versand", () => {
     await sendOptOutMail(proc.id);
 
     const input = sendMailMock.mock.calls[0][0];
-    expect(input.from).toBe(
-      `GoKognito Datenschutzanfragen <proc-${proc.token}@reply.jba-team.com>`,
-    );
+    // Self-Request -> Klarname der Person, passend zur Ich-Form des Textes.
+    expect(input.from).toBe(`Jeffrey Lehmann <proc-${proc.token}@reply.jba-team.com>`);
     expect(input.replyTo).toBeNull();
     // Die Adresse, an die Broker antworten, ist jetzt die getokente.
     expect(input.from).not.toContain("jeffrey@jba-team.com");
+  });
+
+  // Absender und Mailtext muessen dieselbe Geschichte erzaehlen: Ich-Form ->
+  // Mensch, Vertretung -> Dienst.
+  it("tokenized + Vertretungsvorgang: Dienst-Name als Absender, Text in Vertretungsform", async () => {
+    mockEnv.MAIL_BROKER_FROM_MODE = "tokenized";
+    const proc = await newProcess(false);
+    await sendOptOutMail(proc.id);
+
+    const input = sendMailMock.mock.calls[0][0];
+    expect(input.from).toBe(
+      `GoKognito Datenschutzanfragen <proc-${proc.token}@reply.jba-team.com>`,
+    );
+    expect(input.from).not.toContain("Jeffrey Lehmann");
+    // Gegenprobe, dass wirklich das Vertretungs-Template gerendert wurde.
+    expect(input.textBody).not.toContain("ich, Test Person, mache hiermit");
   });
 
   it("tokenized-Modus: process_mails haelt die reine Adresse ohne Display-Name", async () => {
