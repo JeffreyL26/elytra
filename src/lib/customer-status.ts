@@ -14,6 +14,18 @@ import type { processStatusEnum } from "@/db/schema";
 //     ohne Migration und ohne Backfill.
 // Wer hier Verhalten aufhaengen will (Retry, Eskalation, Fristen), nutzt
 // process_status -- nicht diesen Typ.
+//
+// TODO[nachweis]: Sobald aus diesen Status Kundenberichte/Nachweise generiert
+// werden, muss die Herkunft des Ergebnisses mitgefuehrt werden. Ein per ELYTRA
+// manuell gesetzter Status traegt im letzten status_changed-Event
+// reason=resolved_manual plus knowledgeSource (self_document |
+// customer_report | other, siehe manual-resolution.ts). Ein ueber
+// knowledgeSource=customer_report gesetztes Ergebnis beruht auf einer
+// Kundenmeldung -- wir haben es NICHT selbst geprueft (bei Kundenvorgaengen
+// geht die Broker-Antwort an die Kundenanschrift, nie an uns). Es darf deshalb
+// NIEMALS wie eine von uns verifizierte Broker-Antwort dargestellt werden.
+// Diese Projektion allein kann das nicht unterscheiden: sie sieht nur den
+// Status. Die Darstellung selbst ist bewusst noch nicht gebaut.
 
 export type ProcessStatus = (typeof processStatusEnum.enumValues)[number];
 

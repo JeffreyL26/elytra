@@ -2,7 +2,11 @@ import { eq, inArray } from "drizzle-orm";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { db, sql } from "@/db/client";
 import { brokers, optOutProcesses, processEvents, processMails, users } from "@/db/schema";
-import { getAttentionProcesses } from "@/lib/attention-processes";
+import {
+  ATTENTION_OVERDUE_DAYS,
+  ATTENTION_STALE_DAYS,
+  getAttentionProcesses,
+} from "@/lib/attention-processes";
 import { createId, createProcessToken } from "@/lib/ids";
 
 const BROKER_SLUG = `test-attention-${createId().slice(0, 8)}`;
@@ -12,8 +16,16 @@ const userIds: string[] = [];
 let failedProcessId: string;
 let reviewProcessId: string;
 let contactedProcessId: string;
+let staleInProgressId: string;
+let freshInProgressId: string;
+let overdueContactedId: string;
 
-async function createProcess(status: "failed" | "manual_review" | "contacted"): Promise<string> {
+type TestStatus = "failed" | "manual_review" | "contacted" | "in_progress";
+
+async function createProcess(
+  status: TestStatus,
+  fields: { lastContactedAt?: Date } = {},
+): Promise<string> {
   const [user] = await db
     .insert(users)
     .values({ email: `attention-${createId()}@example.org` })
@@ -21,9 +33,19 @@ async function createProcess(status: "failed" | "manual_review" | "contacted"): 
   userIds.push(user.id);
   const [proc] = await db
     .insert(optOutProcesses)
-    .values({ userId: user.id, brokerId, processToken: createProcessToken(), status })
+    .values({
+      userId: user.id,
+      brokerId,
+      processToken: createProcessToken(),
+      status,
+      ...fields,
+    })
     .returning({ id: optOutProcesses.id });
   return proc.id;
+}
+
+function daysAgo(days: number): Date {
+  return new Date(Date.now() - days * 86_400_000);
 }
 
 beforeAll(async () => {
@@ -73,6 +95,30 @@ beforeAll(async () => {
       source: "classified_success",
     },
   });
+
+  // Der ABIS-Fall: ein Ticket-Ack setzte in_progress und danach passierte
+  // nichts mehr. Der Statuswechsel liegt bewusst vor der Staleness-Frist.
+  staleInProgressId = await createProcess("in_progress");
+  await db.insert(processEvents).values({
+    processId: staleInProgressId,
+    eventType: "status_changed",
+    payload: { from: "contacted", to: "in_progress", reason: "classified_in_progress" },
+    createdAt: daysAgo(ATTENTION_STALE_DAYS + 6),
+  });
+
+  // Gegenprobe: gerade erst in Bearbeitung gegangen -> noch kein Fall fuer die Liste.
+  freshInProgressId = await createProcess("in_progress");
+  await db.insert(processEvents).values({
+    processId: freshInProgressId,
+    eventType: "status_changed",
+    payload: { from: "contacted", to: "in_progress", reason: "classified_in_progress" },
+    createdAt: daysAgo(1),
+  });
+
+  // Kontaktiert, aber die Monatsfrist ist ueberschritten.
+  overdueContactedId = await createProcess("contacted", {
+    lastContactedAt: daysAgo(ATTENTION_OVERDUE_DAYS + 5),
+  });
 });
 
 afterAll(async () => {
@@ -97,7 +143,7 @@ describe("getAttentionProcesses", () => {
     expect(review?.reason).toBe("conflict_terminal");
   });
 
-  it("zeigt Prozesse in anderen Status NICHT", async () => {
+  it("zeigt frisch kontaktierte Prozesse NICHT (Frist laeuft noch)", async () => {
     const all = await getAttentionProcesses();
     expect(all.map((p) => p.processId)).not.toContain(contactedProcessId);
   });
@@ -124,9 +170,41 @@ describe("getAttentionProcesses", () => {
     expect(review?.bounce).toBeNull();
   });
 
-  it("sortiert nach reason gruppiert (Triage-Reihenfolge)", async () => {
+  it("sortiert nach Aufmerksamkeitsgrund (Triage-Reihenfolge)", async () => {
     const all = await getAttentionProcesses();
-    const reasons = all.map((p) => p.reason ?? "zz_unbekannt");
-    expect([...reasons].sort((a, b) => a.localeCompare(b))).toEqual(reasons);
+    const ORDER = ["failed", "manual_review", "stale_in_progress", "overdue_contacted"];
+    const ranks = all.map((p) => ORDER.indexOf(p.attentionReason));
+    expect([...ranks].sort((a, b) => a - b)).toEqual(ranks);
+  });
+});
+
+// Die Luecke, durch die der ABIS-Vorgang unbemerkt parkte: ein Ticket-Ack setzt
+// in_progress, und in_progress kennt im Datenmodell keine Frist.
+describe("Staleness-Kriterium", () => {
+  it("listet einen ueberfaelligen in_progress-Vorgang als stale_in_progress", async () => {
+    const all = await getAttentionProcesses();
+    const stale = all.find((p) => p.processId === staleInProgressId);
+    expect(stale?.attentionReason).toBe("stale_in_progress");
+    expect(stale?.status).toBe("in_progress");
+    expect(stale?.waitingSince).toBeInstanceOf(Date);
+  });
+
+  it("listet einen frischen in_progress-Vorgang NICHT", async () => {
+    const all = await getAttentionProcesses();
+    expect(all.map((p) => p.processId)).not.toContain(freshInProgressId);
+  });
+
+  it("listet einen ueberfaellig kontaktierten Vorgang als overdue_contacted", async () => {
+    const all = await getAttentionProcesses();
+    const overdue = all.find((p) => p.processId === overdueContactedId);
+    expect(overdue?.attentionReason).toBe("overdue_contacted");
+    expect(overdue?.status).toBe("contacted");
+  });
+
+  it("die Frist ist stichtagsabhaengig: mit frueherem 'now' faellt der stale-Vorgang raus", async () => {
+    // 'now' um zwei Wochen zurueckgedreht -> der Vorgang war damals frisch.
+    const earlier = new Date(Date.now() - (ATTENTION_STALE_DAYS + 5) * 86_400_000);
+    const all = await getAttentionProcesses(earlier);
+    expect(all.map((p) => p.processId)).not.toContain(staleInProgressId);
   });
 });

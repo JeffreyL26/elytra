@@ -1,0 +1,366 @@
+/* ============================================================
+   ELYTRA -- interne Sachbearbeiter-Sicht.
+   Gleiche Tokens wie Marketing/App (src/app/tokens.css), aber
+   ELYTRA ist ein WERKZEUG: dichte Tabellen, keine Animationen,
+   Space Mono fuer IDs/Tokens/Zeitstempel.
+   Kein three.js, kein GSAP, kein Lenis.
+   ============================================================ */
+
+.elytra {
+  --serif: var(--font-serif), Georgia, serif;
+  --sans: var(--font-sans), -apple-system, BlinkMacSystemFont, sans-serif;
+  --mono: var(--font-mono), ui-monospace, monospace;
+  font-family: var(--sans);
+  color: var(--text-on-dark);
+  background: var(--ink);
+  font-size: 15px;
+  line-height: 1.5;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+.elytra :focus-visible {
+  outline: 2px solid var(--paper);
+  outline-offset: 2px;
+}
+
+/* ---------- Nav ---------- */
+.ely-nav {
+  border-bottom: 1px solid var(--line-dark);
+  background: var(--ink-2);
+}
+.ely-nav__inner {
+  width: min(1400px, 100% - 40px);
+  margin-inline: auto;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.ely-nav__brand {
+  font-family: var(--mono);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+}
+.ely-nav__note {
+  font-size: 12px;
+  color: var(--text-on-dark-muted);
+  letter-spacing: 0.04em;
+}
+
+/* ---------- Main ---------- */
+.ely-main {
+  width: min(1400px, 100% - 40px);
+  margin-inline: auto;
+  padding: 28px 0 80px;
+}
+.ely-title {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-bottom: 6px;
+}
+.ely-lead {
+  font-size: 13.5px;
+  color: var(--text-on-dark-muted);
+  margin-bottom: 22px;
+  max-width: 80ch;
+}
+
+/* ---------- Filter ---------- */
+.ely-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 18px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--line-dark);
+}
+.ely-filter__link {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.04em;
+  padding: 6px 12px;
+  border: 1px solid var(--line-dark);
+  border-radius: 4px;
+  color: var(--text-on-dark-muted);
+}
+.ely-filter__link:hover {
+  border-color: rgba(242, 238, 230, 0.35);
+  color: var(--text-on-dark);
+}
+.ely-filter__link[aria-current="page"] {
+  background: var(--paper);
+  border-color: var(--paper);
+  color: var(--ink);
+}
+
+/* ---------- Tabelle (dicht) ---------- */
+.ely-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--line-dark);
+  border-radius: 6px;
+}
+.ely-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.ely-table th,
+.ely-table td {
+  text-align: left;
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--line-dark);
+  white-space: nowrap;
+  vertical-align: top;
+}
+.ely-table th {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-on-dark-muted);
+  background: var(--ink-2);
+  position: sticky;
+  top: 0;
+}
+.ely-table tbody tr:last-child td {
+  border-bottom: none;
+}
+.ely-table tbody tr:hover td {
+  background: rgba(242, 238, 230, 0.03);
+}
+.ely-table a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--line-dark);
+}
+.ely-table a:hover {
+  text-decoration-color: currentColor;
+}
+.ely-mono {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--text-on-dark-muted);
+}
+.ely-empty {
+  padding: 28px 12px;
+  font-size: 13.5px;
+  color: var(--text-on-dark-muted);
+}
+
+/* ---------- Status-/Grund-Marker ---------- */
+.ely-tag {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 3px;
+  border: 1px solid var(--line-dark);
+  color: var(--text-on-dark-muted);
+}
+.ely-tag--failed {
+  color: #e2907a;
+  border-color: rgba(217, 100, 65, 0.5);
+}
+.ely-tag--review {
+  color: var(--amber);
+  border-color: rgba(217, 164, 65, 0.5);
+}
+.ely-tag--stale {
+  color: var(--amber);
+  border-color: rgba(217, 164, 65, 0.35);
+}
+.ely-tag--done {
+  color: var(--green-soft);
+  border-color: rgba(127, 200, 164, 0.45);
+}
+
+/* ---------- Detail ---------- */
+.ely-back {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--text-on-dark-muted);
+  margin-bottom: 16px;
+}
+.ely-back:hover {
+  color: var(--text-on-dark);
+}
+.ely-grid {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+@media (max-width: 1000px) {
+  .ely-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.ely-panel {
+  border: 1px solid var(--line-dark);
+  border-radius: 6px;
+  padding: 18px;
+  background: var(--ink-2);
+}
+.ely-panel + .ely-panel {
+  margin-top: 20px;
+}
+.ely-panel__title {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line-dark);
+}
+.ely-dl {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 7px 14px;
+  font-size: 13px;
+}
+.ely-dl dt {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-on-dark-muted);
+  padding-top: 2px;
+}
+.ely-dl dd {
+  word-break: break-word;
+}
+
+/* Event-Verlauf */
+.ely-events {
+  display: flex;
+  flex-direction: column;
+}
+.ely-event {
+  padding: 10px 0;
+  border-bottom: 1px dashed var(--line-dark);
+  font-size: 12.5px;
+}
+.ely-event:last-child {
+  border-bottom: none;
+}
+.ely-event__head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+.ely-event__type {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+}
+.ely-event__time {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--text-on-dark-muted);
+}
+.ely-event__body {
+  color: var(--text-on-dark-muted);
+  line-height: 1.55;
+  word-break: break-word;
+}
+
+/* ---------- Formular (manueller Abschluss) ---------- */
+.ely-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.ely-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ely-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+.ely-hint {
+  font-size: 11.5px;
+  color: var(--text-on-dark-muted);
+  line-height: 1.5;
+}
+.ely-input,
+.ely-select,
+.ely-textarea {
+  width: 100%;
+  padding: 9px 11px;
+  font: inherit;
+  font-size: 13px;
+  color: var(--text-on-dark);
+  background: var(--ink-3);
+  border: 1px solid var(--line-dark);
+  border-radius: 4px;
+}
+.ely-textarea {
+  min-height: 84px;
+  resize: vertical;
+}
+.ely-input:focus,
+.ely-select:focus,
+.ely-textarea:focus {
+  outline: none;
+  border-color: var(--paper);
+}
+.ely-btn {
+  align-self: flex-start;
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 4px;
+  background: var(--paper);
+  color: var(--ink);
+}
+.ely-btn:hover {
+  background: #ffffff;
+}
+.ely-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.ely-alert {
+  border: 1px solid var(--line-dark);
+  border-radius: 4px;
+  padding: 11px 13px;
+  font-size: 12.5px;
+  line-height: 1.55;
+}
+.ely-alert--error {
+  border-color: rgba(217, 100, 65, 0.5);
+  background: rgba(217, 100, 65, 0.08);
+  color: #e2907a;
+}
+.ely-alert--success {
+  border-color: rgba(127, 200, 164, 0.4);
+  background: rgba(46, 125, 91, 0.12);
+  color: var(--green-soft);
+}
+.ely-alert--warn {
+  border-color: rgba(217, 164, 65, 0.4);
+  background: rgba(217, 164, 65, 0.07);
+  color: var(--amber);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

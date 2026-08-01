@@ -49,10 +49,29 @@ export interface Transition {
   kind: TransitionKind;
 }
 
+// Aufrufkontext. Die Konfliktregel schuetzt terminale Status gegen AUTOMATIK --
+// gegen eine zweite, widersprechende Broker-Antwort, die niemand geprueft hat.
+// Sie ist kein Schutz gegen den Menschen: ein Sachbearbeiter, der einen Vorgang
+// bewusst abschliesst, ist genau die Instanz, an die "conflict" eskaliert. Er
+// muss deshalb auch auf einem terminalen Status setzen duerfen -- sonst waere
+// ein einmal eskalierter Konflikt nie aufloesbar.
+//
+// Default ist "classification": jeder bestehende Aufrufer (Inbound-Job) behaelt
+// sein Verhalten unveraendert.
+export type TransitionContext = "classification" | "manual";
+
 export function resolveTransition(
   current: ProcessStatus | null,
   incoming: ProcessStatus,
+  context: TransitionContext = "classification",
 ): Transition {
+  // (0) Manueller Sachbearbeiter-Eingriff: setzt immer, auch auf terminalem
+  // Status. Der Audit-Trail (reason=resolved_manual + Begruendung +
+  // Erkenntnisquelle + Admin-userId) macht nachvollziehbar, dass ein Mensch
+  // entschieden hat.
+  if (context === "manual") {
+    return { next: incoming, kind: "set" };
+  }
   // (a) Noch kein Status oder nicht-terminal -> uebernehmen.
   if (current === null || !isTerminal(current)) {
     return { next: incoming, kind: "set" };
