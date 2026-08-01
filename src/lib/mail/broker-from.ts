@@ -16,6 +16,23 @@ import { SERVICE_NAME } from "@/lib/branding";
 // KONSEQUENZ: Im tokenized-Modus traegt die FROM-Adresse den Token, damit
 // Antworten unabhaengig vom Reply-To-Verhalten in der Pipeline landen.
 //
+// WARUM proc-<token>@ UND NICHT datenschutz+<token>@ (geprueft 01.08.2026):
+// Plus-Adressierung waere fuer einen Datenschutzbeauftragten lesbarer und wird
+// von Postmark Inbound sauber unterstuetzt (der Suffix landet sogar fertig
+// extrahiert im MailboxHash-Feld des Webhook-Payloads). Trotzdem bewusst
+// dagegen entschieden: Ein Plus-Suffix ist ein KONVENTION, kein Adressbestandteil
+// -- manche Mailserver und Ticketsysteme normalisieren die Adresse beim
+// Antworten an "+" und schneiden alles danach ab. Dann kaeme die Antwort an
+// datenschutz@<REPLY_DOMAIN> an, ohne jeden Token, und waere still nicht
+// zuordenbar: exakt der Fehlermodus, den dieser Modus gerade behebt.
+// Bei proc-<token>@ ist der Token Teil des MAILBOX-NAMENS und damit nicht
+// abtrennbar -- es gibt nichts zu strippen. Wir tauschen Lesbarkeit gegen
+// Robustheit, und die Robustheit ist hier belegt (Loopback-Test 01.08.:
+// Antwort an die From-Adresse, fremder Absender, frei erfundener Betreff ohne
+// Ref-Block -> matchStage 1). Fuer das Plus-Format existiert dieser Beleg nicht.
+// Die Aussenwirkung traegt ohnehin ueberwiegend der Display-Name (siehe unten),
+// nicht der Local Part.
+//
 // UMSCHALTUNG NUR PER ENV, Default bleibt "self": Solange die Sending-Domain
 // (REPLY_DOMAIN) in Postmark nicht als Absender verifiziert ist, wuerde
 // tokenized jeden Versand bouncen lassen. Der Code schaltet NICHT von sich aus
